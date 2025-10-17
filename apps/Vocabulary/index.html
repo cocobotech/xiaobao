@@ -229,6 +229,16 @@
             background: #138496;
         }
 
+        /* ccbnotes: Home button styling */
+        .home-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background: #c82333;
+        }
+
         /* ccbnotes: Progress counter styling */
         .progress {
             text-align: center;
@@ -267,11 +277,7 @@
         <div class="instructions">
             <h4>📖 How to Use:</h4>
             <p><strong>Demo Mode:</strong> Click "Start Demo" to practice with sample words</p>
-            <p><strong>Custom Mode:</strong> Upload CSV file + folder of images</p>
-            <p>• CSV format: word, translation, example_sentence</p>
-            <p>• Image files should match word names (e.g., apple.jpg for "apple")</p>
-            <p>• Click card to flip and see image/translation/sentence</p>
-            <p>• Use 🔊 button to hear word pronunciation (Text-to-Speech)</p>
+            <p>• Use 🔊 button to for pronunciation (Text-to-Speech)</p>
         </div>
 
         <!-- ccbnotes: File upload section for custom vocabulary -->
@@ -305,6 +311,7 @@
                 <button class="control-btn prev-btn" onclick="previousCard()">⬅️ Previous</button>
                 <button class="control-btn speak-btn" onclick="speakWord()">🔊 Speak</button>
                 <button class="control-btn next-btn" onclick="nextCard()">Next ➡️</button>
+                <button class="control-btn home-btn" onclick="goHome()">🏠 Home</button>
             </div>
 
             <!-- ccbnotes: Progress indicator showing current position -->
@@ -473,6 +480,19 @@
                 currentIndex--;
                 loadCard();
             }
+        }
+
+        // ccbnotes: Function to return to home screen (mode selection)
+        function goHome() {
+            // ccbnotes: Hide card container and show file upload section
+            document.getElementById('cardContainer').style.display = 'none';
+            document.querySelector('.file-upload-section').style.display = 'block';
+            
+            // ccbnotes: Reset vocabulary and state
+            vocabulary = [];
+            images = {};
+            currentIndex = 0;
+            isFlipped = false;
         }
 
         // ccbnotes: Handle CSV file upload for custom vocabulary
