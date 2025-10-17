@@ -307,6 +307,25 @@
             oscillator.stop(audioContext.currentTime + 0.2);
         }
 
+        // ccbnotes: Function to play typing sound when correct key is pressed
+        function playTypingSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // ccbnotes: Set typing sound - higher pitch, shorter duration
+            oscillator.frequency.value = 800;      // Higher pitch (vs 200 for error)
+            oscillator.type = 'sine';              // Smoother sound
+            
+            // ccbnotes: Quick, subtle click sound
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.05);   // Very short (0.05s)
+        }
         // ccbnotes: Level data - 7 progressive levels for different keyboard sections
         // ccbnotes: Level 1: Left hand home row (asdfg)
         // ccbnotes: Level 2: Right hand home row (hjkl;)
@@ -451,6 +470,9 @@
             
             // ccbnotes: Check if pressed key matches expected character
             if (e.key === expectedChar) {
+
+                playTypingSound();  
+                
                 // ccbnotes: Correct key - move to next letter
                 currentLetter.classList.remove('current');
                 currentLetter.classList.add('correct');
