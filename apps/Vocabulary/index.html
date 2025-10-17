@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Learning App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .file-upload-section {
+            padding: 30px;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+        }
+
+        .file-upload-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ffc107;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #856404;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .card-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-width: 400px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .card-image {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 10px;
+        }
+
+        .card-word {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-translation {
+            font-size: 1.8em;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-sentence {
+            font-size: 1.2em;
+            color: #888;
+            font-style: italic;
+            text-align: center;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .prev-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .prev-btn:hover {
+            background: #5a6268;
+        }
+
+        .next-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .next-btn:hover {
+            background: #218838;
+        }
+
+        .speak-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .speak-btn:hover {
+            background: #138496;
+        }
+
+        .progress {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .demo-notice {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #17a2b8;
+            text-align: center;
+            color: #0c5460;
+            font-weight: bold;
+        }
+
+        .flip-hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .card.flipped .card-translation,
+        .card.flipped .card-sentence {
+            display: block;
+        }
+
+        .card:not(.flipped) .card-translation,
+        .card:not(.flipped) .card-sentence {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Vocabulary Learning App</h1>
+
+        <div class="demo-notice">
+            🎯 Demo Mode: Using built-in sample words with images
+        </div>
+
+        <div class="instructions">
+            <h4>📖 How to Use:</h4>
+            <p><strong>Demo Mode:</strong> Click "Start Demo" to practice with sample words</p>
+            <p><strong>Custom Mode:</strong> Upload CSV file + folder of images</p>
+            <p>• CSV format: word, translation, example_sentence</p>
+            <p>• Image files should match word names (e.g., apple.jpg for "apple")</p>
+            <p>• Click card to flip and see translation/sentence</p>
+            <p>• Use 🔊 button to hear pronunciation (Text-to-Speech)</p>
+        </div>
+
+        <div class="file-upload-section">
+            <h3>Choose Learning Mode</h3>
+            <label class="upload-btn" onclick="startDemo()">
+                🎯 Start Demo
+            </label>
+            <label class="upload-btn" for="csvInput">
+                📄 Upload CSV File
+            </label>
+            <label class="upload-btn" for="folderInput">
+                📁 Upload Images Folder
+            </label>
+            <input type="file" id="csvInput" accept=".csv">
+            <input type="file" id="folderInput" multiple accept="image/*">
+        </div>
+
+        <div class="card-container" id="cardContainer">
+            <div class="card" id="card" onclick="flipCard()">
+                <img class="card-image" id="cardImage" src="" alt="Word Image">
+                <div class="card-word" id="cardWord">Word</div>
+                <div class="card-translation" id="cardTranslation">Translation</div>
+                <div class="card-sentence" id="cardSentence">Example sentence</div>
+                <div class="flip-hint">💡 Click card to flip</div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn prev-btn" onclick="previousCard()">⬅️ Previous</button>
+                <button class="control-btn speak-btn" onclick="speakWord()">🔊 Speak</button>
+                <button class="control-btn next-btn" onclick="nextCard()">Next ➡️</button>
+            </div>
+
+            <div class="progress" id="progress">1 / 5</div>
+        </div>
+    </div>
+
+    <script>
+        // Demo vocabulary data with base64 encoded images
+        const demoVocabulary = [
+            {
+                word: 'apple',
+                translation: '苹果',
+                sentence: 'I eat an apple every day.',
+                // Simple SVG image as data URL
+                image: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <circle cx="100" cy="110" r="60" fill="#ff4444"/>
+                        <ellipse cx="100" cy="110" rx="60" ry="55" fill="#ff6666"/>
+                        <path d="M100 50 Q90 30 85 20" stroke="#8B4513" stroke-width="4" fill="none"/>
+                        <ellipse cx="110" cy="60" rx="15" ry="8" fill="#228B22" transform="rotate(-20 110 60)"/>
+                    </svg>
+                `)
+            },
+            {
+                word: 'book',
+                translation: '书',
+                sentence: 'She is reading a book in the library.',
+                image: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <rect x="50" y="40" width="100" height="120" fill="#4169E1" rx="5"/>
+                        <rect x="55" y="45" width="90" height="110" fill="#6495ED" rx="3"/>
+                        <line x1="100" y1="45" x2="100" y2="155" stroke="#4169E1" stroke-width="2"/>
+                        <rect x="50" y="155" width="100" height="10" fill="#2E5090"/>
+                    </svg>
+                `)
+            },
+            {
+                word: 'cat',
+                translation: '猫',
+                sentence: 'The cat is sleeping on the sofa.',
+                image: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <ellipse cx="100" cy="120" rx="50" ry="40" fill="#FFA500"/>
+                        <circle cx="100" cy="90" r="35" fill="#FFA500"/>
+                        <polygon points="70,60 60,30 80,70" fill="#FFA500"/>
+                        <polygon points="130,60 140,30 120,70" fill="#FFA500"/>
+                        <circle cx="85" cy="85" r="5" fill="#000"/>
+                        <circle cx="115" cy="85" r="5" fill="#000"/>
+                        <path d="M100 95 L95 100 L100 100 L105 100 L100 95" stroke="#000" stroke-width="2" fill="none"/>
+                    </svg>
+                `)
+            },
+            {
+                word: 'house',
+                translation: '房子',
+                sentence: 'They live in a beautiful house.',
+                image: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <polygon points="100,40 40,100 160,100" fill="#DC143C"/>
+                        <rect x="50" y="100" width="100" height="80" fill="#8B4513"/>
+                        <rect x="70" y="120" width="25" height="30" fill="#87CEEB"/>
+                        <rect x="105" y="120" width="25" height="30" fill="#87CEEB"/>
+                        <rect x="85" y="150" width="30" height="30" fill="#654321"/>
+                    </svg>
+                `)
+            },
+            {
+                word: 'sun',
+                translation: '太阳',
+                sentence: 'The sun is shining brightly today.',
+                image: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="40" fill="#FFD700"/>
+                        <circle cx="100" cy="100" r="35" fill="#FFA500"/>
+                        <line x1="100" y1="30" x2="100" y2="50" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="100" y1="150" x2="100" y2="170" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="30" y1="100" x2="50" y2="100" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="150" y1="100" x2="170" y2="100" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="50" y1="50" x2="65" y2="65" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="135" y1="135" x2="150" y2="150" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="150" y1="50" x2="135" y2="65" stroke="#FFD700" stroke-width="4"/>
+                        <line x1="65" y1="135" x2="50" y2="150" stroke="#FFD700" stroke-width="4"/>
+                    </svg>
+                `)
+            }
+        ];
+
+        let vocabulary = [];
+        let images = {};
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        // Text-to-Speech function
+        function speakWord() {
+            const word = vocabulary[currentIndex].word;
+            const sentence = vocabulary[currentIndex].sentence;
+            
+            if ('speechSynthesis' in window) {
+                // Stop any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Create utterance for word
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8; // Slightly slower for learning
+                utterance.pitch = 1;
+                
+                // Speak the word
+                window.speechSynthesis.speak(utterance);
+                
+                // Optionally speak the sentence after the word
+                utterance.onend = () => {
+                    const sentenceUtterance = new SpeechSynthesisUtterance(sentence);
+                    sentenceUtterance.lang = 'en-US';
+                    sentenceUtterance.rate = 0.8;
+                    window.speechSynthesis.speak(sentenceUtterance);
+                };
+            } else {
+                alert('Sorry, your browser does not support text-to-speech.');
+            }
+        }
+
+        function startDemo() {
+            vocabulary = demoVocabulary;
+            currentIndex = 0;
+            loadCard();
+            document.querySelector('.file-upload-section').style.display = 'none';
+            document.getElementById('cardContainer').style.display = 'flex';
+        }
+
+        function loadCard() {
+            const card = vocabulary[currentIndex];
+            document.getElementById('cardImage').src = card.image;
+            document.getElementById('cardWord').textContent = card.word;
+            document.getElementById('cardTranslation').textContent = card.translation;
+            document.getElementById('cardSentence').textContent = card.sentence;
+            document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabulary.length}`;
+            
+            // Reset flip state
+            document.getElementById('card').classList.remove('flipped');
+            isFlipped = false;
+        }
+
+        function flipCard() {
+            const card = document.getElementById('card');
+            card.classList.toggle('flipped');
+            isFlipped = !isFlipped;
+        }
+
+        function nextCard() {
+            if (currentIndex < vocabulary.length - 1) {
+                currentIndex++;
+                loadCard();
+            } else {
+                alert('🎉 Congratulations! You have completed all words!');
+            }
+        }
+
+        function previousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadCard();
+            }
+        }
+
+        // Handle CSV upload
+        document.getElementById('csvInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const text = await file.text();
+                parseCSV(text);
+            }
+        });
+
+        // Handle folder upload
+        document.getElementById('folderInput').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            for (let file of files) {
+                const fileName = file.name.split('.')[0].toLowerCase();
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    images[fileName] = event.target.result;
+                    checkAndStart();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            vocabulary = [];
+            
+            for (let i = 1; i < lines.length; i++) { // Skip header
+                const line = lines[i].trim();
+                if (line) {
+                    const parts = line.split(',').map(s => s.trim());
+                    if (parts.length >= 3) {
+                        vocabulary.push({
+                            word: parts[0],
+                            translation: parts[1],
+                            sentence: parts[2],
+                            image: null
+                        });
+                    }
+                }
+            }
+            checkAndStart();
+        }
+
+        function checkAndStart() {
+            if (vocabulary.length > 0 && Object.keys(images).length > 0) {
+                // Match images to words
+                vocabulary.forEach(item => {
+                    const wordKey = item.word.toLowerCase();
+                    if (images[wordKey]) {
+                        item.image = images[wordKey];
+                    }
+                });
+                
+                currentIndex = 0;
+                loadCard();
+                document.querySelector('.file-upload-section').style.display = 'none';
+                document.getElementById('cardContainer').style.display = 'flex';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (vocabulary.length === 0) return;
+            
+            if (e.key === 'ArrowRight') {
+                nextCard();
+            } else if (e.key === 'ArrowLeft') {
+                previousCard();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                flipCard();
+            } else if (e.key === 's' || e.key === 'S') {
+                speakWord();
+            }
+        });
+    </script>
+</body>
+</html>
