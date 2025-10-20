@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Typing Shooter 3D - Integrated</title>
+<style>
+/* Reset */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI", Poppins, system-ui, -apple-system, "Helvetica Neue", Arial;
+  background: radial-gradient(circle at 10% 10%, #0f1720 0%, #03040a 40%, #000 100%);
+  color:#fff; overflow:hidden; cursor:none; perspective:1000px;
+}
+
+/* star texture (subtle) */
+.stars{
+  position:fixed; inset:-50% auto auto -50%;
+  width:200%; height:200%;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity:0.12;
+  transform:translateZ(-200px);
+  animation: drift 120s linear infinite;
+}
+@keyframes drift{from{transform:translate(0,0) translateZ(-200px)}to{transform:translate(-30%, -20%) translateZ(-200px)}}
+
+/* mouse trail */
+.trail{
+  position:fixed; left:0; top:0; width:26px; height:26px; border-radius:50%;
+  pointer-events:none; transform:translate(-50%,-50%);
+  background: radial-gradient(circle at 30% 30%, rgba(0,255,255,0.9), rgba(0,180,255,0.25) 40%, rgba(0,180,255,0) 70%);
+  filter: blur(8px); mix-blend-mode:screen; z-index:9999;
+}
+
+/* container */
+.game-container{position:relative;width:100%;height:100vh;overflow:hidden;transform-style:preserve-3d}
+
+/* letter (neon glass) */
+.letter{
+  position:absolute; font-size:3.2em; font-weight:800; color:#e6ffff;
+  padding:18px 22px; border-radius:16px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border:1px solid rgba(0,220,255,0.12);
+  box-shadow:
+    inset 0 0 14px rgba(0,220,255,0.06),
+    0 10px 30px rgba(0,160,255,0.08),
+    0 2px 6px rgba(0,0,0,0.6);
+  text-shadow:0 0 12px rgba(0,200,255,0.35), 0 0 24px rgba(0,120,255,0.12);
+  user-select:none; cursor:default; transform:rotateY(12deg);
+  animation: fall linear;
+  backdrop-filter: blur(6px) saturate(1.1);
+  z-index:100;
+}
+
+/* falling animation keyframe - duration set inline */
+@keyframes fall {
+  from { top:-140px; transform:rotateY(12deg) translateZ(0); opacity:1 }
+  to   { top:110vh; transform:rotateY(6deg) translateZ(80px); opacity:0.95 }
+}
+
+/* explosion emoji */
+.explosion{
+  position:absolute; font-size:3.4em; filter:drop-shadow(0 0 12px rgba(0,255,255,0.6));
+  animation: explode 0.55s ease-out forwards; z-index:120;
+}
+@keyframes explode { from{transform:scale(1);opacity:1} to{transform:scale(3);opacity:0} }
+
+/* HUD */
+.hud{position:absolute;top:20px;left:0;right:0;display:flex;justify-content:space-around;z-index:2000;padding:0 24px}
+.hud-item{
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  padding:12px 22px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);
+  box-shadow:0 4px 18px rgba(0,200,255,0.04);backdrop-filter:blur(8px);
+  min-width:100px;text-align:center;transition:transform .22s ease,box-shadow .22s ease;
+}
+.hud-item:hover{transform:translateY(-6px);box-shadow:0 18px 45px rgba(0,190,255,0.12)}
+.hud-label{font-size:0.85rem;color:#9fb7c7;margin-bottom:6px}
+.hud-value{font-size:1.7rem;font-weight:700;color:#8ef0ff;text-shadow:0 0 9px rgba(0,200,255,0.25)}
+
+/* Controls */
+.game-controls{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:none;gap:16px;z-index:1800}
+button{font-weight:700;border-radius:9px;padding:12px 18px;border:none;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+button:active{transform:translateY(1px)}
+.pause-btn{background:linear-gradient(135deg,#ffd166,#ff9f43);color:#071013;box-shadow:0 8px 26px rgba(255,150,30,0.16)}
+.home-btn{background:linear-gradient(135deg,#ff3860,#cc1034);color:#fff;box-shadow:0 8px 26px rgba(255,40,80,0.14)}
+
+/* panel (start / gameover) */
+.panel{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3000;
+  background:rgba(10,18,25,0.6);border-radius:18px;padding:36px 42px;width: min(860px, 92%);
+  border:1px solid rgba(0,255,255,0.06);backdrop-filter: blur(10px);
+  box-shadow:0 16px 80px rgba(0,128,255,0.06);
+  text-align:center;
+}
+.panel h1{font-size:2.8rem;color:#8ef0ff;margin-bottom:8px;text-shadow:0 0 18px rgba(0,200,255,0.16)}
+.panel p{color:#cdeff6;margin:10px 0 0 0;font-size:1.05rem}
+.level-selection{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+
+/* level buttons */
+.level-btn{
+  background:linear-gradient(180deg, rgba(0,255,255,0.08), rgba(255,255,255,0.02));
+  border:1px solid rgba(0,220,255,0.08); padding:14px;border-radius:10px;color:#dffaff;font-weight:700;
+  font-size:1rem;box-shadow:0 6px 16px rgba(0,180,255,0.04);
+}
+.level-btn small{display:block;font-weight:500;color:#9fcdd9;margin-top:8px;font-size:.8rem}
+
+/* responsive */
+@media (max-width:720px){
+  .level-selection{grid-template-columns:repeat(2,1fr)}
+  .letter{font-size:2.4em;padding:14px 18px}
+  .hud-value{font-size:1.3rem}
+}
+</style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="trail" id="trail" aria-hidden="true"></div>
+
+  <div class="game-container" id="gameContainer">
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-item"><div class="hud-label">Score</div><div class="hud-value" id="score">0</div></div>
+      <div class="hud-item"><div class="hud-label">Combo</div><div class="hud-value" id="combo">0</div></div>
+      <div class="hud-item"><div class="hud-label">Lives</div><div class="hud-value" id="lives">5</div></div>
+      <div class="hud-item"><div class="hud-label">Level</div><div class="hud-value" id="gameLevel">1</div></div>
+    </div>
+
+    <!-- controls -->
+    <div class="game-controls" id="gameControls">
+      <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️ Pause</button>
+      <button class="home-btn" onclick="goToHome()">🏠 Home</button>
+    </div>
+
+    <!-- start screen -->
+    <div class="panel" id="startScreen">
+      <h1>💠 Typing Shooter 3D</h1>
+      <p>Select Your Level</p>
+      <div class="level-selection">
+        <button class="level-btn" onclick="selectLevel(1)">Level 1 <small>asdfghjkl</small></button>
+        <button class="level-btn" onclick="selectLevel(2)">Level 2 <small>qwertyuiop</small></button>
+        <button class="level-btn" onclick="selectLevel(3)">Level 3 <small>zxcvbnm</small></button>
+        <button class="level-btn" onclick="selectLevel(4)">Level 4 <small>qwer + asdf</small></button>
+        <button class="level-btn" onclick="selectLevel(5)">Level 5 <small>asdf + zxcv</small></button>
+        <button class="level-btn" onclick="selectLevel(6)">Level 6 <small>All Letters</small></button>
+      </div>
+      <p>💥 Type letters to shoot them down!</p>
+      <p>❤️ You have <span id="startLives">5</span> lives</p>
+    </div>
+
+    <!-- gameover -->
+    <div class="panel" id="gameOver" style="display:none;">
+      <h1>💀 Game Over</h1>
+      <p>Final Score: <strong id="finalScore">0</strong></p>
+      <p>Max Combo: <strong id="maxCombo">0</strong></p>
+      <p>Letters Hit: <strong id="lettersHit">0</strong></p>
+      <div style="margin-top:18px">
+        <button onclick="restartGame()">Play Again</button>
+        <button class="home-btn" onclick="goToHome()">Home</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* -------------------------
+   原始游戏逻辑（已完整合并）
+   包括：音效、生成字母、命中/爆炸、扣命、暂停、开始、结束、UI更新
+   -------------------------*/
+
+/* Audio context */
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+/* Game state */
+let score = 0;
+let combo = 0;
+let maxCombo = 0;
+let lives = 5;
+let gameLevel = 1;
+let lettersHit = 0;
+let gameRunning = false;
+let gamePaused = false;
+let spawnInterval = null;
+let fallingLetters = [];
+let selectedLevel = 1;
+
+/* Level letters */
+const levelLetters = {
+  1: ['a','s','d','f','g','h','j','k','l'],
+  2: ['q','w','e','r','t','y','u','i','o','p'],
+  3: ['z','x','c','v','b','n','m'],
+  4: ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l'],
+  5: ['a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'],
+  6: 'abcdefghijklmnopqrstuvwxyz'.split('')
+};
+let currentLetters = levelLetters[1];
+
+/* Sound helpers */
+function playShootSound(){
+  const o = audioContext.createOscillator();
+  const g = audioContext.createGain();
+  o.connect(g); g.connect(audioContext.destination);
+  o.frequency.setValueAtTime(600, audioContext.currentTime);
+  o.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+  o.type = 'sine';
+  g.gain.setValueAtTime(0.28, audioContext.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+  o.start(audioContext.currentTime); o.stop(audioContext.currentTime + 0.15);
+}
+function playExplosionSound(){
+  const o = audioContext.createOscillator();
+  const g = audioContext.createGain();
+  o.connect(g); g.connect(audioContext.destination);
+  o.frequency.setValueAtTime(100, audioContext.currentTime);
+  o.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.2);
+  o.type='sawtooth';
+  g.gain.setValueAtTime(0.42, audioContext.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+  o.start(audioContext.currentTime); o.stop(audioContext.currentTime + 0.3);
+}
+function playMissSound(){
+  const o = audioContext.createOscillator();
+  const g = audioContext.createGain();
+  o.connect(g); g.connect(audioContext.destination);
+  o.frequency.setValueAtTime(400, audioContext.currentTime);
+  o.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.4);
+  o.type='triangle';
+  g.gain.setValueAtTime(0.28, audioContext.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+  o.start(audioContext.currentTime); o.stop(audioContext.currentTime + 0.4);
+}
+
+/* UI update */
+function updateHUD(){
+  document.getElementById('score').textContent = score;
+  document.getElementById('combo').textContent = combo;
+  document.getElementById('lives').textContent = lives;
+  document.getElementById('gameLevel').textContent = gameLevel;
+}
+
+/* select level & start */
+function selectLevel(level){
+  selectedLevel = level;
+  currentLetters = levelLetters[level] || levelLetters[6];
+  startGame();
+}
+
+/* create letter */
+function createLetter(){
+  if (gamePaused) return;
+  const container = document.getElementById('gameContainer');
+  const letterEl = document.createElement('div');
+  const randomLetter = currentLetters[Math.floor(Math.random()*currentLetters.length)];
+  letterEl.className = 'letter';
+  letterEl.textContent = randomLetter;
+  letterEl.dataset.letter = randomLetter;
+  const randomX = Math.random() * (window.innerWidth - 120);
+  letterEl.style.left = randomX + 'px';
+  // fall duration depends on level: faster as level up
+  const fallDuration = Math.max(2.2, 6 - gameLevel * 0.55);
+  letterEl.style.animationDuration = fallDuration + 's';
+  container.appendChild(letterEl);
+  fallingLetters.push({element: letterEl, letter: randomLetter, startTime: Date.now()});
+  // remove after finished falling -> lose life
+  const removalTimeout = setTimeout(()=>{
+    if (letterEl.parentNode && !gamePaused){
+      letterEl.remove();
+      fallingLetters = fallingLetters.filter(l => l.element !== letterEl);
+      loseLife();
+    }
+  }, fallDuration*1000);
+  // store timeout so we can optionally clear later (not used but kept)
+  letterEl._removalTimeout = removalTimeout;
+}
+
+/* create explosion emoji */
+function createExplosion(x,y){
+  const ex = document.createElement('div');
+  ex.className = 'explosion';
+  ex.textContent = '💥';
+  // center a bit
+  ex.style.left = (x - 24) + 'px';
+  ex.style.top = (y - 24) + 'px';
+  document.getElementById('gameContainer').appendChild(ex);
+  setTimeout(()=>ex.remove(), 600);
+}
+
+/* shoot letter when typed */
+function shootLetter(typedLetter){
+  if (gamePaused) return;
+  let target = null; let maxTop = -1;
+  for (let l of fallingLetters){
+    if (l.letter === typedLetter){
+      const t = l.element.getBoundingClientRect().top;
+      if (t > maxTop){ maxTop = t; target = l; }
+    }
+  }
+  if (target){
+    // audio + explosion
+    playShootSound(); playExplosionSound();
+    const rect = target.element.getBoundingClientRect();
+    createExplosion(rect.left + rect.width/2, rect.top + rect.height/2);
+    // remove
+    try{ target.element.remove(); }catch(e){}
+    fallingLetters = fallingLetters.filter(l => l !== target);
+    // score update
+    score += 10 * (combo + 1);
+    combo++;
+    lettersHit++;
+    if (combo > maxCombo) maxCombo = combo;
+    updateHUD();
+    // level up every 20 hits
+    if (lettersHit % 20 === 0){
+      gameLevel++;
+      updateHUD();
+      // when level increases, speed up spawn by clearing and resetting interval
+      if (gameRunning){
+        clearInterval(spawnInterval);
+        const spawnRate = Math.max(350, 1500 - gameLevel * 100);
+        spawnInterval = setInterval(createLetter, spawnRate);
+      }
+    }
+  }
+}
+
+/* lose life */
+function loseLife(){
+  if (gamePaused) return;
+  playMissSound();
+  lives--;
+  combo = 0;
+  updateHUD();
+  if (lives <= 0) endGame();
+}
+
+/* toggle pause */
+function togglePause(){
+  gamePaused = !gamePaused;
+  const pauseBtn = document.getElementById('pauseBtn');
+  if (gamePaused){
+    pauseBtn.textContent = '▶️ Resume';
+    fallingLetters.forEach(l => { l.element.style.animationPlayState = 'paused'; });
+  } else {
+    pauseBtn.textContent = '⏸️ Pause';
+    fallingLetters.forEach(l => { l.element.style.animationPlayState = 'running'; });
+  }
+}
+
+/* go home (level select) */
+function goToHome(){
+  gameRunning = false;
+  gamePaused = false;
+  clearInterval(spawnInterval);
+  // remove letters
+  fallingLetters.forEach(l => { try{ l.element.remove(); }catch(e){} });
+  fallingLetters = [];
+  // UI swap
+  document.getElementById('gameControls').style.display = 'none';
+  document.getElementById('gameOver').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'block';
+  // reset stats
+  score = 0; combo = 0; maxCombo = 0; lives = 5; gameLevel = 1; lettersHit = 0;
+  updateHUD();
+}
+
+/* start game */
+function startGame(){
+  // ensure audio context resumed on some browsers
+  if (audioContext.state === 'suspended'){ audioContext.resume().catch(()=>{}); }
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameControls').style.display = 'flex';
+  gameRunning = true; gamePaused = false;
+  document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+  // ensure currentLetters is set
+  currentLetters = levelLetters[selectedLevel] || levelLetters[6];
+  // spawn interval
+  const spawnRate = Math.max(450, 1500 - gameLevel * 100);
+  spawnInterval = setInterval(createLetter, spawnRate);
+  // create a few immediate letters for better feel
+  for (let i=0;i<3;i++){ setTimeout(createLetter, i*350); }
+}
+
+/* end game */
+function endGame(){
+  gameRunning = false; gamePaused = false;
+  clearInterval(spawnInterval);
+  fallingLetters.forEach(l => { try{ l.element.remove(); }catch(e){} });
+  fallingLetters = [];
+  // show game over panel with stats
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('maxCombo').textContent = maxCombo;
+  document.getElementById('lettersHit').textContent = lettersHit;
+  document.getElementById('gameOver').style.display = 'block';
+  document.getElementById('gameControls').style.display = 'none';
+}
+
+/* restart with same level */
+function restartGame(){
+  score = 0; combo = 0; maxCombo = 0; lives = 5; gameLevel = 1; lettersHit = 0;
+  updateHUD();
+  document.getElementById('gameOver').style.display = 'none';
+  startGame();
+}
+
+/* keyboard listener (typing/shooting) */
+document.addEventListener('keydown', (e)=>{
+  if (!gameRunning || gamePaused) return;
+  const key = e.key.toLowerCase();
+  if (currentLetters.includes(key)) shootLetter(key);
+});
+
+/* ensure startLives in start screen reflects initial lives */
+document.getElementById('startLives').textContent = lives;
+
+/* -------------------------
+   Mouse trail & small parallax for letters (tilt on mousemove)
+   -------------------------*/
+const trail = document.getElementById('trail');
+let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+document.addEventListener('mousemove', (e)=>{
+  mouseX = e.clientX; mouseY = e.clientY;
+  trail.style.left = mouseX + 'px';
+  trail.style.top = mouseY + 'px';
+  // small tilt effect for existing letters (subtle)
+  const centerX = window.innerWidth/2;
+  const ratio = (mouseX - centerX) / centerX; // -1..1
+  document.querySelectorAll('.letter').forEach(el=>{
+    const tilt = Math.max(-18, Math.min(18, 12 + ratio*8));
+    el.style.transform = `rotateY(${tilt}deg)`;
+  });
+});
+
+/* Responsive: clear letters on resize (prevent offscreen placements) */
+window.addEventListener('resize', ()=>{
+  fallingLetters.forEach(l => {
+    const el = l.element;
+    const left = parseFloat(el.style.left) || 0;
+    if (left > window.innerWidth - 100){
+      el.style.left = Math.max(12, window.innerWidth - 140) + 'px';
+    }
+  });
+});
+
+/* Accessibility: allow click start by pressing any level button programmatically kept earlier */
+/* initial HUD update */
+updateHUD();
+
+/* Optional: click on start screen if user clicks panel area -> do nothing (must pick level) */
+/* End of script */
+</script>
+</body>
+</html>
