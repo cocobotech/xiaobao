@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Game - Quantum Drop</title>
+    <style>
+        /* ccbnotes: Owner - ccbnotes */
+        /* ccbnotes: Global reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif; /* 更改为更现代的字体 */
+        }
+        
+        /* 导入Google Font: Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+        /* ccbnotes: Main body styling - Modern Deep Blue 3D Background */
+        body {
+            background: #141e30; /* 极深的蓝色/黑色 */
+            background: linear-gradient(135deg, #09172A 0%, #173860 100%); /* 深蓝渐变 */
+            overflow: hidden;
+            height: 100vh;
+            color: #E0E7FF; /* 浅蓝色文字 */
+            cursor: crosshair; /* 更有游戏感的鼠标图标 */
+        }
+        
+        /* ccbnotes: Game container */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ccbnotes: Falling letter styling - 3D Sci-Fi Look */
+        .letter {
+            position: absolute;
+            font-size: 3.5em; /* 稍微放大 */
+            font-weight: 800; /* 更粗的字体 */
+            color: #fff;
+            background: #2C3E50; /* 深色基底 */
+            
+            /* 3D 凸起效果 - Neumorphism Style with Inner Shadow for Glossy Look */
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 
+                /* 外侧亮光 */
+                0 0 10px rgba(102, 126, 234, 0.5), /* 蓝紫色光晕 */
+                /* 3D 凸起 */
+                5px 5px 15px rgba(0, 0, 0, 0.7), 
+                -5px -5px 15px rgba(44, 62, 80, 0.5),
+                /* 内侧高光 - 模拟玻璃或金属光泽 */
+                inset 2px 2px 5px rgba(255, 255, 255, 0.3),
+                inset -2px -2px 5px rgba(0, 0, 0, 0.5);
+            
+            text-shadow: 0 0 8px #fff, 0 0 15px #667eea; /* 字母发光效果 */
+            transform: perspective(500px) rotateX(0deg); /* 3D 基础设置 */
+            transition: transform 0.1s;
+            user-select: none;
+            animation: fall linear;
+        }
+
+        /* ccbnotes: Falling animation */
+        @keyframes fall {
+            from { top: -100px; }
+            to { top: 100vh; }
+        }
+
+        /* ccbnotes: Explosion effect when letter is hit */
+        .explosion {
+            position: absolute;
+            font-size: 5em;
+            text-shadow: 0 0 20px #FFD700; /* 金色发光爆炸 */
+            animation: explode 0.5s ease-out forwards;
+            z-index: 1001;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(2) rotate(45deg); opacity: 0.5; }
+            100% { transform: scale(4) rotate(90deg); opacity: 0; }
+        }
+
+        /* --- 鼠标拖尾效果 (Mouse Trail) --- */
+        .trail-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 1) 0%, rgba(102, 126, 234, 0) 70%); /* 蓝紫色光晕 */
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: fadeOut 0.8s ease-out forwards;
+            z-index: 500; /* 低于UI元素 */
+            filter: blur(2px);
+            opacity: 0.8;
+        }
+
+        @keyframes fadeOut {
+            to {
+                transform: translate(-50%, -50%) scale(0.1);
+                opacity: 0;
+            }
+        }
+        /* ------------------------------------- */
+
+        /* ccbnotes: HUD (Heads Up Display) - Neumorphism Panel */
+        .hud {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center; /* 居中显示 */
+            gap: 20px;
+            padding: 0 50px;
+            z-index: 1000;
+        }
+
+        .hud-item {
+            /* 嵌入式面板 Neumorphism */
+            background: #141e30;
+            padding: 15px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 
+                inset 5px 5px 10px #09172A, 
+                inset -5px -5px 10px #1E2D4A;
+            min-width: 120px;
+            transition: transform 0.2s;
+        }
+        
+        .hud-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .hud-label {
+            font-size: 0.9em;
+            color: #9AA9C6; /* 柔和的浅色 */
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .hud-value {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #667eea; /* 主题蓝紫色 */
+            text-shadow: 0 0 5px #667eea; /* 数字发光 */
+        }
+        
+        .lives .hud-value {
+            color: #ff4444; /* 生命值红色 */
+            text-shadow: 0 0 5px #ff4444;
+        }
+        
+        /* ccbnotes: Universal Button Style - 3D/Neumorphism */
+        .styled-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            
+            /* 凸起式 Neumorphism */
+            box-shadow: 
+                5px 5px 10px rgba(0, 0, 0, 0.5), 
+                -5px -5px 10px rgba(44, 62, 80, 0.4);
+            transform: translateZ(0);
+        }
+
+        .styled-btn:hover {
+            transform: translateY(-2px) translateZ(5px);
+            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.6), -8px -8px 15px rgba(44, 62, 80, 0.5);
+        }
+
+        .styled-btn:active {
+            /* 按钮按下时的嵌入效果 */
+            box-shadow: 
+                inset 5px 5px 10px rgba(0, 0, 0, 0.6), 
+                inset -5px -5px 10px rgba(44, 62, 80, 0.4);
+            transform: translateY(0) translateZ(0);
+        }
+        
+        /* ccbnotes: Control buttons during game */
+        .game-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .pause-btn {
+            background: #FFC107; /* 黄色 */
+            color: #000;
+        }
+
+        .home-btn {
+            background: #DC3545; /* 红色 */
+            color: white;
+        }
+        
+        .restart-btn {
+            background: #28a745; /* 绿色 */
+            color: white;
+        }
+
+        /* ccbnotes: Game over screen & Start screen - Central Panel */
+        .game-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* 主题深色背景 Neumorphism */
+            background: #141e30;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 
+                        -20px -20px 60px rgba(44, 62, 80, 0.1);
+            text-align: center;
+            display: none;
+            z-index: 2000;
+            max-width: 800px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.05); /* 轻微边框 */
+        }
+        
+        .start-screen, .game-over {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .game-over { display: none; }
+        .start-screen { display: block; }
+
+        .game-panel h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 3.5em;
+            font-weight: 800;
+            text-shadow: 0 0 15px #667eea, 0 0 5px #fff;
+        }
+
+        .game-panel p {
+            font-size: 1.3em;
+            margin: 10px 0;
+            color: #B0BACC;
+            font-weight: 400;
+        }
+
+        /* ccbnotes: Level selection grid */
+        .level-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .level-btn {
+            /* 继承 styled-btn 样式 */
+            background: #667eea;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .level-btn:hover {
+            background: #764ba2;
+        }
+        
+        .level-btn:active {
+            /* 按钮按下时的嵌入效果 */
+            background: #4a5bb8;
+        }
+
+        .level-btn .level-keys {
+            font-size: 0.8em;
+            margin-top: 8px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+        
+        .game-over .final-stats {
+            margin: 20px 0 40px 0;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .game-over .stat-item {
+            text-align: center;
+        }
+        
+        .game-over .stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #28a745;
+            text-shadow: 0 0 8px #28a745;
+        }
+        
+        .game-over .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        /* 使用统一的 styled-btn 类代替单独的按钮样式 */
+        .game-over button {
+            margin: 0;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            .level-selection {
+                grid-template-columns: 1fr;
+            }
+            .hud {
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+            .hud-item {
+                min-width: unset;
+                padding: 10px 15px;
+            }
+            .game-panel {
+                padding: 30px;
+            }
+            .game-panel h1 {
+                font-size: 2.5em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <div class="hud">
+            <div class="hud-item">
+                <div class="hud-label">SCORE</div>
+                <div class="hud-value" id="score">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">COMBO</div>
+                <div class="hud-value" id="combo">0</div>
+            </div>
+            <div class="hud-item lives">
+                <div class="hud-label">LIVES</div>
+                <div class="hud-value" id="lives">5</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">LEVEL</div>
+                <div class="hud-value" id="gameLevel">1</div>
+            </div>
+        </div>
+
+        <div class="game-controls" id="gameControls">
+            <button class="styled-btn pause-btn" id="pauseBtn" onclick="togglePause()">⏸️ Pause</button>
+            <button class="styled-btn home-btn" onclick="goToHome()">🏠 Home</button>
+        </div>
+
+        <div class="start-screen game-panel" id="startScreen">
+            <h1>🎮 QUANTUM DROP</h1>
+            <p>Type letters to destroy them before they hit the floor!</p>
+            
+            <div class="level-selection">
+                <button class="styled-btn level-btn" onclick="selectLevel(1)">
+                    Level 1 - Home Row
+                    <div class="level-keys">a s d f g h j k l</div>
+                </button>
+                <button class="styled-btn level-btn" onclick="selectLevel(2)">
+                    Level 2 - Top Row
+                    <div class="level-keys">q w e r t y u i o p</div>
+                </button>
+                <button class="styled-btn level-btn" onclick="selectLevel(3)">
+                    Level 3 - Bottom Row
+                    <div class="level-keys">z x c v b n m</div>
+                </button>
+                <button class="styled-btn level-btn" onclick="selectLevel(4)">
+                    Level 4 - Home + Top
+                    <div class="level-keys">a-l + q-p</div>
+                </button>
+                <button class="styled-btn level-btn" onclick="selectLevel(5)">
+                    Level 5 - Home + Bottom
+                    <div class="level-keys">a-l + z-m</div>
+                </button>
+                <button class="styled-btn level-btn" onclick="selectLevel(6)">
+                    Level 6 - Ultimate
+                    <div class="level-keys">ALL LETTERS (a-z)</div>
+                </button>
+            </div>
+
+            <p style="margin-top: 20px;">🔥 The higher your combo, the more points you get!</p>
+            <p>💡 **Tip:** Shoot the letter closest to the bottom first.</p>
+        </div>
+
+        <div class="game-over game-panel" id="gameOver">
+            <h1>SYSTEM FAILURE!</h1>
+            
+            <div class="final-stats">
+                <div class="stat-item">
+                    <div class="hud-label">FINAL SCORE</div>
+                    <div class="stat-value" id="finalScore">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="hud-label">MAX COMBO</div>
+                    <div class="stat-value" id="maxCombo">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="hud-label">HITS</div>
+                    <div class="stat-value" id="lettersHit">0</div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="styled-btn restart-btn" onclick="restartGame()">⚡ Restart Level</button>
+                <button class="styled-btn home-btn" onclick="goToHome()">🏠 Back to Levels</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ccbnotes: Owner - ccbnotes
+        
+        /* --- 鼠标拖尾逻辑 (Mouse Trail Logic) --- */
+        const gameContainer = document.getElementById('gameContainer');
+        
+        function createTrailParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'trail-particle';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            gameContainer.appendChild(particle);
+            
+            // 随机大小
+            const size = Math.random() * 8 + 5; 
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // 移除粒子
+            setTimeout(() => {
+                particle.remove();
+            }, 800);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (gameRunning && !gamePaused) {
+                 // 限制生成频率，每 30ms 生成一次
+                if (Date.now() % 30 < 10) { 
+                    createTrailParticle(e.clientX, e.clientY);
+                }
+            }
+        });
+        /* ------------------------------------- */
+        
+        // ccbnotes: Audio context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // ccbnotes: Game state variables
+        let score = 0;
+        let combo = 0;
+        let maxCombo = 0;
+        let lives = 5;
+        let gameLevel = 1;
+        let lettersHit = 0;
+        let gameRunning = false;
+        let gamePaused = false;
+        let spawnInterval;
+        let fallingLetters = [];
+        let selectedLevel = 1;
+        
+        // ccbnotes: Letter sets for each level
+        const levelLetters = {
+            1: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+            2: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            3: ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+            4: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+            5: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
+            6: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        };
+        
+        let currentLetters = [];
+        
+        // ccbnotes: Function to play "pew" shooting sound when letter is hit
+        function playShootSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // ccbnotes: Ascending pitch for "pew" laser sound
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+        
+        // ccbnotes: Function to play explosion "boom" sound
+        function playExplosionSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // ccbnotes: Deep boom sound
+            oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.2);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        // ccbnotes: Function to play "aw" miss sound when letter reaches bottom
+        function playMissSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // ccbnotes: Descending "aww" sad sound
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.4);
+            oscillator.type = 'triangle';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+        
+        // ccbnotes: Function to select level and start game
+        function selectLevel(level) {
+            selectedLevel = level;
+            currentLetters = levelLetters[level];
+            startGame();
+        }
+        
+        // ccbnotes: Function to create and drop a random letter
+        function createLetter() {
+            if (gamePaused) return;
+            
+            const container = document.getElementById('gameContainer');
+            const letter = document.createElement('div');
+            const randomLetter = currentLetters[Math.floor(Math.random() * currentLetters.length)];
+            
+            // ccbnotes: Set letter properties
+            letter.className = 'letter';
+            letter.textContent = randomLetter;
+            letter.dataset.letter = randomLetter;
+            
+            // ccbnotes: Random horizontal position
+            const randomX = Math.random() * (window.innerWidth - 100) + 50; // 确保不超出边缘
+            letter.style.left = randomX + 'px';
+            
+            // ccbnotes: Calculate fall speed based on game level (increases difficulty)
+            const fallDuration = Math.max(2.5, 6 - (gameLevel * 0.5 + selectedLevel * 0.3)); // 结合游戏内升级和初始难度
+            letter.style.animationDuration = fallDuration + 's';
+            
+            container.appendChild(letter);
+            fallingLetters.push({element: letter, letter: randomLetter, startTime: Date.now()});
+            
+            // ccbnotes: Remove letter when it reaches bottom (lose a life)
+            setTimeout(() => {
+                if (letter.parentNode && !gamePaused) {
+                    letter.remove();
+                    fallingLetters = fallingLetters.filter(l => l.element !== letter);
+                    loseLife();
+                }
+            }, fallDuration * 1000);
+        }
+        
+        // ccbnotes: Function to create explosion effect
+        function createExplosion(x, y) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.textContent = '⚡'; // 使用更酷的闪电效果
+            explosion.style.left = x + 'px';
+            explosion.style.top = y + 'px';
+            
+            document.getElementById('gameContainer').appendChild(explosion);
+            
+            // ccbnotes: Remove explosion after animation
+            setTimeout(() => {
+                explosion.remove();
+            }, 500);
+        }
+        
+        // ccbnotes: Function to shoot/hit a letter
+        function shootLetter(typedLetter) {
+            if (gamePaused) return;
+            
+            // ccbnotes: Find the lowest matching letter (closest to bottom)
+            let targetLetter = null;
+            let maxTop = -1;
+            
+            for (let letterObj of fallingLetters) {
+                if (letterObj.letter === typedLetter) {
+                    const top = letterObj.element.getBoundingClientRect().top;
+                    if (top > maxTop) {
+                        maxTop = top;
+                        targetLetter = letterObj;
+                    }
+                }
+            }
+            
+            // ccbnotes: If letter found, shoot it
+            if (targetLetter) {
+                playShootSound();
+                playExplosionSound();
+                
+                // ccbnotes: Create explosion at letter position
+                const rect = targetLetter.element.getBoundingClientRect();
+                createExplosion(rect.left + rect.width / 2, rect.top);
+                
+                // ccbnotes: Remove letter and update score
+                targetLetter.element.remove();
+                fallingLetters = fallingLetters.filter(l => l !== targetLetter);
+                
+                // ccbnotes: Update game stats
+                score += 10 * (combo + 1);
+                combo++;
+                lettersHit++;
+                if (combo > maxCombo) maxCombo = combo;
+                
+                updateHUD();
+                
+                // ccbnotes: Level up every 20 hits
+                if (lettersHit % 20 === 0 && gameLevel < 10) { // 限制最高等级
+                    gameLevel++;
+                    // 动态调整生成速度
+                    const spawnRate = Math.max(400, 1500 - (gameLevel * 100 + selectedLevel * 50));
+                    clearInterval(spawnInterval);
+                    spawnInterval = setInterval(createLetter, spawnRate);
+                    
+                    updateHUD();
+                }
+            } else {
+                 // Missed a targetable letter, reset combo
+                combo = 0;
+                updateHUD();
+            }
+        }
+        
+        // ccbnotes: Function to lose a life when letter reaches bottom
+        function loseLife() {
+            if (gamePaused) return;
+            
+            playMissSound();
+            lives--;
+            combo = 0;
+            updateHUD();
+            
+            // ccbnotes: Game over if no lives left
+            if (lives <= 0) {
+                endGame();
+            }
+        }
+        
+        // ccbnotes: Function to update HUD display
+        function updateHUD() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('combo').textContent = combo;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('gameLevel').textContent = gameLevel;
+        }
+        
+        // ccbnotes: Function to toggle pause state
+        function togglePause() {
+            gamePaused = !gamePaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (gamePaused) {
+                pauseBtn.textContent = '▶️ Resume';
+                // ccbnotes: Pause all falling letters
+                fallingLetters.forEach(l => {
+                    l.element.style.animationPlayState = 'paused';
+                });
+                clearInterval(spawnInterval); // 停止生成新字母
+            } else {
+                pauseBtn.textContent = '⏸️ Pause';
+                // ccbnotes: Resume all falling letters
+                fallingLetters.forEach(l => {
+                    l.element.style.animationPlayState = 'running';
+                });
+                
+                // 恢复生成间隔
+                const spawnRate = Math.max(400, 1500 - (gameLevel * 100 + selectedLevel * 50));
+                spawnInterval = setInterval(createLetter, spawnRate);
+            }
+        }
+        
+        // ccbnotes: Function to go back to home/level selection
+        function goToHome() {
+            gameRunning = false;
+            gamePaused = false;
+            clearInterval(spawnInterval);
+            
+            // ccbnotes: Remove all falling letters
+            fallingLetters.forEach(l => l.element.remove());
+            fallingLetters = [];
+            
+            // ccbnotes: Hide game screens and show start screen
+            document.getElementById('gameControls').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex'; // Use flex for centering
+            
+            // ccbnotes: Reset game stats
+            score = 0;
+            combo = 0;
+            maxCombo = 0;
+            lives = 5;
+            gameLevel = 1;
+            lettersHit = 0;
+            updateHUD();
+        }
+        
+        // ccbnotes: Function to start the game
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('gameControls').style.display = 'flex';
+            
+            // Reset game stats for fresh start
+            score = 0;
+            combo = 0;
+            maxCombo = 0;
+            lives = 5;
+            gameLevel = 1;
+            lettersHit = 0;
+            updateHUD();
+            
+            gameRunning = true;
+            gamePaused = false;
+            
+            // ccbnotes: Reset pause button text
+            document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+            
+            // ccbnotes: Spawn letters at intervals (faster at higher levels)
+            const spawnRate = Math.max(400, 1500 - (gameLevel * 100 + selectedLevel * 50));
+            spawnInterval = setInterval(createLetter, spawnRate);
+        }
+        
+        // ccbnotes: Function to end the game
+        function endGame() {
+            gameRunning = false;
+            gamePaused = false;
+            clearInterval(spawnInterval);
+            
+            // ccbnotes: Remove all remaining letters
+            fallingLetters.forEach(l => l.element.remove());
+            fallingLetters = [];
+            
+            // ccbnotes: Show game over screen with stats
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('maxCombo').textContent = maxCombo;
+            document.getElementById('lettersHit').textContent = lettersHit;
+            document.getElementById('gameOver').style.display = 'flex'; // Use flex for centering
+            document.getElementById('gameControls').style.display = 'none';
+        }
+        
+        // ccbnotes: Function to restart the game with same level
+        function restartGame() {
+            // ccbnotes: Only reset variable stats, keep selectedLevel
+            score = 0;
+            combo = 0;
+            maxCombo = 0;
+            lives = 5;
+            gameLevel = 1;
+            lettersHit = 0;
+            
+            updateHUD();
+            document.getElementById('gameOver').style.display = 'none';
+            startGame();
+        }
+        
+        // ccbnotes: Keyboard event listener - shoot letters by typing
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) {
+                // 如果在开始界面，允许按Enter或Space开始（可选）
+                if (document.getElementById('startScreen').style.display !== 'none' && (e.key === 'Enter' || e.key === ' ')) {
+                    // 可以默认选择一个级别或要求用户点击
+                    // selectLevel(selectedLevel); 
+                    return; 
+                }
+                return;
+            }
+            
+            if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
+                togglePause();
+                return;
+            }
+            
+            if (gamePaused) return;
+            
+            const key = e.key.toLowerCase();
+            if (currentLetters.includes(key)) {
+                shootLetter(key);
+            }
+        });
+        
+        // 确保首次加载显示开始界面
+        document.addEventListener('DOMContentLoaded', () => {
+            goToHome();
+        });
+    </script>
+</body>
+</html>
