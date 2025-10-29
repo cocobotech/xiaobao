@@ -40,7 +40,66 @@
         .subtitle {
             color: rgba(255, 255, 255, 0.9);
             font-size: 18px;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-label {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .dropdown:hover {
+            border-color: rgba(147, 51, 234, 0.6);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown option {
+            background: #2a2a2a;
+            color: white;
+            padding: 10px;
+        }
+
+        .word-count {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .cards-grid {
@@ -109,21 +168,14 @@
         }
 
         .word-english {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            margin-bottom: 5px;
-        }
-
-        .word-phonetic {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            font-style: italic;
         }
 
         .word-chinese {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
             color: #fff;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -158,11 +210,15 @@
             }
             
             .word-english {
-                font-size: 22px;
+                font-size: 24px;
             }
             
             .word-chinese {
-                font-size: 18px;
+                font-size: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
             }
         }
     </style>
@@ -170,7 +226,21 @@
 <body>
     <div class="container">
         <div class="title">📚 互动背单词</div>
-        <div class="subtitle">点击上半部分听英文发音 · 点击下半部分听中文发音</div>
+        <div class="subtitle">选择单词集 · 点击上半部分听英文 · 点击下半部分听中文</div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label class="control-label">📖 选择单词集：</label>
+                <select class="dropdown" id="word-set-selector">
+                    <option value="basic">基础词汇</option>
+                    <option value="animals">动物类</option>
+                    <option value="fruits">水果类</option>
+                    <option value="colors">颜色类</option>
+                    <option value="daily">日常用品</option>
+                </select>
+            </div>
+            <div class="word-count" id="word-count">共 10 个单词</div>
+        </div>
         
         <div class="cards-grid" id="cards-grid"></div>
         
@@ -178,21 +248,73 @@
     </div>
 
     <script>
-        const vocabulary = [
-            { english: 'apple', phonetic: '/ˈæpl/', chinese: '苹果' },
-            { english: 'book', phonetic: '/bʊk/', chinese: '书' },
-            { english: 'cat', phonetic: '/kæt/', chinese: '猫' },
-            { english: 'dog', phonetic: '/dɔːɡ/', chinese: '狗' },
-            { english: 'elephant', phonetic: '/ˈelɪfənt/', chinese: '大象' },
-            { english: 'flower', phonetic: '/ˈflaʊər/', chinese: '花' },
-            { english: 'guitar', phonetic: '/ɡɪˈtɑːr/', chinese: '吉他' },
-            { english: 'house', phonetic: '/haʊs/', chinese: '房子' },
-            { english: 'island', phonetic: '/ˈaɪlənd/', chinese: '岛屿' },
-            { english: 'juice', phonetic: '/dʒuːs/', chinese: '果汁' }
-        ];
+        // 定义不同的单词集
+        const wordSets = {
+            basic: [
+                { english: 'apple', chinese: '苹果' },
+                { english: 'book', chinese: '书' },
+                { english: 'cat', chinese: '猫' },
+                { english: 'dog', chinese: '狗' },
+                { english: 'house', chinese: '房子' },
+                { english: 'water', chinese: '水' },
+                { english: 'sun', chinese: '太阳' },
+                { english: 'moon', chinese: '月亮' },
+                { english: 'tree', chinese: '树' },
+                { english: 'flower', chinese: '花' }
+            ],
+            animals: [
+                { english: 'elephant', chinese: '大象' },
+                { english: 'tiger', chinese: '老虎' },
+                { english: 'lion', chinese: '狮子' },
+                { english: 'monkey', chinese: '猴子' },
+                { english: 'panda', chinese: '熊猫' },
+                { english: 'rabbit', chinese: '兔子' },
+                { english: 'bird', chinese: '鸟' },
+                { english: 'fish', chinese: '鱼' },
+                { english: 'horse', chinese: '马' },
+                { english: 'sheep', chinese: '羊' }
+            ],
+            fruits: [
+                { english: 'banana', chinese: '香蕉' },
+                { english: 'orange', chinese: '橙子' },
+                { english: 'grape', chinese: '葡萄' },
+                { english: 'strawberry', chinese: '草莓' },
+                { english: 'watermelon', chinese: '西瓜' },
+                { english: 'peach', chinese: '桃子' },
+                { english: 'pear', chinese: '梨' },
+                { english: 'cherry', chinese: '樱桃' },
+                { english: 'lemon', chinese: '柠檬' },
+                { english: 'mango', chinese: '芒果' }
+            ],
+            colors: [
+                { english: 'red', chinese: '红色' },
+                { english: 'blue', chinese: '蓝色' },
+                { english: 'green', chinese: '绿色' },
+                { english: 'yellow', chinese: '黄色' },
+                { english: 'purple', chinese: '紫色' },
+                { english: 'orange', chinese: '橙色' },
+                { english: 'pink', chinese: '粉色' },
+                { english: 'black', chinese: '黑色' },
+                { english: 'white', chinese: '白色' },
+                { english: 'brown', chinese: '棕色' }
+            ],
+            daily: [
+                { english: 'phone', chinese: '电话' },
+                { english: 'table', chinese: '桌子' },
+                { english: 'chair', chinese: '椅子' },
+                { english: 'door', chinese: '门' },
+                { english: 'window', chinese: '窗户' },
+                { english: 'cup', chinese: '杯子' },
+                { english: 'plate', chinese: '盘子' },
+                { english: 'spoon', chinese: '勺子' },
+                { english: 'knife', chinese: '刀' },
+                { english: 'fork', chinese: '叉子' }
+            ]
+        };
 
         let audioContext = null;
         let audioInitialized = false;
+        let currentSet = 'basic';
 
         function initAudio() {
             if (!audioInitialized) {
@@ -245,59 +367,72 @@
             }
         }
 
-        const grid = document.getElementById('cards-grid');
-        
-        vocabulary.forEach(word => {
-            const card = document.createElement('div');
-            card.className = 'word-card';
+        function renderCards(setName) {
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = '';
             
-            // 英文部分（上半部分）
-            const englishSection = document.createElement('div');
-            englishSection.className = 'card-half english-section';
+            const vocabulary = wordSets[setName];
             
-            const englishWord = document.createElement('div');
-            englishWord.className = 'word-english';
-            englishWord.textContent = word.english;
-            englishSection.appendChild(englishWord);
+            // 更新单词数量显示
+            document.getElementById('word-count').textContent = `共 ${vocabulary.length} 个单词`;
             
-            const phonetic = document.createElement('div');
-            phonetic.className = 'word-phonetic';
-            phonetic.textContent = word.phonetic;
-            englishSection.appendChild(phonetic);
-            
-            const speakerIcon1 = document.createElement('div');
-            speakerIcon1.className = 'speaker-icon';
-            speakerIcon1.textContent = '🔊';
-            englishSection.appendChild(speakerIcon1);
-            
-            englishSection.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speakEnglish(word.english, englishSection);
+            vocabulary.forEach(word => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                
+                // 英文部分（上半部分）
+                const englishSection = document.createElement('div');
+                englishSection.className = 'card-half english-section';
+                
+                const englishWord = document.createElement('div');
+                englishWord.className = 'word-english';
+                englishWord.textContent = word.english;
+                englishSection.appendChild(englishWord);
+                
+                const speakerIcon1 = document.createElement('div');
+                speakerIcon1.className = 'speaker-icon';
+                speakerIcon1.textContent = '🔊';
+                englishSection.appendChild(speakerIcon1);
+                
+                englishSection.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakEnglish(word.english, englishSection);
+                });
+                
+                // 中文部分（下半部分）
+                const chineseSection = document.createElement('div');
+                chineseSection.className = 'card-half';
+                
+                const chineseWord = document.createElement('div');
+                chineseWord.className = 'word-chinese';
+                chineseWord.textContent = word.chinese;
+                chineseSection.appendChild(chineseWord);
+                
+                const speakerIcon2 = document.createElement('div');
+                speakerIcon2.className = 'speaker-icon';
+                speakerIcon2.textContent = '🔊';
+                chineseSection.appendChild(speakerIcon2);
+                
+                chineseSection.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakChinese(word.chinese, chineseSection);
+                });
+                
+                card.appendChild(englishSection);
+                card.appendChild(chineseSection);
+                grid.appendChild(card);
             });
-            
-            // 中文部分（下半部分）
-            const chineseSection = document.createElement('div');
-            chineseSection.className = 'card-half';
-            
-            const chineseWord = document.createElement('div');
-            chineseWord.className = 'word-chinese';
-            chineseWord.textContent = word.chinese;
-            chineseSection.appendChild(chineseWord);
-            
-            const speakerIcon2 = document.createElement('div');
-            speakerIcon2.className = 'speaker-icon';
-            speakerIcon2.textContent = '🔊';
-            chineseSection.appendChild(speakerIcon2);
-            
-            chineseSection.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speakChinese(word.chinese, chineseSection);
-            });
-            
-            card.appendChild(englishSection);
-            card.appendChild(chineseSection);
-            grid.appendChild(card);
+        }
+
+        // 下拉框变化事件
+        const selector = document.getElementById('word-set-selector');
+        selector.addEventListener('change', (e) => {
+            currentSet = e.target.value;
+            renderCards(currentSet);
         });
+
+        // 初始化页面
+        renderCards(currentSet);
 
         // 点击任意位置初始化音频
         document.body.addEventListener('click', initAudio, { once: true });
