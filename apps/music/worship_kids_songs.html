@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO TECH 赞美诗</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 主容器 */
+        .container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 左侧播放列表 */
+        .sidebar {
+            background: rgba(15, 15, 25, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 40px 30px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .sidebar-header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #00ffff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+            position: relative;
+        }
+
+        .sidebar-header p {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-box input::placeholder {
+            color: #666;
+        }
+
+        /* 播放列表 */
+        .playlist {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .playlist::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .playlist::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .playlist::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00ffff, #8a2be2);
+            border-radius: 10px;
+        }
+
+        /* 分组样式 - 3D效果 */
+        .group {
+            margin: 5px 15px 15px 15px;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 25px;
+            background: 
+                linear-gradient(145deg, rgba(0, 255, 255, 0.15), rgba(138, 43, 226, 0.1)),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            border: 3px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.4),
+                inset 0 2px 5px rgba(255, 255, 255, 0.1),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 渐变光环边框 */
+        .group-header::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(
+                45deg,
+                #00ffff, 
+                #00ff88, 
+                #8a2be2, 
+                #ff00ff, 
+                #ff0080,
+                #00ffff
+            );
+            background-size: 400% 400%;
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            filter: blur(8px);
+            animation: gradient-flow 4s ease infinite;
+            transition: opacity 0.4s;
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 脉动光环效果 */
+        .group-header::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(
+                60deg,
+                rgba(0, 255, 255, 0.6), 
+                rgba(0, 255, 136, 0.6), 
+                rgba(138, 43, 226, 0.6), 
+                rgba(255, 0, 255, 0.6),
+                rgba(0, 255, 255, 0.6)
+            );
+            background-size: 300% 300%;
+            border-radius: 25px;
+            z-index: -2;
+            opacity: 0;
+            filter: blur(15px);
+            animation: gradient-flow 6s ease infinite, pulse-ring 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { 
+                transform: scale(0.95);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: scale(1.05);
+                opacity: 0.6;
+            }
+        }
+
+        .group-header:hover::before {
+            opacity: 0.8;
+            filter: blur(12px);
+            animation: gradient-flow 2s ease infinite;
+        }
+
+        .group-header:hover::after {
+            opacity: 0.7;
+            animation: gradient-flow 3s ease infinite, pulse-ring 1.5s ease-in-out infinite;
+        }
+
+        /* 内部光晕扫描 */
+        .group-header .scan-line {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 20px;
+            transition: left 0.6s;
+            pointer-events: none;
+        }
+
+        .group-header:hover .scan-line {
+            left: 100%;
+        }
+
+        .group-header:hover {
+            transform: translateY(-3px) translateZ(20px) rotateX(5deg);
+            box-shadow: 
+                0 15px 35px rgba(0, 255, 255, 0.4),
+                0 5px 15px rgba(138, 43, 226, 0.3),
+                inset 0 3px 8px rgba(255, 255, 255, 0.15),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .group-header:active {
+            transform: translateY(-1px) translateZ(10px) rotateX(2deg);
+            box-shadow: 
+                0 8px 20px rgba(0, 255, 255, 0.3),
+                inset 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .group-icon {
+            font-size: 26px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
+            transform: translateZ(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .group.collapsed .group-icon {
+            transform: rotate(-90deg) translateZ(10px);
+            filter: drop-shadow(0 0 5px rgba(138, 43, 226, 0.6));
+        }
+
+        .group-header:hover .group-icon {
+            transform: scale(1.2) translateZ(15px) rotate(360deg);
+            filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.9));
+        }
+
+        .group-title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ffff, #ffffff, #8a2be2);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                0 0 40px rgba(138, 43, 226, 0.3);
+            animation: gradient-shift 3s ease infinite;
+            transform: translateZ(8px);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .group-header:hover .group-title {
+            letter-spacing: 4px;
+            animation: gradient-shift 1.5s ease infinite, text-glow 1s ease-in-out infinite;
+        }
+
+        @keyframes text-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.6)); }
+            50% { filter: drop-shadow(0 0 15px rgba(0, 255, 255, 1)) drop-shadow(0 0 25px rgba(138, 43, 226, 0.8)); }
+        }
+
+        .group-count {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00ffff;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+                linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2));
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            box-shadow: 
+                0 4px 10px rgba(0, 0, 0, 0.4),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+            transform: translateZ(12px);
+            transition: all 0.3s;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        .group-header:hover .group-count {
+            transform: translateZ(18px) scale(1.1);
+            box-shadow: 
+                0 6px 15px rgba(0, 255, 255, 0.5),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            border-color: rgba(0, 255, 255, 0.8);
+            text-shadow: 0 0 15px rgba(0, 255, 255, 1);
+        }
+
+        .group-items {
+            max-height: 1000px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .group.collapsed .group-items {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        /* 播放列表项 */
+        .playlist-item {
+            padding: 18px 20px;
+            margin: 6px 0 6px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .playlist-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .playlist-item:hover::before {
+            left: 100%;
+        }
+
+        .playlist-item:hover {
+            transform: translateX(6px) scale(1.01);
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.08);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .playlist-item.active {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2));
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+            transform: translateX(6px);
+        }
+
+        .playlist-item.active .item-number {
+            background: linear-gradient(135deg, #00ffff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .play-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .playlist-item:hover .play-icon,
+        .playlist-item.active .play-icon {
+            background: rgba(0, 255, 255, 0.5);
+            transform: scale(1.15);
+        }
+
+        .item-number {
+            font-size: 18px;
+            font-weight: 900;
+            color: #00ffff;
+            min-width: 28px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            flex-shrink: 0;
+        }
+
+        .item-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-duration {
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* 右侧播放器 */
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            background: rgba(10, 10, 15, 0.5);
+        }
+
+        .player-header {
+            margin-bottom: 30px;
+        }
+
+        .player-header h2 {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .player-meta {
+            display: flex;
+            gap: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .player-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 视频容器 - 3D效果 */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0deg); }
+            50% { transform: translateY(-10px) rotateX(2deg); }
+        }
+
+        .video-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #00ffff, #8a2be2, #00ffff);
+            border-radius: 20px;
+            z-index: -1;
+            animation: rotate 4s linear infinite;
+            filter: blur(10px);
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
+            border-radius: 20px;
+        }
+
+        .video-placeholder svg {
+            width: 100px;
+            height: 100px;
+            opacity: 0.3;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .control-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .control-btn:hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .control-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+                max-height: 40vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <!-- 左侧播放列表 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>NEXUS</h1>
+                <p>Video Collection</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="🔍 搜索视频..." oninput="searchVideos()">
+            </div>
+
+            <div class="playlist" id="playlist">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 右侧播放器 -->
+        <div class="player-section">
+            <div class="player-header">
+                <h2 id="current-title">选择一个视频开始播放</h2>
+                <div class="player-meta">
+                    <span>🎬 <span id="current-group">--</span></span>
+                    <span>📊 <span id="current-index">0</span>/<span id="total-videos">0</span></span>
+                    <span>⏱️ <span id="current-duration">--:--</span></span>
+                </div>
+            </div>
+
+            <div class="video-wrapper">
+                <div class="video-placeholder" id="video-placeholder">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </div>
+                <iframe id="video-player" src="" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" onclick="playPrevious()">
+                    <span>⏮️ 上一个</span>
+                </button>
+                <button class="control-btn" onclick="playNext()">
+                    <span>下一个 ⏭️</span>
+                </button>
+                <button class="control-btn" onclick="toggleAutoPlay()">
+                    <span id="autoplay-text">🔁 自动播放: 开</span>
+                </button>
+                <button class="control-btn" onclick="expandAll()">
+                    <span>📂 全部展开</span>
+                </button>
+                <button class="control-btn" onclick="collapseAll()">
+                    <span>📁 全部折叠</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 视频数据 - 按分组组织
+        const videoGroups = [
+            {
+                name: '🎵 GROUP1',
+                icon: '💻',
+                collapsed: false,
+                videos: [
+                    { id: 'PdD9K5Rc-MM', title: '我是主的羊 I'm Your Little Lamb', duration: '' },
+                    { id: 'GdTZm0qZ3io', title: '靠主得勝 God Is My Victory' },
+                    { id: 'E148UxYDLgY', title: '聖靈的果子 Fruit of the Spirit', duration: '' },
+                    { id: 'bhS0D7Gd-Ek', title: '我要向高山舉目 Lift My Eyes to the Hills', duration: '' }
+                ]
+            },
+            {
+                name: '🎵 GROUP2',
+                icon: '🎸',
+                collapsed: false,
+                videos: [
+                    { id: 'hpDrndhk1ko', title: 'I've got the Joy Joy Joy', duration: '' },
+                    { id: 'ljYws07uAyE', title: '腳步 (Footsteps) ', duration: '' },
+                    { id: 'pbTHmpCBUnQ', title: '有耶穌，不害怕 Jesus, You're In My Heart', duration: '' }
+                    { id: 'n6Slbgg32aA', title: '愛主你的神 Love The Lord, Your God', duration: '' }
+                ]
+            },
+            {
+                name: '🎸 GROUP3',
+                icon: '🎭',
+                collapsed: false,
+                videos: [
+                    { id: '', title: '.。。。', duration: '3:38' },
+                    { id: '', title: '。。。', duration: '0:54' }
+                ]
+            }
+        ];
+
+        let currentGroupIndex = -1;
+        let currentVideoIndex = -1;
+        let autoPlay = true;
+
+        // 初始化
+        function init() {
+            renderPlaylist();
+            updateStats();
+        }
+
+        // 渲染播放列表
+        function renderPlaylist() {
+            const playlist = document.getElementById('playlist');
+            playlist.innerHTML = '';
+
+            let globalIndex = 0;
+
+            videoGroups.forEach((group, groupIdx) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = `group ${group.collapsed ? 'collapsed' : ''}`;
+
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'group-header';
+                groupHeader.onclick = () => toggleGroup(groupIdx);
+                
+                // 添加扫描线元素
+                const scanLine = document.createElement('div');
+                scanLine.className = 'scan-line';
+                
+                groupHeader.innerHTML = `
+                    <div class="group-icon">▼</div>
+                    <div class="group-title">${group.name}</div>
+                    <div class="group-count">${group.videos.length}</div>
+                `;
+                
+                groupHeader.appendChild(scanLine);
+
+                const groupItems = document.createElement('div');
+                groupItems.className = 'group-items';
+
+                group.videos.forEach((video, videoIdx) => {
+                    const item = document.createElement('div');
+                    const isActive = groupIdx === currentGroupIndex && videoIdx === currentVideoIndex;
+                    item.className = `playlist-item ${isActive ? 'active' : ''}`;
+                    item.onclick = () => playVideo(groupIdx, videoIdx);
+
+                    item.innerHTML = `
+                        <div class="play-icon">▶</div>
+                        <div class="item-number">${String(globalIndex + 1).padStart(2, '0')}</div>
+                        <div class="item-content">
+                            <div class="item-title">${video.title}</div>
+                            <div class="item-duration">${video.duration}</div>
+                        </div>
+                    `;
+
+                    groupItems.appendChild(item);
+                    globalIndex++;
+                });
+
+                groupDiv.appendChild(groupHeader);
+                groupDiv.appendChild(groupItems);
+                playlist.appendChild(groupDiv);
+            });
+        }
+
+        // 切换分组展开/折叠
+        function toggleGroup(groupIdx) {
+            videoGroups[groupIdx].collapsed = !videoGroups[groupIdx].collapsed;
+            renderPlaylist();
+        }
+
+        // 全部展开
+        function expandAll() {
+            videoGroups.forEach(group => group.collapsed = false);
+            renderPlaylist();
+        }
+
+        // 全部折叠
+        function collapseAll() {
+            videoGroups.forEach(group => group.collapsed = true);
+            renderPlaylist();
+        }
+
+        // 播放视频
+        function playVideo(groupIdx, videoIdx) {
+            currentGroupIndex = groupIdx;
+            currentVideoIndex = videoIdx;
+
+            const group = videoGroups[groupIdx];
+            const video = group.videos[videoIdx];
+
+            // 更新播放器
+            const player = document.getElementById('video-player');
+            const placeholder = document.getElementById('video-placeholder');
+            
+            player.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+            player.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            // 更新信息
+            document.getElementById('current-title').textContent = video.title;
+            document.getElementById('current-group').textContent = group.name;
+            document.getElementById('current-duration').textContent = video.duration;
+
+            // 计算全局索引
+            let globalIndex = 0;
+            for (let i = 0; i < groupIdx; i++) {
+                globalIndex += videoGroups[i].videos.length;
+            }
+            globalIndex += videoIdx + 1;
+            document.getElementById('current-index').textContent = globalIndex;
+
+            // 更新列表高亮
+            renderPlaylist();
+        }
+
+        // 上一个视频
+        function playPrevious() {
+            if (currentGroupIndex === -1) return;
+
+            let newVideoIdx = currentVideoIndex - 1;
+            let newGroupIdx = currentGroupIndex;
+
+            if (newVideoIdx < 0) {
+                newGroupIdx--;
+                if (newGroupIdx < 0) {
+                    newGroupIdx = videoGroups.length - 1;
+                }
+                newVideoIdx = videoGroups[newGroupIdx].videos.length - 1;
+            }
+
+            playVideo(newGroupIdx, newVideoIdx);
+        }
+
+        // 下一个视频
+        function playNext() {
+            if (currentGroupIndex === -1) {
+                playVideo(0, 0);
+                return;
+            }
+
+            let newVideoIdx = currentVideoIndex + 1;
+            let newGroupIdx = currentGroupIndex;
+
+            if (newVideoIdx >= videoGroups[newGroupIdx].videos.length) {
+                newGroupIdx++;
+                if (newGroupIdx >= videoGroups.length) {
+                    newGroupIdx = 0;
+                }
+                newVideoIdx = 0;
+            }
+
+            playVideo(newGroupIdx, newVideoIdx);
+        }
+
+        // 切换自动播放
+        function toggleAutoPlay() {
+            autoPlay = !autoPlay;
+            document.getElementById('autoplay-text').textContent = `🔁 自动播放: ${autoPlay ? '开' : '关'}`;
+        }
+
+        // 搜索功能
+        function searchVideos() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            
+            videoGroups.forEach(group => {
+                const matchedVideos = group.videos.filter(video => 
+                    video.title.toLowerCase().includes(query) ||
+                    group.name.toLowerCase().includes(query)
+                );
+                
+                // 如果有匹配，展开分组
+                if (matchedVideos.length > 0 && query !== '') {
+                    group.collapsed = false;
+                }
+            });
+            
+            renderPlaylist();
+        }
+
+        // 更新统计
+        function updateStats() {
+            const total = videoGroups.reduce((sum, group) => sum + group.videos.length, 0);
+            document.getElementById('total-videos').textContent = total;
+        }
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') playPrevious();
+            if (e.key === 'ArrowRight') playNext();
+            if (e.key === ' ' && currentGroupIndex === -1) {
+                e.preventDefault();
+                playVideo(0, 0);
+            }
+        });
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
