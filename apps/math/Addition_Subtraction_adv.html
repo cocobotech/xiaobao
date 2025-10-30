@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Practice: Addition & Subtraction</title>
+    <title>Math Practice</title>
     <style>
         * {
             margin: 0;
@@ -15,14 +15,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 15px;
+            padding: 12px;
         }
        
         .container {
             background: white;
             border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -30,59 +30,90 @@
         h1 {
             color: #667eea;
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.6em;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            font-weight: 600;
         }
        
         .controls-top {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 0.95em;
         }
        
-        .format-toggle, .operation-select {
-            text-align: center;
-        }
-       
-        .format-toggle label, .operation-select label {
-            font-size: 1em;
-            color: #333;
-            cursor: pointer;
-            display: inline-flex;
+        .control-group {
+            display: flex;
             align-items: center;
             gap: 8px;
         }
        
-        .format-toggle input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+        .control-group label {
+            color: #333;
+            font-weight: 500;
+        }
+       
+        select, input[type="checkbox"] {
             cursor: pointer;
         }
        
         select {
-            padding: 8px 12px;
-            font-size: 1em;
+            padding: 6px 10px;
+            font-size: 0.95em;
             border: 2px solid #667eea;
             border-radius: 6px;
             background: white;
             color: #333;
         }
        
+        .format-toggle label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95em;
+            color: #333;
+        }
+       
+        .format-toggle input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+       
         .questions-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+       
+        /* Dynamic grid columns */
+        .questions-grid[data-count="10"],
+        .questions-grid[data-count="15"] { grid-template-columns: repeat(5, 1fr); }
+        .questions-grid[data-count="20"],
+        .questions-grid[data-count="25"] { grid-template-columns: repeat(5, 1fr); }
+        .questions-grid[data-count="30"],
+        .questions-grid[data-count="40"],
+        .questions-grid[data-count="50"] { grid-template-columns: repeat(5, 1fr); }
+
+        @media (max-width: 1000px) {
+            .questions-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 800px) {
+            .questions-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .questions-grid { grid-template-columns: repeat(2, 1fr); }
+            .controls-top { flex-direction: column; align-items: center; }
         }
        
         .question-card {
             background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 8px;
+            border-radius: 7px;
             border: 2px solid transparent;
-            transition: all 0.3s;
+            transition: all 0.25s;
+            min-height: 110px;
         }
        
         .question-card.correct {
@@ -98,19 +129,20 @@
         .question-header {
             font-weight: bold;
             color: #667eea;
-            font-size: 0.85em;
-            margin-bottom: 8px;
+            font-size: 0.78em;
+            margin-bottom: 5px;
+            text-align: center;
         }
        
         /* Vertical Format */
         .equation-display.vertical {
             font-family: 'Courier New', monospace;
-            font-size: 1.3em;
+            font-size: 1.25em;
             color: #333;
             font-weight: bold;
             text-align: right;
-            margin-bottom: 5px;
-            line-height: 1.4;
+            line-height: 1.35;
+            margin-bottom: 3px;
         }
        
         .divider-line {
@@ -122,10 +154,9 @@
        
         .answer-section.vertical {
             display: flex;
-            align-items: center;
             justify-content: flex-end;
-            gap: 5px;
-            margin-top: 5px;
+            gap: 4px;
+            margin-top: 3px;
         }
        
         /* Horizontal Format */
@@ -133,167 +164,131 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             font-family: 'Courier New', monospace;
-            font-size: 1.3em;
+            font-size: 1.25em;
             color: #333;
             font-weight: bold;
         }
        
         .answer-section.horizontal {
             display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
        
         /* Both Format */
         .equation-display.both {
             font-family: 'Courier New', monospace;
-            font-size: 1.3em;
+            font-size: 1.25em;
             color: #333;
             font-weight: bold;
             text-align: right;
-            line-height: 1.4;
+            line-height: 1.35;
         }
        
         .both-answer-row {
             display: flex;
-            align-items: center;
             justify-content: flex-end;
-            gap: 8px;
-            margin-top: 5px;
+            gap: 6px;
+            margin-top: 3px;
+            font-size: 0.95em;
+            align-items: center;
         }
        
         .both-horizontal-part {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 1em;
+            gap: 6px;
         }
        
         .answer-section.both {
             display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
        
-        .equals, .operator {
-            font-size: 1.3em;
+        .operator, .equals {
             font-weight: bold;
+            font-size: 1.25em;
         }
        
         .digit-input {
-            width: 32px;
-            height: 40px;
+            width: 30px;
+            height: 36px;
             padding: 0;
-            font-size: 1.2em;
+            font-size: 1.15em;
             font-weight: bold;
             border: 2px solid #667eea;
             border-radius: 5px;
             text-align: center;
-            transition: all 0.3s;
             font-family: 'Courier New', monospace;
         }
        
         .digit-input:focus {
             outline: none;
             border-color: #764ba2;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 0 4px rgba(102, 126, 234, 0.3);
         }
        
         .digit-input:disabled {
             background: #e9ecef;
+            opacity: 0.7;
         }
        
         .digit-input::-webkit-outer-spin-button,
-        .digit-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-       
-        .digit-input[type=number] {
-            -moz-appearance: textfield;
-        }
+        .digit-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .digit-input[type=number] { -moz-appearance: textfield; }
        
         .result {
             font-weight: bold;
-            font-size: 0.85em;
+            font-size: 0.78em;
             text-align: center;
-            margin-top: 5px;
-            min-height: 20px;
+            margin-top: 4px;
+            min-height: 18px;
         }
        
-        .result.correct {
-            color: #28a745;
-        }
-       
-        .result.incorrect {
-            color: #dc3545;
-        }
-       
-        @media (max-width: 900px) {
-            .questions-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-       
-        @media (max-width: 600px) {
-            .questions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        .result.correct { color: #28a745; }
+        .result.incorrect { color: #dc3545; }
        
         .controls {
             text-align: center;
+            margin-top: 8px;
         }
        
         button {
-            padding: 12px 30px;
-            font-size: 1.1em;
+            padding: 10px 24px;
+            font-size: 1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s;
             font-weight: bold;
-            margin: 0 8px;
+            margin: 0 6px;
         }
        
-        button:hover {
-            transform: translateY(-2px);
-        }
-       
-        button:active {
-            transform: translateY(0);
-        }
-       
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
+        button:hover { transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
        
         .score-display {
             text-align: center;
-            font-size: 1.3em;
+            font-size: 1.2em;
             color: #667eea;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: bold;
-            min-height: 35px;
+            min-height: 30px;
         }
        
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Math Practice - 30 Questions</h1>
+        <h1>Math Practice</h1>
        
         <div class="controls-top">
-            <div class="operation-select">
+            <div class="control-group">
                 <label for="operationMode">Operation:</label>
                 <select id="operationMode" onchange="restart()">
                     <option value="addition">Addition</option>
@@ -302,12 +297,25 @@
                 </select>
             </div>
            
+            <div class="control-group">
+                <label for="questionCount">Questions:</label>
+                <select id="questionCount" onchange="restart()">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30" selected>30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+           
             <div class="format-toggle">
                 <label>
                     <input type="checkbox" id="verticalToggle" checked onchange="toggleFormat()">
-                    Vertical Format
+                    Vertical
                 </label>
-                <label style="margin-left: 20px;">
+                <label>
                     <input type="checkbox" id="bothToggle" onchange="toggleFormat()">
                     Both
                 </label>
@@ -319,7 +327,7 @@
         <div class="questions-grid" id="questionsGrid"></div>
        
         <div class="controls">
-            <button onclick="checkAllAnswers()" id="checkBtn">Check All Answers</button>
+            <button onclick="checkAllAnswers()" id="checkBtn">Check Answers</button>
             <button onclick="restart()" id="restartBtn" class="hidden">Practice Again</button>
         </div>
     </div>
@@ -329,16 +337,17 @@
         let isChecked = false;
         let isVertical = true;
         let isBoth = false;
-        const TOTAL_QUESTIONS = 30;
 
-        // Generate question based on type
+        function getTotalQuestions() {
+            return parseInt(document.getElementById('questionCount').value);
+        }
+
         function generateQuestion(type) {
             let num1, num2, operator, answer;
 
             if (type === 'addition' || (type === 'mixed' && Math.random() < 0.5)) {
-                // Addition: 1-digit + 2-digit or 2-digit + 2-digit
-                const useCarry = Math.random() < 0.5;
                 const useSingle = Math.random() < 0.33;
+                const useCarry = Math.random() < 0.5;
 
                 if (useSingle) {
                     num1 = Math.floor(Math.random() * 9) + 1;
@@ -367,21 +376,15 @@
                 answer = num1 + num2;
 
             } else {
-                // Subtraction: ensure positive result
-                num2 = Math.floor(Math.random() * 90) + 10; // 10–99
+                num2 = Math.floor(Math.random() * 90) + 10;
                 const useSingle = Math.random() < 0.4;
-                if (useSingle) {
-                    num1 = Math.floor(Math.random() * 9) + 1; // 1–9
-                } else {
-                    num1 = Math.floor(Math.random() * 90) + 10; // 10–99
-                }
-                // Ensure num2 > num1
+                num1 = useSingle 
+                    ? Math.floor(Math.random() * 9) + 1 
+                    : Math.floor(Math.random() * 90) + 10;
                 while (num2 <= num1) {
-                    if (useSingle) {
-                        num1 = Math.floor(Math.random() * 9) + 1;
-                    } else {
-                        num1 = Math.floor(Math.random() * 90) + 10;
-                    }
+                    num1 = useSingle 
+                        ? Math.floor(Math.random() * 9) + 1 
+                        : Math.floor(Math.random() * 90) + 10;
                 }
                 operator = '−';
                 answer = num2 - num1;
@@ -393,8 +396,9 @@
         function generateQuestions() {
             questions = [];
             const mode = document.getElementById('operationMode').value;
+            const total = getTotalQuestions();
 
-            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+            for (let i = 0; i < total; i++) {
                 questions.push(generateQuestion(mode));
             }
         }
@@ -407,17 +411,18 @@
         function displayQuestions() {
             const grid = document.getElementById('questionsGrid');
             grid.innerHTML = '';
+            grid.dataset.count = questions.length;
 
             questions.forEach((q, index) => {
                 const card = document.createElement('div');
                 card.className = 'question-card';
 
-                const opSymbol = q.operator === '+' ? '+' : '−';
                 const opDisplay = q.operator === '+' ? '+' : '−';
+                const opSymbol = q.operator === '+' ? '+' : '−';
 
                 if (isBoth) {
                     card.innerHTML = `
-                        <div class="question-header">Question ${index + 1}</div>
+                        
                         <div class="equation-display both">
                             ${formatNumber(q.num1)}<br>
                             ${opDisplay} ${formatNumber(q.num2)}
@@ -439,7 +444,7 @@
                     `;
                 } else if (isVertical) {
                     card.innerHTML = `
-                        <div class="question-header">Question ${index + 1}</div>
+                        
                         <div class="equation-display vertical">
                             ${formatNumber(q.num1)}<br>
                             ${opDisplay} ${formatNumber(q.num2)}
@@ -453,7 +458,7 @@
                     `;
                 } else {
                     card.innerHTML = `
-                        <div class="question-header">Question ${index + 1}</div>
+                        
                         <div class="equation-display horizontal">
                             <span>${q.num1}</span>
                             <span class="operator">${opSymbol}</span>
@@ -503,6 +508,7 @@
             if (isChecked) return;
 
             let correctCount = 0;
+            const total = questions.length;
 
             questions.forEach((q, index) => {
                 const tensInput = document.getElementById(`answer${index}_tens`);
@@ -510,22 +516,22 @@
                 const result = document.getElementById(`result${index}`);
                 const card = tensInput.closest('.question-card');
 
-                const tens = tensInput.value;
-                const ones = onesInput.value;
+                const tens = tensInput.value.trim();
+                const ones = onesInput.value.trim();
 
                 if (tens === '' || ones === '') {
-                    result.textContent = '⚠ No answer';
+                    result.textContent = 'No answer';
                     result.className = 'result incorrect';
                     card.classList.add('incorrect');
                 } else {
                     const userAnswer = parseInt(tens + ones);
                     if (userAnswer === q.answer) {
-                        result.textContent = '✓ Correct!';
+                        result.textContent = 'Correct!';
                         result.className = 'result correct';
                         card.classList.add('correct');
                         correctCount++;
                     } else {
-                        result.textContent = `✗ Wrong (${q.answer})`;
+                        result.textContent = `Wrong (${q.answer})`;
                         result.className = 'result incorrect';
                         card.classList.add('incorrect');
                     }
@@ -535,22 +541,23 @@
                 onesInput.disabled = true;
             });
 
-            const percentage = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+            const percentage = Math.round((correctCount / total) * 100);
             let message = '';
-            if (correctCount === TOTAL_QUESTIONS) message = '🌟 Perfect Score! 🌟';
-            else if (correctCount >= 27) message = '🎯 Excellent! ';
-            else if (correctCount >= 21) message = '👍 Great Job! ';
-            else if (correctCount >= 15) message = '💪 Good Effort! ';
-            else message = '📚 Keep Practicing! ';
+            if (correctCount === total) message = 'Perfect Score!';
+            else if (correctCount >= total * 0.9) message = 'Excellent!';
+            else if (correctCount >= total * 0.7) message = 'Great Job!';
+            else if (correctCount >= total * 0.5) message = 'Good Effort!';
+            else message = 'Keep Practicing!';
 
             document.getElementById('scoreDisplay').textContent =
-                `${message} Score: ${correctCount}/${TOTAL_QUESTIONS} (${percentage}%)`;
+                `${message} Score: ${correctCount}/${total} (${percentage}%)`;
 
             document.getElementById('checkBtn').classList.add('hidden');
             document.getElementById('restartBtn').classList.remove('hidden');
             document.getElementById('verticalToggle').disabled = true;
             document.getElementById('bothToggle').disabled = true;
             document.getElementById('operationMode').disabled = true;
+            document.getElementById('questionCount').disabled = true;
 
             isChecked = true;
         }
@@ -561,6 +568,7 @@
             document.getElementById('checkBtn').classList.remove('hidden');
             document.getElementById('restartBtn').classList.add('hidden');
             document.getElementById('operationMode').disabled = false;
+            document.getElementById('questionCount').disabled = false;
 
             if (!document.getElementById('bothToggle').checked) {
                 document.getElementById('verticalToggle').disabled = false;
