@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    //<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>COCOBO TECH 赞美诗</title>
     <style>
         * {
@@ -669,18 +670,331 @@
         }
 
         /* 响应式 */
+        /* ========================================
+       📱 响应式设计 - 手机和平板适配
+           ======================================== */
+        
+        /* 🖥️ 平板横屏 (1024px 以下) */
         @media (max-width: 1024px) {
             .container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
+                grid-template-columns: 320px 1fr;  /* ✅ 缩小侧边栏 */
             }
-
-            .sidebar {
-                border-right: none;
-                border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-                max-height: 40vh;
+            
+            .sidebar-header h1 {
+                font-size: 26px;  /* ✅ 缩小标题 */
+            }
+            
+            .player-header h2 {
+                font-size: 28px;  /* ✅ 缩小播放器标题 */
             }
         }
+        
+        /* 📱 手机横屏 (768px-1024px 宽度 + 高度<500px) */
+        @media (max-width: 1024px) and (max-height: 500px) and (orientation: landscape) {
+            body {
+                overflow-y: auto;  /* ✅ 允许整体滚动 */
+            }
+            
+            .container {
+                grid-template-columns: 280px 1fr;  /* ✅ 更窄的侧边栏 */
+                height: auto;  /* ✅ 自动高度 */
+                min-height: 100vh;
+            }
+            
+            .sidebar {
+                max-height: 100vh;
+                position: sticky;  /* ✅ 粘性定位 */
+                top: 0;
+            }
+            
+            /* ✅ 缩小所有元素尺寸 */
+            .sidebar-header {
+                padding: 20px 20px;
+            }
+            
+            .sidebar-header h1 {
+                font-size: 22px;
+            }
+            
+            .sidebar-header p {
+                font-size: 11px;
+            }
+            
+            .search-box {
+                padding: 15px 20px;
+            }
+            
+            .search-box input {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .playlist {
+                max-height: calc(100vh - 200px);
+                padding: 10px 0;
+            }
+            
+            .group {
+                margin: 3px 10px 10px 10px;
+            }
+            
+            .group-header {
+                padding: 12px 15px;
+                border-radius: 15px;
+            }
+            
+            .group-icon {
+                font-size: 20px;
+            }
+            
+            .group-title {
+                font-size: 13px;
+                letter-spacing: 2px;
+            }
+            
+            .group-count {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            
+            .playlist-item {
+                padding: 12px 15px;
+                margin: 4px 0 4px 10px;
+            }
+            
+            .play-icon {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .item-number {
+                font-size: 16px;
+                min-width: 24px;
+            }
+            
+            .item-title {
+                font-size: 12px;
+            }
+            
+            .item-duration {
+                font-size: 11px;
+            }
+            
+            .player-section {
+                padding: 20px;
+            }
+            
+            .player-header {
+                margin-bottom: 15px;
+            }
+            
+            .player-header h2 {
+                font-size: 22px;
+            }
+            
+            .player-meta {
+                font-size: 12px;
+                gap: 15px;
+            }
+            
+            .video-wrapper {
+                animation: none;  /* ✅ 禁用浮动动画 */
+            }
+            
+            .controls {
+                margin-top: 15px;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 📱 手机竖屏 (768px 以下) */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;  /* ✅ 允许滚动 */
+            }
+            
+            .container {
+                grid-template-columns: 1fr;  /* ✅ 单列布局 */
+                grid-template-rows: auto 1fr;  /* ✅ 上下分屏 */
+                height: auto;
+                min-height: 100vh;
+            }
+        
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 255, 255, 0.2);  /* ✅ 下边框 */
+                max-height: none;
+                position: relative;
+            }
+            
+            .sidebar-header {
+                padding: 25px 20px;
+            }
+            
+            .sidebar-header h1 {
+                font-size: 28px;
+            }
+            
+            .search-box {
+                padding: 15px 20px;
+            }
+            
+            .playlist {
+                max-height: 50vh;  /* ✅ 限制播放列表高度 */
+                padding: 15px 0;
+            }
+            
+            .group {
+                margin: 5px 15px 12px 15px;
+            }
+            
+            .group-header {
+                padding: 16px 20px;
+            }
+            
+            .group-icon {
+                font-size: 22px;
+            }
+            
+            .group-title {
+                font-size: 15px;
+            }
+            
+            .group-count {
+                font-size: 12px;
+            }
+            
+            .playlist-item {
+                padding: 15px 18px;
+                margin: 5px 0 5px 12px;
+            }
+            
+            .item-content {
+                flex-direction: column;  /* ✅ 垂直排列 */
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .item-title {
+                white-space: normal;  /* ✅ 允许换行 */
+                overflow: visible;
+                font-size: 13px;
+            }
+            
+            .item-duration {
+                align-self: flex-start;
+            }
+            
+            .player-section {
+                padding: 20px;
+            }
+            
+            .player-header h2 {
+                font-size: 24px;
+            }
+            
+            .player-meta {
+                flex-wrap: wrap;
+                font-size: 13px;
+            }
+            
+            .video-wrapper {
+                animation: none;  /* ✅ 禁用动画 */
+                border-radius: 15px;
+            }
+            
+            .video-wrapper::before {
+                animation: none;  /* ✅ 禁用光环动画 */
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                flex: 1 1 calc(50% - 5px);  /* ✅ 两列按钮 */
+                min-width: 140px;
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+        }
+        
+        /* 📱 小屏手机 (480px 以下) */
+        @media (max-width: 480px) {
+            .sidebar-header h1 {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+            
+            .sidebar-header p {
+                font-size: 11px;
+            }
+            
+            .group-title {
+                font-size: 13px;
+                letter-spacing: 1.5px;
+            }
+            
+            .playlist-item {
+                padding: 12px 15px;
+            }
+            
+            .item-number {
+                font-size: 14px;
+                min-width: 22px;
+            }
+            
+            .item-title {
+                font-size: 12px;
+            }
+            
+            .player-header h2 {
+                font-size: 20px;
+            }
+            
+            .control-btn {
+                flex: 1 1 100%;  /* ✅ 单列全宽按钮 */
+                padding: 12px 15px;
+            }
+        }
+        
+        /* 📱 超小屏 (360px 以下) */
+        @media (max-width: 360px) {
+            .sidebar-header {
+                padding: 20px 15px;
+            }
+            
+            .sidebar-header h1 {
+                font-size: 22px;
+            }
+            
+            .search-box {
+                padding: 12px 15px;
+            }
+            
+            .group {
+                margin: 5px 10px 10px 10px;
+            }
+            
+            .group-header {
+                padding: 12px 15px;
+                gap: 10px;
+            }
+            
+            .group-title {
+                font-size: 12px;
+            }
+            
+            .player-section {
+                padding: 15px;
+            }
+        }    
     </style>
 </head>
 <body>
