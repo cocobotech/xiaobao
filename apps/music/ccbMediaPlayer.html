@@ -55,89 +55,18 @@
             box-shadow: 4px 0 30px rgba(0, 255, 255, 0.1);
         }
 
-        .sidebar-header {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
-            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .sidebar-header h1 {
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #00ffff, #8a2be2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
-            position: relative;
-        }
-
-        .sidebar-header p {
-            margin-top: 10px;
-            color: #aaa;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* 搜索框 */
-        .search-box {
-            padding: 20px 30px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .search-box input::placeholder {
-            color: #666;
-        }
-
         /* ✅ 播放列表选择器样式 */
         .playlist-selector {
-            padding: 15px 30px;
+            padding: 10px 20px;
             border-bottom: 1px solid rgba(0, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
         }
 
         .playlist-selector label {
             color: #00ffff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -145,12 +74,12 @@
 
         .playlist-selector select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 8px 10px;
             background: linear-gradient(145deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
             border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 10px;
+            border-radius: 8px;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -181,27 +110,27 @@
             flex: 1;
             overflow-y: auto;  /* ✅ 启用垂直滚动 */
             overflow-x: hidden; /* 隐藏水平滚动 */
-            padding: 20px 0;
-            max-height: calc(100vh - 250px); /* 限制最大高度 */
+            padding: 10px 0;
+            max-height: calc(100vh - 80px); /* 调整最大高度 */
         }
 
         /* 🎨 自定义滚动条轨道 */
         .playlist::-webkit-scrollbar {
-            width: 8px; /* 滚动条宽度 */
+            width: 6px; /* 滚动条宽度 */
         }
 
         /* 🎨 滚动条轨道背景 */
         .playlist::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         /* 🎨 滚动条滑块 - 渐变色 */
         .playlist::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #00ffff, #8a2be2);
             border-radius: 10px;
-            border: 2px solid rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.2);
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
@@ -218,7 +147,7 @@
 
         /* 分组样式 - 3D效果 */
         .group {
-            margin: 5px 15px 15px 15px;
+            margin: 5px 10px 10px 10px;
             perspective: 1000px;
             position: relative;
         }
@@ -226,13 +155,13 @@
         .group-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 20px 25px;
+            gap: 10px;
+            padding: 15px 20px;
             background: 
                 linear-gradient(145deg, rgba(0, 255, 255, 0.15), rgba(138, 43, 226, 0.1)),
                 linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
             border: 3px solid transparent;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -356,7 +285,7 @@
         }
 
         .group-icon {
-            font-size: 26px;
+            font-size: 22px;
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
             transform: translateZ(10px);
@@ -376,14 +305,14 @@
 
         .group-title {
             flex: 1;
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 800;
             background: linear-gradient(135deg, #00ffff, #ffffff, #8a2be2);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 
                 0 0 20px rgba(0, 255, 255, 0.5),
                 0 0 40px rgba(138, 43, 226, 0.3);
@@ -400,7 +329,7 @@
         }
 
         .group-header:hover .group-title {
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             animation: gradient-shift 1.5s ease infinite, text-glow 1s ease-in-out infinite;
         }
 
@@ -410,14 +339,14 @@
         }
 
         .group-count {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #00ffff;
             background: 
                 linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
                 linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2));
-            padding: 6px 16px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: 15px;
             border: 2px solid rgba(0, 255, 255, 0.4);
             box-shadow: 
                 0 4px 10px rgba(0, 0, 0, 0.4),
@@ -444,7 +373,7 @@
             opacity: 1;
             overflow: hidden;
             transition: max-height 0.4s ease, opacity 0.3s ease;
-            margin-top: 8px;
+            margin-top: 5px;
         }
 
         .group.collapsed .group-items {
@@ -454,18 +383,18 @@
 
         /* 播放列表项 */
         .playlist-item {
-            padding: 18px 20px;
-            margin: 6px 0 6px 15px;
+            padding: 12px 15px;
+            margin: 4px 0 4px 10px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 255, 255, 0.15);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .playlist-item::before {
@@ -504,14 +433,14 @@
         }
 
         .play-icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: rgba(0, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 8px;
             transition: all 0.3s;
             flex-shrink: 0;
         }
@@ -523,10 +452,10 @@
         }
 
         .item-number {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             color: #00ffff;
-            min-width: 28px;
+            min-width: 24px;
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             flex-shrink: 0;
         }
@@ -536,12 +465,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 10px;
             min-width: 0;
         }
 
         .item-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #fff;
             line-height: 1.4;
@@ -551,9 +480,13 @@
         }
 
         .item-duration {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
             white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .select-checkbox {
             flex-shrink: 0;
         }
 
@@ -561,34 +494,34 @@
         .player-section {
             display: flex;
             flex-direction: column;
-            padding: 40px;
+            padding: 30px;
             background: rgba(10, 10, 15, 0.5);
         }
 
         .player-header {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .player-header h2 {
-            font-size: 36px;
+            font-size: 30px;
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #00ffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .player-meta {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             color: #888;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .player-meta span {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         /* 视频容器 - 3D效果 */
@@ -608,26 +541,7 @@
             50% { transform: translateY(-10px) rotateX(2deg); }
         }
 
-        .video-wrapper::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            background: linear-gradient(45deg, #00ffff, #8a2be2, #00ffff);
-            border-radius: 20px;
-            z-index: -1;
-            animation: rotate 4s linear infinite;
-            filter: blur(10px);
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .video-wrapper iframe {
+        .video-wrapper #video-player {
             position: absolute;
             top: 0;
             left: 0;
@@ -649,37 +563,46 @@
             justify-content: center;
             background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
             border-radius: 20px;
+            position: relative;
         }
 
-        .video-placeholder svg {
-            width: 100px;
-            height: 100px;
-            opacity: 0.3;
-            animation: pulse 2s ease-in-out infinite;
+        #connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
+        .letter {
+            position: absolute;
+            font-size: 60px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00ffff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            z-index: 2;
         }
 
         /* 控制按钮 */
         .controls {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .control-btn {
-            padding: 15px 30px;
+            padding: 10px 20px;
             background: rgba(0, 255, 255, 0.1);
             border: 2px solid rgba(0, 255, 255, 0.3);
             color: #00ffff;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 1px;
             transition: all 0.3s;
@@ -726,10 +649,6 @@
                 grid-template-columns: 320px 1fr;
             }
             
-            .sidebar-header h1 {
-                font-size: 26px;
-            }
-            
             .player-header h2 {
                 font-size: 28px;
             }
@@ -753,29 +672,8 @@
                 top: 0;
             }
             
-            .sidebar-header {
-                padding: 20px 20px;
-            }
-            
-            .sidebar-header h1 {
-                font-size: 22px;
-            }
-            
-            .sidebar-header p {
-                font-size: 11px;
-            }
-            
-            .search-box {
-                padding: 15px 20px;
-            }
-            
-            .search-box input {
-                padding: 10px 15px;
-                font-size: 13px;
-            }
-            
             .playlist {
-                max-height: calc(100vh - 200px);
+                max-height: calc(100vh - 80px);
                 padding: 10px 0;
             }
             
@@ -877,18 +775,6 @@
                 position: relative;
             }
             
-            .sidebar-header {
-                padding: 25px 20px;
-            }
-            
-            .sidebar-header h1 {
-                font-size: 28px;
-            }
-            
-            .search-box {
-                padding: 15px 20px;
-            }
-            
             .playlist {
                 max-height: 50vh;
                 padding: 15px 0;
@@ -953,10 +839,6 @@
                 border-radius: 15px;
             }
             
-            .video-wrapper::before {
-                animation: none;
-            }
-            
             .controls {
                 flex-wrap: wrap;
                 gap: 10px;
@@ -972,15 +854,6 @@
         
         /* 小屏手机 (480px 以下) */
         @media (max-width: 480px) {
-            .sidebar-header h1 {
-                font-size: 24px;
-                letter-spacing: 2px;
-            }
-            
-            .sidebar-header p {
-                font-size: 11px;
-            }
-            
             .group-title {
                 font-size: 13px;
                 letter-spacing: 1.5px;
@@ -1011,18 +884,6 @@
         
         /* 超小屏 (360px 以下) */
         @media (max-width: 360px) {
-            .sidebar-header {
-                padding: 20px 15px;
-            }
-            
-            .sidebar-header h1 {
-                font-size: 22px;
-            }
-            
-            .search-box {
-                padding: 12px 15px;
-            }
-            
             .group {
                 margin: 5px 10px 10px 10px;
             }
@@ -1048,9 +909,6 @@
     <div class="container">
         <!-- 左侧播放列表 -->
         <div class="sidebar">
-            
-
-
 
             <!-- ✅ 新增：播放列表选择器 -->
             <div class="playlist-selector">
@@ -1071,7 +929,7 @@
         <!-- 右侧播放器 -->
         <div class="player-section">
             <div class="player-header">
-                <h1>COCOBO PLAYER</h2>
+                <h2>COCOBO PLAYER</h2>
                 <h2 id="current-title">选择一个视频开始播放</h2>
                 <div class="player-meta">
                     <span>🎬 <span id="current-group">--</span></span>
@@ -1079,16 +937,6 @@
                     <span>⏱️ <span id="current-duration">--:--</span></span>
                 </div>
             </div>
-
-            <div class="video-wrapper">
-                <div class="video-placeholder" id="video-placeholder">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </div>
-                <iframe id="video-player" src="" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
-            </div>
-
             <div class="controls">
                 <button class="control-btn" onclick="playPrevious()">
                     <span>⏮️ 上一个</span>
@@ -1099,6 +947,9 @@
                 <button class="control-btn" onclick="toggleAutoPlay()">
                     <span id="autoplay-text">🔁 连续播放: 开</span>
                 </button>
+                <button class="control-btn" onclick="toggleLoopSelected()">
+                    <span id="loop-selected-text">🔄 循环选定: 关</span>
+                </button>
                 <button class="control-btn" onclick="expandAll()">
                     <span>📂 全部展开</span>
                 </button>
@@ -1106,6 +957,20 @@
                     <span>📁 全部折叠</span>
                 </button>
             </div>
+
+            <div class="video-wrapper">
+                <div class="video-placeholder" id="video-placeholder">
+                    <canvas id="connections"></canvas>
+                    <span class="letter">C</span>
+                    <span class="letter">O</span>
+                    <span class="letter">C</span>
+                    <span class="letter">O</span>
+                    <span class="letter">B</span>
+                    <span class="letter">O</span>
+                </div>
+                <div id="video-player" style="display: none;"></div>
+            </div>
+
         </div>
     </div>
 
@@ -1211,13 +1076,18 @@
         // ✅ 重置播放器状态
         function resetPlayer() {
             // 停止当前播放
-            if (player && player.destroy) {
+            if (player) {
                 player.destroy();
+                player = null;
             }
             
             // 重置变量
             currentGroupIndex = -1;
             currentVideoIndex = -1;
+            isLoopingSelected = false;
+            selectedVideos = [];
+            currentSelectedIndex = -1;
+            document.getElementById('loop-selected-text').textContent = '🔄 循环选定: 关';
             
             // 重置显示
             document.getElementById('video-player').style.display = 'none';
@@ -1233,8 +1103,11 @@
         let currentGroupIndex = -1;
         let currentVideoIndex = -1;
         let autoPlay = true;
-        let player; // ✅ YouTube Player 对象
+        let player = null; // ✅ YouTube Player 对象
         let playerReady = false; // ✅ 播放器是否准备好
+        let selectedVideos = [];
+        let isLoopingSelected = false;
+        let currentSelectedIndex = -1;
 
         // ✅ YouTube IFrame API 回调函数
         function onYouTubeIframeAPIReady() {
@@ -1280,10 +1153,12 @@
                 group.videos.forEach((video, videoIdx) => {
                     const item = document.createElement('div');
                     const isActive = groupIdx === currentGroupIndex && videoIdx === currentVideoIndex;
+                    const isSelected = selectedVideos.some(s => s.group === groupIdx && s.video === videoIdx);
                     item.className = `playlist-item ${isActive ? 'active' : ''}`;
                     item.onclick = () => playVideo(groupIdx, videoIdx);
 
                     item.innerHTML = `
+                        <input type="checkbox" class="select-checkbox" data-group="${groupIdx}" data-video="${videoIdx}" ${isSelected ? 'checked' : ''}>
                         <div class="play-icon">▶</div>
                         <div class="item-number">${String(globalIndex + 1).padStart(2, '0')}</div>
                         <div class="item-content">
@@ -1322,36 +1197,46 @@
 
         // 播放视频
         function playVideo(groupIdx, videoIdx) {
+            if (isLoopingSelected) {
+                // 检查是否在选定中
+                currentSelectedIndex = selectedVideos.findIndex(s => s.group === groupIdx && s.video === videoIdx);
+                if (currentSelectedIndex === -1) {
+                    // 不在选定中，退出循环模式
+                    isLoopingSelected = false;
+                    document.getElementById('loop-selected-text').textContent = '🔄 循环选定: 关';
+                }
+            }
+
             currentGroupIndex = groupIdx;
             currentVideoIndex = videoIdx;
 
             const group = videoGroups[groupIdx];
             const video = group.videos[videoIdx];
 
-            // ✅ 销毁旧的播放器
-            if (player && player.destroy) {
-                player.destroy();
-            }
-
-            // ✅ 创建新的 YouTube 播放器
             const placeholder = document.getElementById('video-placeholder');
             const playerContainer = document.getElementById('video-player');
             
             placeholder.style.display = 'none';
             playerContainer.style.display = 'block';
 
-            player = new YT.Player('video-player', {
-                videoId: video.id,
-                playerVars: {
-                    autoplay: 1,
-                    rel: 0,
-                    modestbranding: 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+            if (player) {
+                player.loadVideoById(video.id);
+            } else {
+                player = new YT.Player('video-player', {
+                    height: '100%',
+                    width: '100%',
+                    videoId: video.id,
+                    playerVars: {
+                        autoplay: 1,
+                        rel: 0,
+                        modestbranding: 1
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
 
             // 更新信息
             document.getElementById('current-title').textContent = video.title;
@@ -1384,66 +1269,72 @@
         // ✅ 播放器准备就绪
         function onPlayerReady(event) {
             playerReady = true;
+            event.target.playVideo(); // 确保立即播放
             console.log('播放器准备就绪');
         }
 
         // ✅ 播放器状态改变（检测视频结束）
         function onPlayerStateChange(event) {
             // YT.PlayerState.ENDED = 0 表示视频播放结束
-            if (event.data === YT.PlayerState.ENDED) {
+            if (event.data === YT.PlayerState.ENDED && autoPlay) {
                 console.log('视频播放结束');
-                
-                // 如果开启了连续播放，自动播放下一个
-                if (autoPlay) {
-                    setTimeout(() => {
-                        playNext();
-                    }, 1000); // 延迟1秒后播放下一个
-                }
+                setTimeout(() => {
+                    playNext();
+                }, 1000); // 延迟1秒后播放下一个
             }
-            
-            // 其他状态
-            // YT.PlayerState.PLAYING = 1 (播放中)
-            // YT.PlayerState.PAUSED = 2 (暂停)
-            // YT.PlayerState.BUFFERING = 3 (缓冲中)
         }
 
         // 上一个视频
         function playPrevious() {
-            if (currentGroupIndex === -1) return;
+            if (isLoopingSelected) {
+                if (selectedVideos.length === 0) return;
+                currentSelectedIndex = (currentSelectedIndex - 1 + selectedVideos.length) % selectedVideos.length;
+                const sel = selectedVideos[currentSelectedIndex];
+                playVideo(sel.group, sel.video);
+            } else {
+                if (currentGroupIndex === -1) return;
 
-            let newVideoIdx = currentVideoIndex - 1;
-            let newGroupIdx = currentGroupIndex;
+                let newVideoIdx = currentVideoIndex - 1;
+                let newGroupIdx = currentGroupIndex;
 
-            if (newVideoIdx < 0) {
-                newGroupIdx--;
-                if (newGroupIdx < 0) {
-                    newGroupIdx = videoGroups.length - 1;
+                if (newVideoIdx < 0) {
+                    newGroupIdx--;
+                    if (newGroupIdx < 0) {
+                        newGroupIdx = videoGroups.length - 1;
+                    }
+                    newVideoIdx = videoGroups[newGroupIdx].videos.length - 1;
                 }
-                newVideoIdx = videoGroups[newGroupIdx].videos.length - 1;
-            }
 
-            playVideo(newGroupIdx, newVideoIdx);
+                playVideo(newGroupIdx, newVideoIdx);
+            }
         }
 
         // 下一个视频
         function playNext() {
-            if (currentGroupIndex === -1) {
-                playVideo(0, 0);
-                return;
-            }
-
-            let newVideoIdx = currentVideoIndex + 1;
-            let newGroupIdx = currentGroupIndex;
-
-            if (newVideoIdx >= videoGroups[newGroupIdx].videos.length) {
-                newGroupIdx++;
-                if (newGroupIdx >= videoGroups.length) {
-                    newGroupIdx = 0;
+            if (isLoopingSelected) {
+                if (selectedVideos.length === 0) return;
+                currentSelectedIndex = (currentSelectedIndex + 1) % selectedVideos.length;
+                const sel = selectedVideos[currentSelectedIndex];
+                playVideo(sel.group, sel.video);
+            } else {
+                if (currentGroupIndex === -1) {
+                    playVideo(0, 0);
+                    return;
                 }
-                newVideoIdx = 0;
-            }
 
-            playVideo(newGroupIdx, newVideoIdx);
+                let newVideoIdx = currentVideoIndex + 1;
+                let newGroupIdx = currentGroupIndex;
+
+                if (newVideoIdx >= videoGroups[newGroupIdx].videos.length) {
+                    newGroupIdx++;
+                    if (newGroupIdx >= videoGroups.length) {
+                        newGroupIdx = 0;
+                    }
+                    newVideoIdx = 0;
+                }
+
+                playVideo(newGroupIdx, newVideoIdx);
+            }
         }
 
         // 切换自动播放
@@ -1456,23 +1347,41 @@
             console.log(message);
         }
 
-        // 搜索功能
-        function searchVideos() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            
-            videoGroups.forEach(group => {
-                const matchedVideos = group.videos.filter(video => 
-                    video.title.toLowerCase().includes(query) ||
-                    group.name.toLowerCase().includes(query)
-                );
-                
-                // 如果有匹配，展开分组
-                if (matchedVideos.length > 0 && query !== '') {
-                    group.collapsed = false;
+        // 切换循环选定
+        function toggleLoopSelected() {
+            if (!isLoopingSelected && selectedVideos.length === 0) {
+                alert('请选择至少一个视频');
+                return;
+            }
+
+            isLoopingSelected = !isLoopingSelected;
+            document.getElementById('loop-selected-text').textContent = `🔄 循环选定: ${isLoopingSelected ? '开' : '关'}`;
+
+            if (isLoopingSelected) {
+                currentSelectedIndex = 0;
+                const sel = selectedVideos[0];
+                playVideo(sel.group, sel.video);
+            }
+        }
+
+        // 更新选定视频
+        function updateSelected(checkbox) {
+            const group = parseInt(checkbox.dataset.group);
+            const video = parseInt(checkbox.dataset.video);
+
+            if (checkbox.checked) {
+                if (!selectedVideos.some(s => s.group === group && s.video === video)) {
+                    selectedVideos.push({group, video});
                 }
-            });
-            
-            renderPlaylist();
+            } else {
+                selectedVideos = selectedVideos.filter(s => s.group !== group || s.video !== video);
+            }
+
+            // 如果在循环模式中，且选定改变了，可能需要调整
+            if (isLoopingSelected && selectedVideos.length === 0) {
+                isLoopingSelected = false;
+                document.getElementById('loop-selected-text').textContent = '🔄 循环选定: 关';
+            }
         }
 
         // 更新统计
@@ -1491,8 +1400,98 @@
             }
         });
 
+        // 监听checkbox变化
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('select-checkbox')) {
+                updateSelected(e.target);
+            }
+        });
+
+        // 防止checkbox点击触发item的onclick
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('select-checkbox')) {
+                e.stopPropagation();
+            }
+        });
+
         // 初始化
         init();
+
+        // 动画初始化
+        const placeholder = document.getElementById('video-placeholder');
+        const letters = document.querySelectorAll('.letter');
+        const canvas = document.getElementById('connections');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = placeholder.clientWidth;
+            canvas.height = placeholder.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 设置初始位置和目标
+        letters.forEach(letter => {
+            letter.style.left = `${Math.random() * 100}%`;
+            letter.style.top = `${Math.random() * 100}%`;
+            letter.dataset.targetX = Math.random() * 100;
+            letter.dataset.targetY = Math.random() * 100;
+        });
+
+        function updateTargets() {
+            letters.forEach(letter => {
+                letter.dataset.targetX = Math.random() * 100;
+                letter.dataset.targetY = Math.random() * 100;
+            });
+            setTimeout(updateTargets, 5000); // 每5秒更新目标
+        }
+
+        function animate() {
+            letters.forEach(letter => {
+                let x = parseFloat(letter.style.left) || 50;
+                let y = parseFloat(letter.style.top) || 50;
+                const tx = parseFloat(letter.dataset.targetX);
+                const ty = parseFloat(letter.dataset.targetY);
+                x += (tx - x) * 0.01;
+                y += (ty - y) * 0.01;
+                letter.style.left = `${x}%`;
+                letter.style.top = `${y}%`;
+            });
+
+            drawConnections();
+
+            requestAnimationFrame(animate);
+        }
+
+        function drawConnections() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(138, 43, 226, 0.3)';
+            ctx.shadowColor = 'rgba(138, 43, 226, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 4]); // 虚线
+
+            const positions = [];
+            const parentRect = placeholder.getBoundingClientRect();
+            letters.forEach(letter => {
+                const rect = letter.getBoundingClientRect();
+                positions.push({
+                    x: rect.left - parentRect.left + rect.width / 2,
+                    y: rect.top - parentRect.top + rect.height / 2
+                });
+            });
+
+            ctx.beginPath();
+            for (let i = 0; i < positions.length - 1; i++) {
+                ctx.moveTo(positions[i].x, positions[i].y);
+                ctx.lineTo(positions[i + 1].x, positions[i + 1].y);
+            }
+            ctx.stroke();
+        }
+
+        updateTargets();
+        animate();
     </script>
 </body>
 </html>
