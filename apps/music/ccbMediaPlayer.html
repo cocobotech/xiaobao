@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>NEXUS Video Player</title>
+    <title>COCOBO Player</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: #0a0a0f;
@@ -18,7 +17,6 @@
             overflow: hidden;
             height: 100vh;
         }
-
         .bg-animation {
             position: fixed;
             width: 100%;
@@ -29,20 +27,18 @@
                 radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
             animation: bgPulse 15s ease-in-out infinite;
         }
-
         @keyframes bgPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
-
         .container {
             display: grid;
             grid-template-columns: 380px 1fr;
             height: 100vh;
             position: relative;
             z-index: 1;
+            overflow: hidden;
         }
-
         .sidebar {
             background: rgba(15, 15, 25, 0.8);
             backdrop-filter: blur(20px);
@@ -51,7 +47,6 @@
             flex-direction: column;
             box-shadow: 4px 0 30px rgba(0, 255, 255, 0.1);
         }
-
         .playlist-selector {
             padding: 8px 15px;
             border-bottom: 1px solid rgba(0, 255, 255, 0.1);
@@ -60,15 +55,14 @@
             gap: 5px;
         }
         
-        /* ccbnotes: Control buttons moved to sidebar */
+        /* 🚀 播放列表控制按钮区域 CSS 调整为 3 列 */
         .sidebar-controls {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, 1fr); /* 调整为 3 列 */
             gap: 6px;
             padding: 10px 15px;
             border-bottom: 1px solid rgba(0, 255, 255, 0.1);
         }
-
         .playlist-selector label {
             color: #00ffff;
             font-size: 11px;
@@ -76,7 +70,6 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-
         .playlist-selector select {
             width: 100%;
             padding: 6px 8px;
@@ -90,18 +83,15 @@
             transition: all 0.3s;
             outline: none;
         }
-
         .playlist-selector select:hover {
             border-color: #00ffff;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
         }
-
         .playlist-selector select option {
             background: #1a1a2e;
             color: #fff;
             padding: 10px;
         }
-
         .playlist {
             flex: 1;
             overflow-y: auto;
@@ -109,35 +99,29 @@
             padding: 8px 0;
             max-height: calc(100vh - 180px);
         }
-
         .playlist::-webkit-scrollbar {
             width: 6px;
         }
-
         .playlist::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             margin: 5px 0;
         }
-
         .playlist::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #00ffff, #8a2be2);
             border-radius: 10px;
             border: 1px solid rgba(0, 0, 0, 0.2);
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
-
         .playlist::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #00ffff, #ff00ff);
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
         }
-
         .group {
             margin: 4px 8px 8px 8px;
             perspective: 1000px;
             position: relative;
         }
-
         .group-header {
             display: flex;
             align-items: center;
@@ -157,7 +141,6 @@
                 0 4px 12px rgba(0, 0, 0, 0.4),
                 inset 0 1px 3px rgba(255, 255, 255, 0.1);
         }
-
         .group-header::before {
             content: '';
             position: absolute;
@@ -174,32 +157,26 @@
             animation: gradient-flow 4s ease infinite;
             transition: opacity 0.4s;
         }
-
         @keyframes gradient-flow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .group-header:hover::before {
             opacity: 0.8;
         }
-
         .group-header:hover {
             transform: translateY(-3px) translateZ(20px);
             box-shadow: 0 15px 35px rgba(0, 255, 255, 0.4);
         }
-
         .group-icon {
             font-size: 16px;
             transition: all 0.4s;
             filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.6));
         }
-
         .group.collapsed .group-icon {
             transform: rotate(-90deg);
         }
-
         .group-title {
             flex: 1;
             font-size: 13px;
@@ -212,12 +189,10 @@
             letter-spacing: 1.5px;
             animation: gradient-shift 3s ease infinite;
         }
-
         @keyframes gradient-shift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-
         .group-count {
             font-size: 11px;
             font-weight: 700;
@@ -228,7 +203,6 @@
             border: 1.5px solid rgba(0, 255, 255, 0.4);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
         }
-
         .group-items {
             max-height: 1000px;
             opacity: 1;
@@ -236,12 +210,10 @@
             transition: max-height 0.4s ease, opacity 0.3s ease;
             margin-top: 5px;
         }
-
         .group.collapsed .group-items {
             max-height: 0;
             opacity: 0;
         }
-
         /* ccbnotes: Improved playlist item layout with better click zones */
         .playlist-item {
             padding: 10px 12px;
@@ -257,21 +229,18 @@
             align-items: center;
             gap: 8px;
         }
-
         .playlist-item:hover {
             transform: translateX(6px);
             border-color: #00ffff;
             background: rgba(0, 255, 255, 0.08);
             box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
         }
-
         .playlist-item.active {
             background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2));
             border-color: #00ffff;
             box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
             transform: translateX(6px);
         }
-
         /* ccbnotes: Larger checkbox area for easier clicking */
         .select-checkbox-wrapper {
             display: flex;
@@ -283,7 +252,6 @@
             flex-shrink: 0;
             z-index: 10;
         }
-
         .select-checkbox {
             width: 18px;
             height: 18px;
@@ -291,7 +259,6 @@
             accent-color: #00ffff;
             flex-shrink: 0;
         }
-
         /* ccbnotes: Clickable area for playing video */
         .item-play-area {
             display: flex;
@@ -301,7 +268,6 @@
             cursor: pointer;
             min-width: 0;
         }
-
         .play-icon {
             width: 24px;
             height: 24px;
@@ -314,13 +280,11 @@
             transition: all 0.3s;
             flex-shrink: 0;
         }
-
         .playlist-item:hover .play-icon,
         .playlist-item.active .play-icon {
             background: rgba(0, 255, 255, 0.5);
             transform: scale(1.15);
         }
-
         .item-number {
             font-size: 16px;
             font-weight: 900;
@@ -329,13 +293,11 @@
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             flex-shrink: 0;
         }
-
         .playlist-item.active .item-number {
             background: linear-gradient(135deg, #00ffff, #8a2be2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .item-content {
             flex: 1;
             display: flex;
@@ -344,7 +306,6 @@
             gap: 10px;
             min-width: 0;
         }
-
         .item-title {
             font-size: 12px;
             font-weight: 600;
@@ -354,58 +315,188 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .item-duration {
             font-size: 10px;
             color: #888;
             white-space: nowrap;
             flex-shrink: 0;
         }
-
         .player-section {
             display: flex;
             flex-direction: column;
-            padding: 30px;
+            padding: 20px 30px;
             background: rgba(10, 10, 15, 0.5);
+            height: 100vh;
+            overflow: hidden;
         }
-
         .player-header {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
-
         .player-header h2 {
-            font-size: 30px;
+            font-size: 26px;
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #00ffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-
+        
+        /* ccbnotes: Futuristic burning text effect for playing title */
+        .player-title-playing {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(
+                to bottom,
+                #fff 0%,
+                #ffff00 20%,
+                #ff8800 40%,
+                #ff0000 60%,
+                #ff0080 80%,
+                #8a2be2 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 0, 0.8),
+                0 0 40px rgba(255, 136, 0, 0.6),
+                0 0 60px rgba(255, 0, 0, 0.4);
+            animation: fire-flicker 2s ease-in-out infinite, text-glow-fire 3s ease-in-out infinite;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        
+        .player-title-playing::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 0, 0.8),
+                rgba(255, 136, 0, 0.6),
+                rgba(255, 0, 0, 0.4)
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: blur(10px);
+            animation: fire-wave 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes fire-flicker {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 20px rgba(255, 255, 0, 0.8),
+                    0 0 40px rgba(255, 136, 0, 0.6),
+                    0 0 60px rgba(255, 0, 0, 0.4);
+            }
+            25% { 
+                text-shadow: 
+                    0 0 30px rgba(255, 255, 0, 1),
+                    0 0 50px rgba(255, 136, 0, 0.8),
+                    0 0 70px rgba(255, 0, 0, 0.6);
+            }
+            50% { 
+                text-shadow: 
+                    0 0 25px rgba(255, 255, 0, 0.9),
+                    0 0 45px rgba(255, 136, 0, 0.7),
+                    0 0 65px rgba(255, 0, 0, 0.5);
+            }
+            75% { 
+                text-shadow: 
+                    0 0 35px rgba(255, 255, 0, 1),
+                    0 0 55px rgba(255, 136, 0, 0.9),
+                    0 0 75px rgba(255, 0, 0, 0.7);
+            }
+        }
+        
+        @keyframes text-glow-fire {
+            0%, 100% { 
+                filter: brightness(1) contrast(1);
+            }
+            50% { 
+                filter: brightness(1.3) contrast(1.2);
+            }
+        }
+        
+        @keyframes fire-wave {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translateY(-3px) scale(1.02);
+                opacity: 0.8;
+            }
+        }
+        
+        /* ccbnotes: Particle effect container */
+        .fire-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #ffff00, #ff8800, transparent);
+            border-radius: 50%;
+            animation: float-up 2s ease-out infinite;
+            opacity: 0;
+        }
+        
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(var(--drift)) scale(0);
+                opacity: 0;
+            }
+        }
         .player-meta {
             display: flex;
             gap: 15px;
             color: #888;
-            font-size: 13px;
+            font-size: 12px;
             flex-wrap: wrap;
         }
-
         .player-meta span {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .video-wrapper {
             position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
+            width: 100%;
+            flex: 1;
             overflow: hidden;
             border-radius: 20px;
             transform-style: preserve-3d;
             perspective: 1000px;
+            margin-bottom: 15px;
+            min-height: 0;
         }
-
+        
+        .video-wrapper-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
         .video-wrapper #video-player {
             position: absolute;
             top: 0;
@@ -416,7 +507,6 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
-
         .video-placeholder {
             position: absolute;
             top: 0;
@@ -429,7 +519,6 @@
             background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(138, 43, 226, 0.1));
             border-radius: 20px;
         }
-
         #connections {
             position: absolute;
             top: 0;
@@ -438,7 +527,6 @@
             height: 100%;
             z-index: 1;
         }
-
         .letter {
             position: absolute;
             font-size: 60px;
@@ -449,7 +537,6 @@
             text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
             z-index: 2;
         }
-
         .controls {
             display: none;
         }
@@ -458,20 +545,79 @@
         .sidebar-control-btn {
             padding: 8px;
             background: rgba(0, 255, 255, 0.1);
-            border: 1.5px solid rgba(0, 255, 255, 0.3);
+            border: 2px solid rgba(0, 255, 255, 0.3);
             color: #00ffff;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
-        .sidebar-control-btn::before {
+        
+        /* ccbnotes: Inactive state - gray */
+        .sidebar-control-btn.inactive {
+            border-color: rgba(128, 128, 128, 0.3);
+            color: #888;
+            background: rgba(128, 128, 128, 0.1);
+        }
+        
+        /* ccbnotes: Disabled state */
+        .sidebar-control-btn.disabled {
+            border-color: rgba(80, 80, 80, 0.2);
+            color: #555;
+            background: rgba(80, 80, 80, 0.05);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+        
+        /* ccbnotes: Active state with animated halo border (V48 连续播放的风格) */
+        .sidebar-control-btn.active {
+            background: linear-gradient(145deg, rgba(0, 255, 255, 0.3), rgba(138, 43, 226, 0.25));
+            border-color: rgba(0, 255, 255, 0.6);
+            animation: halo-pulse 2s ease-in-out infinite;
+        }
+        
+        .sidebar-control-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(
+                45deg,
+                #00ffff,
+                #00ff88,
+                #8a2be2,
+                #ff00ff,
+                #ff0080,
+                #00ffff
+            );
+            background-size: 400% 400%;
+            border-radius: 10px;
+            z-index: -1;
+            filter: blur(8px);
+            animation: halo-flow 3s linear infinite;
+        }
+        
+        @keyframes halo-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
+        }
+        
+        @keyframes halo-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.9);
+            }
+        }
+        .sidebar-control-btn::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -483,26 +629,63 @@
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
-
-        .sidebar-control-btn:hover::before {
+        .sidebar-control-btn:hover::after {
             width: 200px;
             height: 200px;
         }
-
         .sidebar-control-btn:hover {
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
             transform: translateY(-1px);
         }
-
+        
+        .sidebar-control-btn:not(.inactive):hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+        }
         .sidebar-control-btn span {
             position: relative;
             z-index: 1;
         }
-
+        
+        /* ccbnotes: Copyright and disclaimer text */
+        .copyright-notice {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.6;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        .copyright-notice a {
+            color: #00ffff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .copyright-notice a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        .copyright-notice .separator {
+            margin: 0 8px;
+            color: #444;
+        }
         @media (max-width: 1024px) {
             .container {
                 grid-template-columns: 320px 1fr;
+            }
+            
+            .player-header h2 {
+                font-size: 24px;
+            }
+            
+            .player-title-playing {
+                font-size: 20px;
             }
         }
         
@@ -517,7 +700,6 @@
                 height: auto;
                 min-height: 100vh;
             }
-
             .sidebar {
                 border-right: none;
                 border-bottom: 1px solid rgba(0, 255, 255, 0.2);
@@ -528,54 +710,63 @@
             }
             
             .player-section {
-                padding: 20px;
+                padding: 15px 20px 20px 20px;
+            }
+            
+            .player-header h2 {
+                font-size: 20px;
+            }
+            
+            .player-title-playing {
+                font-size: 18px;
+            }
+            
+            .copyright-notice {
+                font-size: 10px;
+                padding: 10px 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
-
     <div class="container">
         <div class="sidebar">
             <div class="playlist-selector">
                 <label for="playlist-file-select">📂 选择播放列表:</label>
                 <select id="playlist-file-select" onchange="loadPlaylistFile()">
-                    <option value="default">默认播放列表</option>
-                    <option value="https://raw.githubusercontent.com/cocobotech/xiaobao/refs/heads/main/apps/music/worship_kids1.json">音乐合集</option>
-                    <option value="playlist2.json">教育视频</option>
-                    <option value="playlist3.json">娱乐搞笑</option>
+                    <option value="https://raw.githubusercontent.com/cocobotech/xiaobao/refs/heads/main/apps/music/worship_kids1.json">默认播放列表</option>
+                    <option value="https://raw.githubusercontent.com/cocobotech/xiaobao/refs/heads/main/apps/music/worship_kids1.json">worship_kids1</option>
+                    <option value="playlist2.json">COCOBO作品1</option>
+                    <option value="playlist3.json">COCOBO作品2</option>
                 </select>
             </div>
-
-            <!-- ccbnotes: Control buttons moved to sidebar -->
-            <div class="sidebar-controls">
-                <button class="sidebar-control-btn" onclick="playPrevious()" title="上一个">
-                    <span>⏮️</span>
+            
+            <div class="sidebar-controls" style="grid-template-columns: repeat(3, 1fr);">
+                <button class="sidebar-control-btn active" id="play-all-btn" onclick="togglePlayAll()" title="播放全部 (循环)">
+                    <span>▶️<sub style="font-size: 10px;">ALL</sub></span>
                 </button>
-                <button class="sidebar-control-btn" onclick="playNext()" title="下一个">
-                    <span>⏭️</span>
+                <button class="sidebar-control-btn inactive" id="play-selected-btn" onclick="togglePlaySelected()" title="播放选中项 (循环)">
+                    <span>▶️<sub style="font-size: 10px;">SEL</sub></span>
                 </button>
-                <button class="sidebar-control-btn" onclick="toggleAutoPlay()" title="连续播放">
-                    <span id="autoplay-icon">🔁</span>
-                </button>
-                <button class="sidebar-control-btn" onclick="toggleLoopSelected()" title="循环选定">
-                    <span id="loop-selected-icon">🔄</span>
-                </button>
-                <button class="sidebar-control-btn" onclick="expandAll()" title="全部展开">
-                    <span>⬇️</span>
-                </button>
-                <button class="sidebar-control-btn" onclick="collapseAll()" title="全部折叠">
-                    <span>⬆️</span>
+                <button class="sidebar-control-btn inactive" id="pause-btn" onclick="pausePlayback()" title="暂停/继续播放">
+                    <span>⏸️</span>
                 </button>
             </div>
-
+            
             <div class="playlist" id="playlist"></div>
+            
+            <button class="sidebar-control-btn" style="margin: 10px 15px; grid-column: span 3;" onclick="playPrevious()" title="上一个">
+                <span>⏮️ 上一个</span>
+            </button>
+            <button class="sidebar-control-btn" style="margin: 0px 15px 10px 15px; grid-column: span 3;" onclick="playNext()" title="下一个">
+                <span>下一个 ⏭️</span>
+            </button>
+            
         </div>
-
         <div class="player-section">
             <div class="player-header">
-                <h2>COCOBO PLAYER</h2>
+                <h2 style="display: none;" id="static-title">COCOBO PLAYER</h2>
                 <h2 id="current-title">选择一个视频开始播放</h2>
                 <div class="player-meta">
                     <span>🎬 <span id="current-group">--</span></span>
@@ -583,24 +774,38 @@
                     <span>⏱️ <span id="current-duration">--:--</span></span>
                 </div>
             </div>
-
             <div class="video-wrapper">
-                <div class="video-placeholder" id="video-placeholder">
-                    <canvas id="connections"></canvas>
-                    <span class="letter">C</span>
-                    <span class="letter">O</span>
-                    <span class="letter">C</span>
-                    <span class="letter">O</span>
-                    <span class="letter">B</span>
-                    <span class="letter">O</span>
+                <div class="video-wrapper-inner">
+                    <div class="video-placeholder" id="video-placeholder">
+                        <canvas id="connections"></canvas>
+                        <span class="letter">C</span>
+                        <span class="letter">O</span>
+                        <span class="letter">C</span>
+                        <span class="letter">O</span>
+                        <span class="letter">B</span>
+                        <span class="letter">O</span>
+                    </div>
+                    <div id="video-player" style="display: none;"></div>
                 </div>
-                <div id="video-player" style="display: none;"></div>
+            </div>
+            
+            <div class="copyright-notice">
+                <div>
+                    ⚠️ 本播放器仅供学习和个人使用
+                    <span class="separator">|</span>
+                    所有视频版权归原作者所有
+                </div>
+                <div style="margin-top: 4px;">
+                    Powered by <a href="https://www.youtube.com" target="_blank">YouTube</a>
+                    <span class="separator">|</span>
+                    © 2025 COCOBO Player
+                    <span class="separator">|</span>
+                    <a href="#" onclick="alert('感谢使用 COCOBO Player！'); return false;">关于</a>
+                </div>
             </div>
         </div>
     </div>
-
     <script src="https://www.youtube.com/iframe_api"></script>
-
     <script>
         // ccbnotes: Default playlist data
         const defaultPlaylist = [
@@ -609,9 +814,8 @@
                 icon: '💻',
                 collapsed: false,
                 videos: [
-                    { id: 'jNQXAC9IVRw', title: 'Me at the zoo - 第一个YouTube视频', duration: '0:19' },
-                    { id: 'FlsCjmMhFmw', title: 'David After Dentist', duration: '1:58' },
-                    { id: 'EIyixC9NsLI', title: 'Evolution of Dance', duration: '6:00' }
+                    { id: 'ooo', title: 'ooo', duration: '0:19', selected: false },
+                   
                 ]
             },
             {
@@ -619,9 +823,8 @@
                 icon: '🎸',
                 collapsed: false,
                 videos: [
-                    { id: 'dQw4w9WgXcQ', title: 'Rick Astley - Never Gonna Give You Up', duration: '3:32' },
-                    { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE', duration: '4:12' },
-                    { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito', duration: '4:41' }
+                    { id: 'ooo', title: 'ooo', duration: '3:32', selected: true },
+                  
                 ]
             },
             {
@@ -629,45 +832,46 @@
                 icon: '🎭',
                 collapsed: false,
                 videos: [
-                    { id: 'wZZ7oFKsKzY', title: 'Nyan Cat [original]', duration: '3:38' },
-                    { id: 'oHg5SJYRHA0', title: 'Keyboard Cat', duration: '0:54' }
+                    { id: 'ooo', title: 'ooo', duration: '3:38', selected: false },
+        
                 ]
             }
         ];
-
+        
         // ccbnotes: Current playlist being used
         let videoGroups = JSON.parse(JSON.stringify(defaultPlaylist));
-
+        
         // ccbnotes: Player state variables
         let currentGroupIndex = -1;
         let currentVideoIndex = -1;
-        let autoPlay = true;
         let player = null;
         let playerReady = false;
-        let selectedVideos = [];
-        let isLoopingSelected = false;
-        let currentSelectedIndex = -1;
-
+        
+        // 🚀 新增状态变量
+        // ccbnotes: 播放模式：'all' (播放全部) | 'selected' (播放选中)
+        let currentPlayMode = 'all'; 
+        let isPaused = false; // 跟踪播放器是否处于暂停状态
+        
         // ccbnotes: YouTube API ready callback
         function onYouTubeIframeAPIReady() {
             console.log('YouTube API 已加载');
+            // 确保在 API 加载后进行初始化
+            init(); 
         }
-
+        
         // ccbnotes: Load external playlist file
         async function loadPlaylistFile() {
             const select = document.getElementById('playlist-file-select');
             const selectedFile = select.value;
-
             if (selectedFile === 'default') {
                 videoGroups = JSON.parse(JSON.stringify(defaultPlaylist));
                 resetPlayer();
                 init();
                 return;
             }
-
+            
             const playlist = document.getElementById('playlist');
             playlist.innerHTML = '<div style="padding: 40px; text-align: center; color: #00ffff;"><div style="font-size: 32px; margin-bottom: 10px;">⏳</div><div>加载中...</div></div>';
-
             try {
                 const response = await fetch(selectedFile);
                 
@@ -676,6 +880,16 @@
                 }
                 
                 const data = await response.json();
+                
+                // 确保每个视频项都有 'selected' 属性，默认未选中
+                data.forEach(group => {
+                    group.videos.forEach(video => {
+                        if (video.selected === undefined) {
+                            video.selected = false;
+                        }
+                    });
+                });
+                
                 videoGroups = data;
                 
                 resetPlayer();
@@ -705,7 +919,7 @@
                 videoGroups = JSON.parse(JSON.stringify(defaultPlaylist));
             }
         }
-
+        
         // ccbnotes: Reset player to initial state
         function resetPlayer() {
             if (player) {
@@ -715,404 +929,645 @@
             
             currentGroupIndex = -1;
             currentVideoIndex = -1;
-            isLoopingSelected = false;
-            selectedVideos = [];
-            currentSelectedIndex = -1;
-            const loopIcon = document.getElementById('loop-selected-icon');
-            if (loopIcon) {
-                loopIcon.textContent = '⭕';
-                loopIcon.closest('.sidebar-control-btn').style.opacity = '0.5';
-            }
+            playerReady = false;
+            
+            // 🚀 重置播放模式为 'all'
+            currentPlayMode = 'all'; 
+            isPaused = false;
             
             document.getElementById('video-player').style.display = 'none';
             document.getElementById('video-placeholder').style.display = 'flex';
             document.getElementById('current-title').textContent = '选择一个视频开始播放';
             document.getElementById('current-group').textContent = '--';
             document.getElementById('current-index').textContent = '0';
+            document.getElementById('total-videos').textContent = '0';
             document.getElementById('current-duration').textContent = '--:--';
+            
+            // 确保清除所有激活状态
+            document.querySelectorAll('.playlist-item.active').forEach(el => el.classList.remove('active'));
         }
-
-        // ccbnotes: Initialize the app
+        
+        // ccbnotes: Initial setup
         function init() {
+            console.log('初始化播放列表...');
             renderPlaylist();
-            updateStats();
+            
+            if (!player) {
+                try {
+                    // ccbnotes: 确保在 DOM 中有 #video-player 元素
+                    player = new YT.Player('video-player', {
+                        videoId: '', // 初始为空
+                        playerVars: {
+                            'controls': 1,
+                            'modestbranding': 1,
+                            'rel': 0,
+                            'showinfo': 0,
+                            'iv_load_policy': 3,
+                            'fs': 1
+                        },
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                } catch (error) {
+                    console.error("创建 YouTube 播放器失败:", error);
+                }
+            }
+            
+            // 🚀 初始化按钮状态
+            updateControlButtons();
+            
+            // ccbnotes: 播放器占位符的霓虹灯动画
+            setupPlaceholderAnimation();
         }
-
-        // ccbnotes: Render playlist with improved click handling
+        
+        // ccbnotes: Render the playlist structure
         function renderPlaylist() {
-            const playlist = document.getElementById('playlist');
-            playlist.innerHTML = '';
+            const playlistEl = document.getElementById('playlist');
+            playlistEl.innerHTML = ''; // 清空现有内容
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const totalVideos = allVideos.length;
+            document.getElementById('total-videos').textContent = totalVideos;
 
-            let globalIndex = 0;
-
-            videoGroups.forEach((group, groupIdx) => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = `group ${group.collapsed ? 'collapsed' : ''}`;
-
-                const groupHeader = document.createElement('div');
-                groupHeader.className = 'group-header';
-                groupHeader.onclick = () => toggleGroup(groupIdx);
+            videoGroups.forEach((group, groupIndex) => {
+                const groupEl = document.createElement('div');
+                groupEl.className = `group ${group.collapsed ? 'collapsed' : ''}`;
+                groupEl.dataset.groupIndex = groupIndex;
                 
-                groupHeader.innerHTML = `
-                    <div class="group-icon">▼</div>
-                    <div class="group-title">${group.name}</div>
-                    <div class="group-count">${group.videos.length}</div>
+                const headerEl = document.createElement('div');
+                headerEl.className = 'group-header';
+                headerEl.onclick = () => toggleGroupCollapse(groupIndex);
+                
+                headerEl.innerHTML = `
+                    <span class="group-icon">▶️</span>
+                    <span class="group-title">${group.name}</span>
+                    <span class="group-count">${group.videos.length}</span>
                 `;
-
-                const groupItems = document.createElement('div');
-                groupItems.className = 'group-items';
-
-                group.videos.forEach((video, videoIdx) => {
-                    const item = document.createElement('div');
-                    const isActive = groupIdx === currentGroupIndex && videoIdx === currentVideoIndex;
-                    const isSelected = selectedVideos.some(s => s.group === groupIdx && s.video === videoIdx);
-                    item.className = `playlist-item ${isActive ? 'active' : ''}`;
-
-                    // ccbnotes: Create separate clickable areas for checkbox and play
-                    const checkboxWrapper = document.createElement('div');
-                    checkboxWrapper.className = 'select-checkbox-wrapper';
-                    checkboxWrapper.onclick = (e) => {
-                        e.stopPropagation();
-                        const checkbox = checkboxWrapper.querySelector('.select-checkbox');
-                        checkbox.checked = !checkbox.checked;
-                        updateSelected(checkbox);
-                        renderPlaylist();
-                    };
+                
+                const itemsEl = document.createElement('div');
+                itemsEl.className = 'group-items';
+                
+                group.videos.forEach((video, videoIndex) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = `playlist-item ${video.active ? 'active' : ''}`;
+                    itemEl.dataset.videoIndex = videoIndex;
+                    itemEl.dataset.groupIndex = groupIndex;
                     
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.className = 'select-checkbox';
-                    checkbox.checked = isSelected;
-                    checkbox.onclick = (e) => e.stopPropagation();
-                    
-                    checkboxWrapper.appendChild(checkbox);
-
-                    // ccbnotes: Create play area that triggers video playback
-                    const playArea = document.createElement('div');
-                    playArea.className = 'item-play-area';
-                    playArea.onclick = () => playVideo(groupIdx, videoIdx);
-                    
-                    playArea.innerHTML = `
-                        <div class="play-icon">▶</div>
-                        <div class="item-number">${String(globalIndex + 1).padStart(2, '0')}</div>
-                        <div class="item-content">
-                            <div class="item-title">${video.title}</div>
-                            <div class="item-duration">${video.duration}</div>
+                    // ccbnotes: 构建内容，将 checkbox 区域和播放区域分开
+                    itemEl.innerHTML = `
+                        <div class="select-checkbox-wrapper" onclick="event.stopPropagation(); toggleVideoSelection(${groupIndex}, ${videoIndex});">
+                            <input type="checkbox" class="select-checkbox" ${video.selected ? 'checked' : ''} id="cb-${groupIndex}-${videoIndex}">
+                        </div>
+                        <div class="item-play-area" onclick="playVideoFromList(${groupIndex}, ${videoIndex});">
+                            <span class="item-number">${videoIndex + 1}</span>
+                            <div class="item-content">
+                                <span class="item-title">${video.title}</span>
+                                <span class="item-duration">${video.duration}</span>
+                            </div>
+                            <div class="play-icon">▶</div>
                         </div>
                     `;
-
-                    item.appendChild(checkboxWrapper);
-                    item.appendChild(playArea);
-                    groupItems.appendChild(item);
-                    globalIndex++;
+                    
+                    itemsEl.appendChild(itemEl);
                 });
-
-                groupDiv.appendChild(groupHeader);
-                groupDiv.appendChild(groupItems);
-                playlist.appendChild(groupDiv);
+                
+                groupEl.appendChild(headerEl);
+                groupEl.appendChild(itemsEl);
+                playlistEl.appendChild(groupEl);
             });
         }
 
-        // ccbnotes: Toggle group expand/collapse
-        function toggleGroup(groupIdx) {
-            videoGroups[groupIdx].collapsed = !videoGroups[groupIdx].collapsed;
-            renderPlaylist();
+        // ccbnotes: Collapse/Expand group
+        function toggleGroupCollapse(groupIndex) {
+            const group = videoGroups[groupIndex];
+            group.collapsed = !group.collapsed;
+            const groupEl = document.querySelector(`.group[data-group-index='${groupIndex}']`);
+            if (groupEl) {
+                groupEl.classList.toggle('collapsed', group.collapsed);
+            }
         }
-
+        
         // ccbnotes: Expand all groups
         function expandAll() {
             videoGroups.forEach(group => group.collapsed = false);
-            renderPlaylist();
+            document.querySelectorAll('.group').forEach(el => el.classList.remove('collapsed'));
         }
-
+        
         // ccbnotes: Collapse all groups
         function collapseAll() {
             videoGroups.forEach(group => group.collapsed = true);
-            renderPlaylist();
+            document.querySelectorAll('.group').forEach(el => el.classList.add('collapsed'));
+        }
+        
+        // ccbnotes: Toggle video selection
+        function toggleVideoSelection(groupIndex, videoIndex) {
+            const video = videoGroups[groupIndex].videos[videoIndex];
+            video.selected = !video.selected;
+            
+            const checkboxEl = document.getElementById(`cb-${groupIndex}-${videoIndex}`);
+            if (checkboxEl) {
+                checkboxEl.checked = video.selected;
+            }
+            
+            // 🚀 保持 Play Selected 模式的连贯性：如果取消了当前播放项的选中，则停止播放或跳转
+            if (currentPlayMode === 'selected' && 
+                currentGroupIndex === groupIndex && 
+                currentVideoIndex === videoIndex && 
+                !video.selected) {
+                
+                // 当前正在播放的视频被取消选中
+                player.pauseVideo();
+                isPaused = true;
+                updateControlButtons();
+                // playNext(); // 尝试播放下一个选中的视频 (如果需要立即跳转)
+            }
         }
 
-        // ccbnotes: Play selected video
-        function playVideo(groupIdx, videoIdx) {
-            if (isLoopingSelected) {
-                currentSelectedIndex = selectedVideos.findIndex(s => s.group === groupIdx && s.video === videoIdx);
-                if (currentSelectedIndex === -1) {
-                    isLoopingSelected = false;
-                    const loopIcon = document.getElementById('loop-selected-icon');
-                    if (loopIcon) {
-                        loopIcon.textContent = '⭕';
-                        loopIcon.closest('.sidebar-control-btn').style.opacity = '0.5';
-                    }
-                }
+        // ccbnotes: Get video data by index
+        function getVideoAt(gIdx, vIdx) {
+            if (gIdx >= 0 && gIdx < videoGroups.length && vIdx >= 0 && vIdx < videoGroups[gIdx].videos.length) {
+                return videoGroups[gIdx].videos[vIdx];
             }
-
-            currentGroupIndex = groupIdx;
-            currentVideoIndex = videoIdx;
-
-            const group = videoGroups[groupIdx];
-            const video = group.videos[videoIdx];
-
-            const placeholder = document.getElementById('video-placeholder');
-            const playerContainer = document.getElementById('video-player');
-            
-            placeholder.style.display = 'none';
-            playerContainer.style.display = 'block';
-
-            if (player) {
-                player.loadVideoById(video.id);
-            } else {
-                player = new YT.Player('video-player', {
-                    height: '100%',
-                    width: '100%',
-                    videoId: video.id,
-                    playerVars: {
-                        autoplay: 1,
-                        rel: 0,
-                        modestbranding: 1
-                    },
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
+            return null;
+        }
+        
+        // ccbnotes: Play a specific video (called from playlist click)
+        function playVideoFromList(groupIndex, videoIndex) {
+            // 默认切换到 Play All 模式，除非用户明确选择了 Play Selected
+            if (currentPlayMode !== 'selected') {
+                 currentPlayMode = 'all';
             }
-
-            document.getElementById('current-title').textContent = video.title;
-            document.getElementById('current-group').textContent = group.name;
-            document.getElementById('current-duration').textContent = video.duration;
-
-            let globalIndex = 0;
-            for (let i = 0; i < groupIdx; i++) {
-                globalIndex += videoGroups[i].videos.length;
-            }
-            globalIndex += videoIdx + 1;
-            document.getElementById('current-index').textContent = globalIndex;
-
-            renderPlaylist();
-            
-            setTimeout(() => {
-                const activeItem = document.querySelector('.playlist-item.active');
-                if (activeItem) {
-                    activeItem.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                }
-            }, 100);
+            isPaused = false;
+            playVideo(groupIndex, videoIndex);
         }
 
-        // ccbnotes: YouTube player ready callback
+        // ccbnotes: Play a specific video (internal function)
+        function playVideo(groupIndex, videoIndex) {
+            const video = getVideoAt(groupIndex, videoIndex);
+            if (!video || !playerReady) return;
+            
+            // 移除所有视频项的 active 状态
+            document.querySelectorAll('.playlist-item.active').forEach(el => {
+                if (el.dataset.groupIndex != groupIndex || el.dataset.videoIndex != videoIndex) {
+                    el.classList.remove('active');
+                }
+            });
+
+            // 设置当前视频项为 active
+            const currentItemEl = document.querySelector(`.playlist-item[data-group-index='${groupIndex}'][data-video-index='${videoIndex}']`);
+            if (currentItemEl) {
+                currentItemEl.classList.add('active');
+            }
+
+            // 更新状态
+            currentGroupIndex = groupIndex;
+            currentVideoIndex = videoIndex;
+            
+            updateControlButtons();
+            
+            // 隐藏占位符，显示播放器
+            document.getElementById('video-placeholder').style.display = 'none';
+            document.getElementById('video-player').style.display = 'block';
+
+            // 更新播放器标题和元信息
+            const totalVideos = videoGroups.flatMap(g => g.videos).length;
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const currentIndexInAll = allVideos.findIndex(v => v.id === video.id);
+
+            const titleEl = document.getElementById('current-title');
+            titleEl.textContent = video.title;
+            titleEl.dataset.text = video.title; // for burning effect
+            titleEl.className = 'player-title-playing'; // 应用燃烧文字效果
+            
+            document.getElementById('current-group').textContent = videoGroups[groupIndex].name;
+            document.getElementById('current-index').textContent = currentIndexInAll + 1;
+            document.getElementById('total-videos').textContent = totalVideos;
+            document.getElementById('current-duration').textContent = video.duration || '--:--';
+            
+            // 加载并播放视频
+            player.loadVideoById(video.id);
+        }
+
+        // ccbnotes: YouTube player ready event
         function onPlayerReady(event) {
             playerReady = true;
-            event.target.playVideo();
-            console.log('播放器准备就绪');
+            console.log('YouTube 播放器已准备就绪');
+            // 🚀 确保初始按钮状态已设置
+            updateControlButtons(); 
         }
-
-        // ccbnotes: Handle video end and auto-play next
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED && autoPlay) {
-                console.log('视频播放结束');
-                setTimeout(() => {
-                    playNext();
-                }, 1000);
-            }
-        }
-
-        // ccbnotes: Play previous video
-        function playPrevious() {
-            if (isLoopingSelected) {
-                if (selectedVideos.length === 0) return;
-                currentSelectedIndex = (currentSelectedIndex - 1 + selectedVideos.length) % selectedVideos.length;
-                const sel = selectedVideos[currentSelectedIndex];
-                playVideo(sel.group, sel.video);
-            } else {
-                if (currentGroupIndex === -1) return;
-
-                let newVideoIdx = currentVideoIndex - 1;
-                let newGroupIdx = currentGroupIndex;
-
-                if (newVideoIdx < 0) {
-                    newGroupIdx--;
-                    if (newGroupIdx < 0) {
-                        newGroupIdx = videoGroups.length - 1;
-                    }
-                    newVideoIdx = videoGroups[newGroupIdx].videos.length - 1;
-                }
-
-                playVideo(newGroupIdx, newVideoIdx);
-            }
-        }
-
-        // ccbnotes: Play next video
+        
+        // ccbnotes: 播放下一个视频的核心逻辑，已更新
         function playNext() {
-            if (isLoopingSelected) {
-                if (selectedVideos.length === 0) return;
-                currentSelectedIndex = (currentSelectedIndex + 1) % selectedVideos.length;
-                const sel = selectedVideos[currentSelectedIndex];
-                playVideo(sel.group, sel.video);
-            } else {
-                if (currentGroupIndex === -1) {
-                    playVideo(0, 0);
+            if (!playerReady) return;
+
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const totalVideos = allVideos.length;
+
+            const currentIndexInAll = allVideos.findIndex(v => 
+                v.id === getVideoAt(currentGroupIndex, currentVideoIndex)?.id
+            );
+            
+            // 如果列表为空，或者没有视频在播，则不执行
+            if (totalVideos === 0 || currentIndexInAll === -1) {
+                 if (currentPlayMode === 'selected') {
+                    playFirstSelected();
+                 } else {
+                    return;
+                 }
+            }
+
+
+            if (currentPlayMode === 'all') {
+                // Play All 模式：循环播放所有视频
+                let nextIndexInAll = (currentIndexInAll + 1) % totalVideos;
+                
+                const nextVideo = allVideos[nextIndexInAll];
+                // 找到 nextVideo 在原始分组中的位置
+                for (let gIdx = 0; gIdx < videoGroups.length; gIdx++) {
+                    const vIdx = videoGroups[gIdx].videos.findIndex(v => v.id === nextVideo.id);
+                    if (vIdx !== -1) {
+                        playVideo(gIdx, vIdx);
+                        return;
+                    }
+                }
+                
+            } else if (currentPlayMode === 'selected') {
+                // Play Selected 模式：循环播放选中的视频
+                const selectedList = allVideos.filter(v => v.selected);
+                const totalSelected = selectedList.length;
+
+                if (totalSelected === 0) {
+                    console.warn('没有选中的视频，停止播放。切换到 Play All 模式。');
+                    currentPlayMode = 'all'; 
+                    isPaused = true;
+                    updateControlButtons();
+                    player.stopVideo();
                     return;
                 }
 
-                let newVideoIdx = currentVideoIndex + 1;
-                let newGroupIdx = currentGroupIndex;
-
-                if (newVideoIdx >= videoGroups[newGroupIdx].videos.length) {
-                    newGroupIdx++;
-                    if (newGroupIdx >= videoGroups.length) {
-                        newGroupIdx = 0;
-                    }
-                    newVideoIdx = 0;
+                // 2. 获取当前视频在“选中”列表中的索引
+                const currentIndexInSelected = selectedList.findIndex(v => 
+                    v.id === getVideoAt(currentGroupIndex, currentVideoIndex)?.id
+                );
+                
+                // 循环逻辑: 播放到最后一个选中的视频后回到第一个选中的视频
+                let nextIndexInSelected = 0; // 默认回到第一个
+                if (currentIndexInSelected !== -1 && currentIndexInSelected < totalSelected - 1) {
+                    nextIndexInSelected = currentIndexInSelected + 1; // 播放下一个选中的视频
+                }
+                
+                // 如果当前视频不在选中列表中，则从第一个选中的视频开始播放
+                if (currentIndexInSelected === -1) {
+                    nextIndexInSelected = 0;
                 }
 
-                playVideo(newGroupIdx, newVideoIdx);
-            }
-        }
-
-        // ccbnotes: Toggle auto-play mode
-        function toggleAutoPlay() {
-            autoPlay = !autoPlay;
-            const icon = document.getElementById('autoplay-icon');
-            icon.textContent = autoPlay ? '🔁' : '⏸️';
-            icon.closest('.sidebar-control-btn').style.opacity = autoPlay ? '1' : '0.5';
-            console.log(autoPlay ? '✅ 连续播放已开启' : '⏸️ 连续播放已关闭');
-        }
-
-        // ccbnotes: Toggle loop selected videos mode
-        function toggleLoopSelected() {
-            if (!isLoopingSelected && selectedVideos.length === 0) {
-                alert('请选择至少一个视频');
-                return;
-            }
-
-            isLoopingSelected = !isLoopingSelected;
-            const icon = document.getElementById('loop-selected-icon');
-            icon.textContent = isLoopingSelected ? '🔄' : '⭕';
-            icon.closest('.sidebar-control-btn').style.opacity = isLoopingSelected ? '1' : '0.5';
-
-            if (isLoopingSelected) {
-                currentSelectedIndex = 0;
-                const sel = selectedVideos[0];
-                playVideo(sel.group, sel.video);
-            }
-        }
-
-        // ccbnotes: Update selected videos array when checkbox changes
-        function updateSelected(checkbox) {
-            const group = parseInt(checkbox.closest('.playlist-item').querySelector('.item-play-area').onclick.toString().match(/playVideo\((\d+),/)[1]);
-            const video = parseInt(checkbox.closest('.playlist-item').querySelector('.item-play-area').onclick.toString().match(/,\s*(\d+)\)/)[1]);
-
-            if (checkbox.checked) {
-                if (!selectedVideos.some(s => s.group === group && s.video === video)) {
-                    selectedVideos.push({group, video});
+                const nextVideo = selectedList[nextIndexInSelected];
+                // 找到 nextVideo 在原始分组中的位置
+                for (let gIdx = 0; gIdx < videoGroups.length; gIdx++) {
+                    const vIdx = videoGroups[gIdx].videos.findIndex(v => v.id === nextVideo.id);
+                    if (vIdx !== -1) {
+                        playVideo(gIdx, vIdx);
+                        return;
+                    }
                 }
             } else {
-                selectedVideos = selectedVideos.filter(s => s.group !== group || s.video !== video);
+                // Paused 模式：播放结束不自动跳转下一个
+                console.log('当前处于暂停模式，播放结束不自动跳转。');
+                player.stopVideo();
+                isPaused = true;
+                updateControlButtons();
             }
+        }
 
-            if (isLoopingSelected && selectedVideos.length === 0) {
-                isLoopingSelected = false;
-                const loopIcon = document.getElementById('loop-selected-icon');
-                if (loopIcon) {
-                    loopIcon.textContent = '⭕';
-                    loopIcon.closest('.sidebar-control-btn').style.opacity = '0.5';
+        // ccbnotes: 播放上一个视频 (已调整以支持 'selected' 模式)
+        function playPrevious() {
+            if (!playerReady) return;
+            
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const totalVideos = allVideos.length;
+
+            const currentIndexInAll = allVideos.findIndex(v => 
+                v.id === getVideoAt(currentGroupIndex, currentVideoIndex)?.id
+            );
+
+            if (totalVideos === 0) return; 
+
+            if (currentPlayMode === 'all' || currentIndexInAll === -1) {
+                // Play All 模式：播放上一个视频 (循环)
+                let prevIndexInAll = (currentIndexInAll === -1) ? totalVideos - 1 : (currentIndexInAll - 1 + totalVideos) % totalVideos;
+                
+                const prevVideo = allVideos[prevIndexInAll];
+                for (let gIdx = 0; gIdx < videoGroups.length; gIdx++) {
+                    const vIdx = videoGroups[gIdx].videos.findIndex(v => v.id === prevVideo.id);
+                    if (vIdx !== -1) {
+                        currentPlayMode = 'all'; // 确保模式正确
+                        isPaused = false;
+                        playVideo(gIdx, vIdx);
+                        return;
+                    }
+                }
+            } else if (currentPlayMode === 'selected') {
+                // Play Selected 模式：播放上一个选中的视频 (循环)
+                const selectedList = allVideos.filter(v => v.selected);
+                const totalSelected = selectedList.length;
+
+                if (totalSelected === 0) {
+                     console.warn('没有选中的视频，切换到 Play All 模式。');
+                     currentPlayMode = 'all';
+                     isPaused = false;
+                     updateControlButtons();
+                     playPrevious(); // 再次调用，以 'all' 模式播放上一个
+                     return;
+                }
+
+                const currentIndexInSelected = selectedList.findIndex(v => 
+                    v.id === getVideoAt(currentGroupIndex, currentVideoIndex)?.id
+                );
+
+                let prevIndexInSelected = (currentIndexInSelected === -1) ? totalSelected - 1 : (currentIndexInSelected - 1 + totalSelected) % totalSelected;
+                
+                const prevVideo = selectedList[prevIndexInSelected];
+                for (let gIdx = 0; gIdx < videoGroups.length; gIdx++) {
+                    const vIdx = videoGroups[gIdx].videos.findIndex(v => v.id === prevVideo.id);
+                    if (vIdx !== -1) {
+                        playVideo(gIdx, vIdx);
+                        return;
+                    }
                 }
             }
         }
 
-        // ccbnotes: Update total video count
-        function updateStats() {
-            const total = videoGroups.reduce((sum, group) => sum + group.videos.length, 0);
-            document.getElementById('total-videos').textContent = total;
-        }
-
-        // ccbnotes: Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') playPrevious();
-            if (e.key === 'ArrowRight') playNext();
-            if (e.key === ' ' && currentGroupIndex === -1) {
-                e.preventDefault();
-                playVideo(0, 0);
+        // ccbnotes: 播放器状态变化事件处理
+        function onPlayerStateChange(event) {
+            if (event.data === 0) { // 0: ended
+                // 当视频播放结束时，根据当前的播放模式自动播放下一个
+                console.log('视频播放完毕，准备播放下一个...');
+                playNext();
             }
-        });
-
-        // ccbnotes: Initialize app
-        init();
-
-        // ccbnotes: Animated letter background setup
-        const placeholder = document.getElementById('video-placeholder');
-        const letters = document.querySelectorAll('.letter');
-        const canvas = document.getElementById('connections');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = placeholder.clientWidth;
-            canvas.height = placeholder.clientHeight;
+            
+            // 更新暂停按钮状态
+            if (event.data === 2) { // 2: paused
+                isPaused = true;
+            } else if (event.data === 1) { // 1: playing
+                isPaused = false;
+            }
+            updateControlButtons();
+        }
+        
+        // 🚀 新的三个控制按钮函数
+        
+        /**
+         * 切换到“播放全部”模式 (Play All)
+         * - 激活此按钮，并设置为循环播放整个列表。
+         * - 如果当前未播放，则开始播放当前或第一个视频。
+         */
+        function togglePlayAll() {
+            if (currentPlayMode !== 'all' || isPaused) {
+                currentPlayMode = 'all';
+                isPaused = false; 
+                updateControlButtons();
+                
+                if (playerReady) {
+                    // 如果播放器已加载但当前未播放，则开始播放列表的第一个或当前视频
+                    if (player.getPlayerState() !== 1) { // 1=Playing
+                        if (currentGroupIndex === -1 || currentVideoIndex === -1) {
+                            // 如果没有正在播放的视频，则播放第一个
+                            if (videoGroups.flatMap(g => g.videos).length > 0) {
+                                playVideo(0, 0); 
+                            }
+                        } else {
+                            // 如果有视频暂停，则继续播放当前视频
+                            player.playVideo(); 
+                        }
+                    }
+                }
+            }
         }
 
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        /**
+         * 切换到“播放选中”模式 (Play Selected)
+         * - 激活此按钮，并设置为仅循环播放选中的列表项。
+         * - 如果当前视频未选中，则跳转到第一个选中的视频。
+         */
+        function togglePlaySelected() {
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const totalSelected = allVideos.filter(v => v.selected).length;
+            
+            if (totalSelected === 0) {
+                alert('请先在列表中选择要播放的视频项！');
+                return; 
+            }
 
-        letters.forEach(letter => {
-            letter.style.left = `${Math.random() * 100}%`;
-            letter.style.top = `${Math.random() * 100}%`;
-            letter.dataset.targetX = Math.random() * 100;
-            letter.dataset.targetY = Math.random() * 100;
-        });
+            if (currentPlayMode !== 'selected' || isPaused) {
+                currentPlayMode = 'selected';
+                isPaused = false;
+                updateControlButtons();
 
-        function updateTargets() {
-            letters.forEach(letter => {
-                letter.dataset.targetX = Math.random() * 100;
-                letter.dataset.targetY = Math.random() * 100;
-            });
-            setTimeout(updateTargets, 5000);
+                // 检查当前视频是否选中
+                const currentVideo = getVideoAt(currentGroupIndex, currentVideoIndex);
+                
+                if (!playerReady || !currentVideo || !currentVideo.selected || player.getPlayerState() !== 1) {
+                    // 如果当前视频未选中、未加载或未播放，则播放第一个选中的视频
+                    playFirstSelected();
+                } else {
+                    // 如果当前视频选中且在播放，则继续播放
+                    player.playVideo();
+                }
+            }
         }
 
-        function animate() {
+        /**
+         * 暂停播放 (Pause)
+         * - 如果当前处于播放状态，则暂停，并激活暂停按钮。
+         * - 如果当前处于暂停状态，则继续播放（恢复到之前的 'all' 或 'selected' 模式）。
+         */
+        function pausePlayback() {
+            if (!playerReady) return;
+            
+            if (player.getPlayerState() === 1) { // 1=Playing
+                player.pauseVideo();
+                isPaused = true;
+            } else if (player.getPlayerState() === 2) { // 2=Paused
+                // 如果已经在暂停状态，则继续播放
+                player.playVideo();
+                isPaused = false;
+            } else if (currentGroupIndex !== -1) {
+                 // 如果播放器已加载但未处于播放/暂停状态，且有当前视频，则开始播放当前视频
+                 player.playVideo();
+                 isPaused = false;
+            }
+            updateControlButtons();
+        }
+        
+        /**
+         * 更新按钮的激活/非激活状态
+         */
+        function updateControlButtons() {
+            const playAllBtn = document.getElementById('play-all-btn');
+            const playSelectedBtn = document.getElementById('play-selected-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+
+            const isPlaying = playerReady && player.getPlayerState() === 1;
+            const isPausedState = playerReady && player.getPlayerState() === 2;
+
+            // 1. Play All Button: 只有在 Play All 模式且正在播放时激活
+            if (currentPlayMode === 'all' && isPlaying) {
+                playAllBtn.classList.add('active');
+                playAllBtn.classList.remove('inactive');
+            } else {
+                playAllBtn.classList.remove('active');
+                playAllBtn.classList.add('inactive');
+            }
+
+            // 2. Play Selected Button: 只有在 Play Selected 模式且正在播放时激活
+            if (currentPlayMode === 'selected' && isPlaying) {
+                playSelectedBtn.classList.add('active');
+                playSelectedBtn.classList.remove('inactive');
+            } else {
+                playSelectedBtn.classList.remove('active');
+                playSelectedBtn.classList.add('inactive');
+            }
+            
+            // 3. Pause Button: 只有在真正处于 YouTube 播放器的暂停状态时激活
+            if (isPausedState) { 
+                pauseBtn.classList.add('active');
+                pauseBtn.classList.remove('inactive');
+            } else {
+                pauseBtn.classList.remove('active');
+                pauseBtn.classList.add('inactive');
+            }
+        }
+
+        /**
+         * 播放第一个选中的视频
+         */
+        function playFirstSelected() {
+            const allVideos = videoGroups.flatMap(g => g.videos);
+            const firstSelected = allVideos.find(v => v.selected);
+            
+            if (firstSelected) {
+                // 找到 firstSelected 在原始分组中的位置
+                for (let gIdx = 0; gIdx < videoGroups.length; gIdx++) {
+                    const vIdx = videoGroups[gIdx].videos.findIndex(v => v.id === firstSelected.id);
+                    if (vIdx !== -1) {
+                        playVideo(gIdx, vIdx);
+                        return;
+                    }
+                }
+            } else {
+                console.log('没有选中的视频可播放。');
+                player.stopVideo();
+                currentPlayMode = 'all'; // 切换回 Play All 模式
+                isPaused = true;
+                updateControlButtons();
+            }
+        }
+
+        // ccbnotes: 霓虹灯动画 - 播放器占位符的动画逻辑
+        function setupPlaceholderAnimation() {
+            const letters = document.querySelectorAll('.letter');
+            const placeholder = document.getElementById('video-placeholder');
+            const canvas = document.getElementById('connections');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            function resizeCanvas() {
+                width = canvas.width = placeholder.offsetWidth;
+                height = canvas.height = placeholder.offsetHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            let letterPositions = [];
+
+            function updatePositions() {
+                letterPositions = Array.from(letters).map(letter => {
+                    const rect = letter.getBoundingClientRect();
+                    const parentRect = placeholder.getBoundingClientRect();
+                    return {
+                        x: rect.left + rect.width / 2 - parentRect.left,
+                        y: rect.top + rect.height / 2 - parentRect.top,
+                        targetX: Math.random() * width,
+                        targetY: Math.random() * height
+                    };
+                });
+            }
+            
             letters.forEach(letter => {
-                let x = parseFloat(letter.style.left) || 50;
-                let y = parseFloat(letter.style.top) || 50;
-                const tx = parseFloat(letter.dataset.targetX);
-                const ty = parseFloat(letter.dataset.targetY);
-                x += (tx - x) * 0.01;
-                y += (ty - y) * 0.01;
-                letter.style.left = `${x}%`;
-                letter.style.top = `${y}%`;
+                letter.style.top = `${Math.random() * 80 + 10}%`;
+                letter.style.left = `${Math.random() * 80 + 10}%`;
+                // Note: The CSS @keyframes neon-flicker is assumed to be defined if needed
             });
+
+            function drawConnections() {
+                if (document.getElementById('video-player').style.display === 'block') {
+                    return;
+                }
+                
+                ctx.clearRect(0, 0, width, height);
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+
+                updatePositions();
+
+                // Draw grid lines
+                const gridSize = 40;
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+                for (let x = 0; x < width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+
+                // Draw connecting lines between letters
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)';
+                ctx.shadowColor = '#00ffff';
+                ctx.shadowBlur = 10;
+                
+                for (let i = 0; i < letterPositions.length; i++) {
+                    for (let j = i + 1; j < letterPositions.length; j++) {
+                        const p1 = letterPositions[i];
+                        const p2 = letterPositions[j];
+                        const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+                        
+                        if (dist < 300) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                ctx.shadowBlur = 0; // Reset shadow
+
+                requestAnimationFrame(drawConnections);
+            }
 
             drawConnections();
-            requestAnimationFrame(animate);
         }
-
-        function drawConnections() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(138, 43, 226, 0.3)';
-            ctx.shadowColor = 'rgba(138, 43, 226, 0.5)';
-            ctx.shadowBlur = 10;
-            ctx.lineWidth = 1;
-            ctx.setLineDash([2, 4]);
-
-            const positions = [];
-            const parentRect = placeholder.getBoundingClientRect();
-            letters.forEach(letter => {
-                const rect = letter.getBoundingClientRect();
-                positions.push({
-                    x: rect.left - parentRect.left + rect.width / 2,
-                    y: rect.top - parentRect.top + rect.height / 2
-                });
+        
+        // ccbnotes: Ensure init runs when the script loads, after the API is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof YT === 'undefined' || !YT.Player) {
+                    // If API is not ready, rely on onYouTubeIframeAPIReady
+                } else {
+                     init(); // API might have loaded before DOMContentLoaded
+                }
             });
-
-            ctx.beginPath();
-            for (let i = 0; i < positions.length - 1; i++) {
-                ctx.moveTo(positions[i].x, positions[i].y);
-                ctx.lineTo(positions[i + 1].x, positions[i + 1].y);
+        } else {
+            if (typeof YT !== 'undefined' && YT.Player) {
+                init();
             }
-            ctx.stroke();
         }
-
-        updateTargets();
-        animate();
     </script>
 </body>
 </html>
