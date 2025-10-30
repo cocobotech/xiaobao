@@ -126,24 +126,46 @@
             color: #666;
         }
 
-        /* 播放列表 */
+        /* ========================================
+           📜 播放列表滚动条样式（垂直滚动）
+           ======================================== */
         .playlist {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto;  /* ✅ 启用垂直滚动 */
+            overflow-x: hidden; /* 隐藏水平滚动 */
             padding: 20px 0;
+            max-height: calc(100vh - 250px); /* 限制最大高度 */
         }
 
+        /* 🎨 自定义滚动条轨道 */
         .playlist::-webkit-scrollbar {
-            width: 6px;
+            width: 8px; /* 滚动条宽度 */
         }
 
+        /* 🎨 滚动条轨道背景 */
         .playlist::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 10px 0;
         }
 
+        /* 🎨 滚动条滑块 - 渐变色 */
         .playlist::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #00ffff, #8a2be2);
             border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 🎨 滚动条滑块悬停效果 */
+        .playlist::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        /* 🎨 滚动条滑块激活效果 */
+        .playlist::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(180deg, #00ff88, #8a2be2);
         }
 
         /* 分组样式 - 3D效果 */
