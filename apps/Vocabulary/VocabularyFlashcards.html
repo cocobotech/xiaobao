@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO互动背单词</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+            padding: 40px 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.1), transparent 50%);
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            align-items: stretch;
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 40px 30px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #a8b2d1;
+        }
+
+        .list-container {
+            /* 保持 flex-direction: column 和 gap */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        /* 新增的样式用于包含 label 和 select 的组 */
+        .list-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 调整 label 和 select 之间的间距 */
+        }
+
+        .listbox {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            appearance: none;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .listbox:hover {
+            border-color: rgba(147, 51, 234, 0.3);
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.2);
+        }
+
+        .listbox option {
+            padding: 10px;
+            background: transparent;
+            color: #ffffff;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #a8b2d1, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .controls {
+            /* 保持 flex 布局，但移除内部元素后会变空 */
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* 隐藏整个 controls 区域 */
+            visibility: collapse; 
+            height: 0; 
+            margin-bottom: 0; 
+            padding: 0; 
+            border: none;
+        }
+
+        /* 重新使用 control-label 样式 */
+        .control-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #a8b2d1;
+        }
+
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .word-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .word-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(147, 51, 234, 0.3);
+            border-color: rgba(147, 51, 234, 0.3);
+        }
+
+        .card-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 20px;
+        }
+
+        .card-half:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-half.active {
+            background: rgba(147, 51, 234, 0.1);
+            animation: pulse 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .english-section {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .word-english {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .word-chinese {
+            font-size: 20px;
+            font-weight: 600;
+            color: #a8b2d1;
+        }
+
+        .speaker-icon {
+            font-size: 14px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.3s ease;
+        }
+
+        .card-half:hover .speaker-icon {
+            color: #ffffff;
+        }
+
+        .audio-status {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .list-container {
+                flex-direction: row;
+                gap: 20px;
+            }
+            
+            /* 在小屏幕上，让列表组并排显示 */
+            .list-group {
+                flex: 1;
+            }
+
+            .listbox {
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .list-container {
+                flex-direction: column;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .word-english {
+                font-size: 20px;
+            }
+
+            .word-chinese {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>词汇库</h2>
+            <div class="list-container">
+                <div class="list-group">
+                    <div class="control-label">文件列表</div>
+                    <select id="file-list" class="listbox" size="10"></select>
+                </div>
+                
+                <div class="list-group">
+                    <div class="control-label">词语分组</div>
+                    <select id="group-list" class="listbox" size="10"></select>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="title">📚COCOBO互动背单词</div>
+            <div class="subtitle">选择词汇文件和组，点击英文或中文部分聆听发音</div>
+            
+            <div class="controls" style="visibility: hidden; height: 0; margin-bottom: 0; padding: 0; border: none;">
+            </div>
+
+            <div class="cards-grid" id="cards-grid">
+                </div>
+            
+            <div class="audio-status" id="audio-status">🔊 准备就绪</div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let audioInitialized = false;
+
+        let fileHandles = {};
+        let currentFileData = null;
+
+        function initAudio() {
+            if (!audioInitialized) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioInitialized = true;
+                document.getElementById('audio-status').textContent = '🔊 音频已激活';
+            }
+        }
+
+        function speakEnglish(word, element) {
+            initAudio();
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                
+                element.classList.add('active');
+                
+                utterance.onend = () => {
+                    element.classList.remove('active');
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakChinese(word, element) {
+            initAudio();
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                
+                element.classList.add('active');
+                
+                utterance.onend = () => {
+                    element.classList.remove('active');
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+
+        function renderCards(words) {
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = '';
+            
+            const vocabulary = words;
+            
+            vocabulary.forEach(word => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                
+                // 英文部分（上半部分）
+                const englishSection = document.createElement('div');
+                englishSection.className = 'card-half english-section';
+                
+                const englishWord = document.createElement('div');
+                englishWord.className = 'word-english';
+                englishWord.textContent = word.english;
+                englishSection.appendChild(englishWord);
+                
+                const speakerIcon1 = document.createElement('div');
+                speakerIcon1.className = 'speaker-icon';
+                speakerIcon1.textContent = '🔊';
+                englishSection.appendChild(speakerIcon1);
+                
+                englishSection.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakEnglish(word.english, englishSection);
+                });
+                
+                // 中文部分（下半部分）
+                const chineseSection = document.createElement('div');
+                chineseSection.className = 'card-half';
+                
+                const chineseWord = document.createElement('div');
+                chineseWord.className = 'word-chinese';
+                chineseWord.textContent = word.chinese;
+                chineseSection.appendChild(chineseWord);
+                
+                const speakerIcon2 = document.createElement('div');
+                speakerIcon2.className = 'speaker-icon';
+                speakerIcon2.textContent = '🔊';
+                chineseSection.appendChild(speakerIcon2);
+                
+                chineseSection.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakChinese(word.chinese, chineseSection);
+                });
+                
+                card.appendChild(englishSection);
+                card.appendChild(chineseSection);
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadFilesFromGitHub() {
+            try {
+                const res = await fetch('https://api.github.com/repos/cocobotech/xiaobao/contents/apps/Vocabulary');
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const data = await res.json();
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = '';
+                fileHandles = {};
+                data.forEach(item => {
+                    if (item.type === 'file' && item.name.startsWith('dict_') && item.name.endsWith('.json')) {
+                        const option = document.createElement('option');
+                        option.value = item.name;
+                        option.textContent = item.name;
+                        fileList.appendChild(option);
+                        fileHandles[item.name] = item.download_url;
+                    }
+                });
+                // 首次加载后自动加载第一个文件的分组
+                if (fileList.options.length > 0) {
+                    fileList.options[0].selected = true;
+                    loadGroups();
+                }
+            } catch (error) {
+                console.error('Error fetching files from GitHub:', error);
+            }
+        }
+
+        async function loadGroups() {
+            const fileList = document.getElementById('file-list');
+            const groupList = document.getElementById('group-list');
+            groupList.innerHTML = '';
+            // 清空卡片区域
+            document.getElementById('cards-grid').innerHTML = ''; 
+            
+            const selectedFile = fileList.value;
+            if (!selectedFile) return;
+            const url = fileHandles[selectedFile];
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                currentFileData = await res.json();
+                const groupObj = currentFileData.groups;
+                if (groupObj) {
+                    const groups = Object.keys(groupObj);
+                    groups.forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group;
+                        option.textContent = group;
+                        groupList.appendChild(option);
+                    });
+                    currentFileData.groups = groupObj; // For consistency
+                    // 自动选择第一个组并加载单词
+                    if (groupList.options.length > 0) {
+                        groupList.options[0].selected = true;
+                        loadWords();
+                    }
+                } else {
+                    console.error('No "groups" key found in JSON');
+                }
+            } catch (error) {
+                console.error('Error fetching file content:', error);
+            }
+        }
+
+        function loadWords() {
+            const groupList = document.getElementById('group-list');
+            const selectedGroup = groupList.value;
+            if (!selectedGroup || !currentFileData || !currentFileData.groups) {
+                // 如果没有选中组，清空卡片
+                document.getElementById('cards-grid').innerHTML = '';
+                return;
+            }
+            const words = currentFileData.groups[selectedGroup];
+            if (Array.isArray(words)) {
+                renderCards(words);
+            } else {
+                console.error('Group data is not an array');
+            }
+        }
+
+        document.getElementById('file-list').addEventListener('change', loadGroups);
+        document.getElementById('group-list').addEventListener('change', loadWords);
+
+        // 初始化页面
+        loadFilesFromGitHub();
+
+        // 点击任意位置初始化音频
+        document.body.addEventListener('click', initAudio, { once: true });
+    </script>
+</body>
+</html>
