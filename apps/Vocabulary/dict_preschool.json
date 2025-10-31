@@ -2,6 +2,42 @@
   "fileName": "preschool_DCA",
   "description": "包含Unit 1和Unit 2的单词。",
   "groups": {
+    "WW01": [
+      { "english": "Love", "chinese": "仁爱" },
+      { "english": "Joy", "chinese": "喜乐" },
+      { "english": "Peace", "chinese": "和平" },
+      { "english": "Patience", "chinese": "忍耐" },
+      { "english": "Kindness", "chinese": "恩慈" },
+      { "english": "Goodness", "chinese": "良善" },
+      { "english": "Faithfulness", "chinese": "信实" },
+      { "english": "Gentleness", "chinese": "温柔" },
+      { "english": "Self-control", "chinese": "节制" },
+    ],
+    "WW45": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
+    "WW45": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
+    "WW45": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
+    "WW45": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
+    "WW45": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
     "WW45": [
       { "english": "acquire", "chinese": "获得" },
       { "english": "adhere", "chinese": "坚持" },
