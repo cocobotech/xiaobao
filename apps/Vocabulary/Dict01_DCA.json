@@ -2,7 +2,7 @@
   "fileName": "preschool_DCA",
   "description": "包含Unit 1和Unit 2的单词。",
   "groups": {
-    "WW01": [
+    "圣灵的果子": [
       { "english": "Love", "chinese": "仁爱" },
       { "english": "Joy", "chinese": "喜乐" },
       { "english": "Peace", "chinese": "和平" },
@@ -14,10 +14,16 @@
       { "english": "Self-control", "chinese": "节制" }
     ],
    
-    "WW46": [
+    "WW45": [
      
-      { "english": "breeze", "chinese": "微风" },
-      { "english": "capacity", "chinese": "容量" }
+      
+      { "english": "Spin", "chinese": "旋转" },
+      { "english": "Snake", "chinese": "蛇" },
+      { "english": "Snail", "chinese": "蜗牛" },
+      { "english": "Smoke", "chinese": "烟" },
+      { "english": "Swim", "chinese": "游泳" },
+      { "english": "Sweep", "chinese": "打扫" },
+      { "english": "Skate", "chinese": "滑冰" },
     ]
   }
 }
