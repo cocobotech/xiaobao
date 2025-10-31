@@ -1,23 +1,48 @@
 [
     {
-        "name": "🎹 GROUP1",
+        "name": "🎹 我最喜欢",
         "icon": "🎸",
         "collapsed": false,
         "videos": [
             {
                 "id": "PdD9K5Rc-MM",
                 "title": "我是主的羊 I am Your Little Lamb",
-                "duration": "3:32"
+                "duration": ":"
             },
             {
                 "id": "GdTZm0qZ3io",
                 "title": "靠主得勝 God Is My Victory",
-                "duration": "4:12"
+                "duration": ":"
+            },
+            {
+                "id": "E148UxYDLgY",
+                "title": "聖靈的果子 Fruit of the Spirit",
+                "duration": ":"
+            },
+            {
+                "id": "bhS0D7Gd-Ek",
+                "title": "我要向高山舉目 Lift My Eyes to the Hills",
+                "duration": ":"
+            },
+            {
+                "id": "n6Slbgg32aA",
+                "title": "愛主你的神 Love The Lord, Your God",
+                "duration": ":"
+            },
+            {
+                "id": "ljYws07uAyE",
+                "title": "有耶穌，不害怕 Jesus, You re In My Heart",
+                "duration": ":"
+            },
+            {
+                "id": "n6Slbgg32aA",
+                "title": "腳步 (Footsteps)",
+                "duration": ":"
             }
         ]
     },
     {
-        "name": "🎹 GROUP2",
+        "name": "🎹 NEW",
         "icon": "🎹",
         "collapsed": false,
         "videos": [
