@@ -1,13 +1,13 @@
 {
-  "fileName": "大学四级词汇",
+  "fileName": "preschool_DCA",
   "description": "包含Unit 1和Unit 2的单词。",
   "groups": {
-    "Unit 1": [
+    "WW45": [
       { "english": "acquire", "chinese": "获得" },
       { "english": "adhere", "chinese": "坚持" },
       { "english": "allocate", "chinese": "分配" }
     ],
-    "Unit 2": [
+    "WW46": [
       { "english": "bachelor", "chinese": "单身汉" },
       { "english": "breeze", "chinese": "微风" },
       { "english": "capacity", "chinese": "容量" }
