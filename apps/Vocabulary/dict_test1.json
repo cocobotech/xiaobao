@@ -1,0 +1,16 @@
+{
+  "fileName": "test2",
+  "description": "包含Unit 1和Unit 2的单词。",
+  "groups": {
+    "Unit AA1": [
+      { "english": "acquire", "chinese": "获得" },
+      { "english": "adhere", "chinese": "坚持" },
+      { "english": "allocate", "chinese": "分配" }
+    ],
+    "Unit AA2": [
+      { "english": "bachelor", "chinese": "单身汉" },
+      { "english": "breeze", "chinese": "微风" },
+      { "english": "capacity", "chinese": "容量" }
+    ]
+  }
+}
