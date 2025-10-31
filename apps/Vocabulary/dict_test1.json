@@ -38,6 +38,54 @@
       { "english": "lemon", "chinese": "柠檬" },
       { "english": "mango", "chinese": "芒果" }
     ],
+    "fruits2": [
+      { "english": "banana", "chinese": "香蕉" },
+      { "english": "orange", "chinese": "橙子" },
+      { "english": "grape", "chinese": "葡萄" },
+      { "english": "strawberry", "chinese": "草莓" },
+      { "english": "watermelon", "chinese": "西瓜" },
+      { "english": "peach", "chinese": "桃子" },
+      { "english": "pear", "chinese": "梨" },
+      { "english": "cherry", "chinese": "樱桃" },
+      { "english": "lemon", "chinese": "柠檬" },
+      { "english": "mango", "chinese": "芒果" }
+    ],
+    "fruits3": [
+      { "english": "banana", "chinese": "香蕉" },
+      { "english": "orange", "chinese": "橙子" },
+      { "english": "grape", "chinese": "葡萄" },
+      { "english": "strawberry", "chinese": "草莓" },
+      { "english": "watermelon", "chinese": "西瓜" },
+      { "english": "peach", "chinese": "桃子" },
+      { "english": "pear", "chinese": "梨" },
+      { "english": "cherry", "chinese": "樱桃" },
+      { "english": "lemon", "chinese": "柠檬" },
+      { "english": "mango", "chinese": "芒果" }
+    ],
+    "fruits4": [
+      { "english": "banana", "chinese": "香蕉" },
+      { "english": "orange", "chinese": "橙子" },
+      { "english": "grape", "chinese": "葡萄" },
+      { "english": "strawberry", "chinese": "草莓" },
+      { "english": "watermelon", "chinese": "西瓜" },
+      { "english": "peach", "chinese": "桃子" },
+      { "english": "pear", "chinese": "梨" },
+      { "english": "cherry", "chinese": "樱桃" },
+      { "english": "lemon", "chinese": "柠檬" },
+      { "english": "mango", "chinese": "芒果" }
+    ],
+    "fruits5": [
+      { "english": "banana", "chinese": "香蕉" },
+      { "english": "orange", "chinese": "橙子" },
+      { "english": "grape", "chinese": "葡萄" },
+      { "english": "strawberry", "chinese": "草莓" },
+      { "english": "watermelon", "chinese": "西瓜" },
+      { "english": "peach", "chinese": "桃子" },
+      { "english": "pear", "chinese": "梨" },
+      { "english": "cherry", "chinese": "樱桃" },
+      { "english": "lemon", "chinese": "柠檬" },
+      { "english": "mango", "chinese": "芒果" }
+    ],
     "animals": [
       { "english": "elephant", "chinese": "大象" },
       { "english": "tiger", "chinese": "老虎" },
