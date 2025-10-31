@@ -12,7 +12,7 @@
                 { english: 'sun', chinese: '太阳' },
                 { english: 'moon', chinese: '月亮' },
                 { english: 'tree', chinese: '树' },
-                { english: 'flower', chinese: '花' },
+                { english: 'flower', chinese: '花' }
     ],
     "colors": [
                 { english: 'red', chinese: '红色' },
