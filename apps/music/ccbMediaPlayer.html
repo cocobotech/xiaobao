@@ -527,16 +527,96 @@
             height: 100%;
             z-index: 1;
         }
+
+
+
         .letter {
             position: absolute;
             font-size: 60px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #00ffff, #8a2be2);
+            font-weight: 900; /* 更粗的字体 */
+            z-index: 2;
+            animation: letter-glow 3s ease-in-out infinite;
+            /* 添加文字描边 */
+            -webkit-text-stroke: 2px rgba(0, 0, 0, 0.3);
+            text-stroke: 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 为每个字母设置不同的颜色 */
+        .letter:nth-child(2) { /* C */
+            background: linear-gradient(135deg, #00ffff, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6)) 
+                    drop-shadow(0 0 15px rgba(0, 255, 255, 0.3));
+            animation-delay: 0s;
         }
+
+        .letter:nth-child(3) { /* O */
+            background: linear-gradient(135deg, #ff00ff, #ff66ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.6)) 
+                    drop-shadow(0 0 15px rgba(255, 0, 255, 0.3));
+            animation-delay: 0.3s;
+        }
+
+        .letter:nth-child(4) { /* C */
+            background: linear-gradient(135deg, #00ff88, #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.6)) 
+                    drop-shadow(0 0 15px rgba(0, 255, 136, 0.3));
+            animation-delay: 0.6s;
+        }
+
+        .letter:nth-child(5) { /* O */
+            background: linear-gradient(135deg, #ffff00, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 0, 0.6)) 
+                    drop-shadow(0 0 15px rgba(255, 255, 0, 0.3));
+            animation-delay: 0.9s;
+        }
+
+        .letter:nth-child(6) { /* B */
+            background: linear-gradient(135deg, #8a2be2, #aa4bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6)) 
+                    drop-shadow(0 0 15px rgba(138, 43, 226, 0.3));
+            animation-delay: 1.2s;
+        }
+
+        .letter:nth-child(7) { /* O */
+            background: linear-gradient(135deg, #ff0080, #ff4499);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(255, 0, 128, 0.6)) 
+                    drop-shadow(0 0 15px rgba(255, 0, 128, 0.3));
+            animation-delay: 1.5s;
+        }
+
+        /* 减弱的 Halo 发光脉冲动画 */
+        @keyframes letter-glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 6px currentColor) 
+                        drop-shadow(0 0 12px currentColor);
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 10px currentColor) 
+                        drop-shadow(0 0 20px currentColor) 
+                        drop-shadow(0 0 30px currentColor);
+                transform: scale(1.03);
+            }
+        }
+
+
+
+
+
+
+
         .controls {
             display: none;
         }
@@ -629,10 +709,15 @@
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
+
+        /*
         .sidebar-control-btn:hover::after {
             width: 200px;
             height: 200px;
         }
+            */
+
+
         .sidebar-control-btn:hover {
             transform: translateY(-1px);
         }
@@ -733,7 +818,7 @@
     <div class="container">
         <div class="sidebar">
             <div class="playlist-selector">
-                <label for="playlist-file-select">📂 选择播放列表:</label>
+                <label for="playlist-file-select">COCOBO播放器-请选择播放列表:</label>
                 <select id="playlist-file-select" onchange="loadPlaylistFile()">
                     /* //<option value="https://raw.githubusercontent.com/cocobotech/xiaobao/refs/heads/main/apps/music/worship_kids1.json">默认播放列表</option>  */
                     <option value="https://raw.githubusercontent.com/cocobotech/xiaobao/refs/heads/main/apps/music/worship_kids1.json">worship_kids1</option>
@@ -1456,93 +1541,131 @@
         }
 
         // ccbnotes: 霓虹灯动画 - 播放器占位符的动画逻辑
+        // ccbnotes: 霓虹灯动画 - 播放器占位符的动画逻辑 (替换整个函数)
+        // ccbnotes: 霓虹灯动画 - 播放器占位符的动画逻辑 (完整版本)
         function setupPlaceholderAnimation() {
-            const letters = document.querySelectorAll('.letter');
             const placeholder = document.getElementById('video-placeholder');
+            const letters = document.querySelectorAll('.letter');
             const canvas = document.getElementById('connections');
             const ctx = canvas.getContext('2d');
-            let width, height;
+            
+
+            // ✨ 为每个字母设置独特的颜色和 Halo
+            const colors = [
+                '#00ffff', // C - 青色
+                '#ff00ff', // O - 粉色
+                '#00ff88', // C - 绿色
+                '#ffff00', // O - 黄色
+                '#8a2be2', // B - 紫色
+                '#ff0080'  // O - 玫红色
+            ];
+            
+            letters.forEach((letter, index) => {
+                const color = colors[index];
+                letter.style.color = color;
+                letter.style.textShadow = `
+                    0 0 10px ${color},
+                    0 0 20px ${color},
+                    0 0 30px ${color},
+                    0 0 40px ${color}
+                `;
+            });
+
 
             function resizeCanvas() {
-                width = canvas.width = placeholder.offsetWidth;
-                height = canvas.height = placeholder.offsetHeight;
+                const parent = placeholder.parentElement;
+                canvas.width = parent.clientWidth;
+                canvas.height = parent.clientHeight;
             }
+
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas();
 
-            let letterPositions = [];
-
-            function updatePositions() {
-                letterPositions = Array.from(letters).map(letter => {
-                    const rect = letter.getBoundingClientRect();
-                    const parentRect = placeholder.getBoundingClientRect();
-                    return {
-                        x: rect.left + rect.width / 2 - parentRect.left,
-                        y: rect.top + rect.height / 2 - parentRect.top,
-                        targetX: Math.random() * width,
-                        targetY: Math.random() * height
-                    };
-                });
-            }
-            
+            // 设置初始位置和目标
             letters.forEach(letter => {
-                letter.style.top = `${Math.random() * 80 + 10}%`;
-                letter.style.left = `${Math.random() * 80 + 10}%`;
-                // Note: The CSS @keyframes neon-flicker is assumed to be defined if needed
+                letter.style.left = `${Math.random() * 100}%`;
+                letter.style.top = `${Math.random() * 100}%`;
+                letter.dataset.targetX = Math.random() * 100;
+                letter.dataset.targetY = Math.random() * 100;
             });
 
-            function drawConnections() {
-                if (document.getElementById('video-player').style.display === 'block') {
-                    return;
-                }
-                
-                ctx.clearRect(0, 0, width, height);
-                ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
-                ctx.lineWidth = 1;
-
-                updatePositions();
-
-                // Draw grid lines
-                const gridSize = 40;
-                ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
-                for (let x = 0; x < width; x += gridSize) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x, height);
-                    ctx.stroke();
-                }
-                for (let y = 0; y < height; y += gridSize) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(width, y);
-                    ctx.stroke();
-                }
-
-                // Draw connecting lines between letters
-                ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)';
-                ctx.shadowColor = '#00ffff';
-                ctx.shadowBlur = 10;
-                
-                for (let i = 0; i < letterPositions.length; i++) {
-                    for (let j = i + 1; j < letterPositions.length; j++) {
-                        const p1 = letterPositions[i];
-                        const p2 = letterPositions[j];
-                        const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-                        
-                        if (dist < 300) {
-                            ctx.beginPath();
-                            ctx.moveTo(p1.x, p1.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                ctx.shadowBlur = 0; // Reset shadow
-
-                requestAnimationFrame(drawConnections);
+            function updateTargets() {
+                letters.forEach(letter => {
+                    letter.dataset.targetX = Math.random() * 100;
+                    letter.dataset.targetY = Math.random() * 100;
+                });
+                setTimeout(updateTargets, 5000); // 每5秒更新目标
             }
 
-            drawConnections();
+            function animate() {
+                letters.forEach(letter => {
+                    let x = parseFloat(letter.style.left) || 50;
+                    let y = parseFloat(letter.style.top) || 50;
+                    const tx = parseFloat(letter.dataset.targetX);
+                    const ty = parseFloat(letter.dataset.targetY);
+                    x += (tx - x) * 0.01;
+                    y += (ty - y) * 0.01;
+                    letter.style.left = `${x}%`;
+                    letter.style.top = `${y}%`;
+                });
+
+                drawConnections();
+                requestAnimationFrame(animate);
+            }
+
+            function drawConnections() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // ✨ 添加：绘制复杂网格线背景
+                const gridSize = 40;
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([]); // 实线网格
+                
+                // 垂直网格线
+                for (let x = 0; x < canvas.width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                // 水平网格线
+                for (let y = 0; y < canvas.height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                // 绘制字母之间的连接线（紫色虚线）
+                ctx.strokeStyle = 'rgba(138, 43, 226, 0.3)';
+                ctx.shadowColor = 'rgba(138, 43, 226, 0.5)';
+                ctx.shadowBlur = 10;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 4]); // 虚线
+
+                const positions = [];
+                const parentRect = placeholder.parentElement.getBoundingClientRect();
+                letters.forEach(letter => {
+                    const rect = letter.getBoundingClientRect();
+                    positions.push({
+                        x: rect.left - parentRect.left + rect.width / 2,
+                        y: rect.top - parentRect.top + rect.height / 2
+                    });
+                });
+
+                ctx.beginPath();
+                for (let i = 0; i < positions.length - 1; i++) {
+                    ctx.moveTo(positions[i].x, positions[i].y);
+                    ctx.lineTo(positions[i + 1].x, positions[i + 1].y);
+                }
+                ctx.stroke();
+                
+                ctx.shadowBlur = 0; // 重置阴影
+            }
+
+            updateTargets();
+            animate();
         }
         
         // ccbnotes: Ensure init runs when the script loads, after the API is ready
