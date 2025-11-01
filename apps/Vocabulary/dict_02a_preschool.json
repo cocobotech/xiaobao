@@ -1,0 +1,128 @@
+{
+  "fileName": "preschool_words",
+  "description": "Pre-school vocabulary list",
+  "groups": {
+    "basic": [
+      { "english": "hello", "chinese": "你好" },
+      { "english": "bye", "chinese": "再见" },
+      { "english": "yes", "chinese": "是的" },
+      { "english": "no", "chinese": "不是" },
+      { "english": "please", "chinese": "请" },
+      { "english": "thank you", "chinese": "谢谢" },
+      { "english": "sorry", "chinese": "对不起" }
+    ],
+    "family": [
+      { "english": "mom", "chinese": "妈妈" },
+      { "english": "dad", "chinese": "爸爸" },
+      { "english": "grandma", "chinese": "奶奶 / 外婆" },
+      { "english": "grandpa", "chinese": "爷爷 / 外公" },
+      { "english": "brother", "chinese": "哥哥 / 弟弟" },
+      { "english": "sister", "chinese": "姐姐 / 妹妹" },
+      { "english": "baby", "chinese": "宝宝" }
+    ],
+    "body": [
+      { "english": "head", "chinese": "头" },
+      { "english": "eyes", "chinese": "眼睛" },
+      { "english": "ears", "chinese": "耳朵" },
+      { "english": "nose", "chinese": "鼻子" },
+      { "english": "mouth", "chinese": "嘴巴" },
+      { "english": "hands", "chinese": "手" },
+      { "english": "feet", "chinese": "脚" }
+    ],
+    "colors": [
+      { "english": "red", "chinese": "红色" },
+      { "english": "blue", "chinese": "蓝色" },
+      { "english": "yellow", "chinese": "黄色" },
+      { "english": "green", "chinese": "绿色" },
+      { "english": "black", "chinese": "黑色" },
+      { "english": "white", "chinese": "白色" },
+      { "english": "pink", "chinese": "粉色" },
+      { "english": "orange", "chinese": "橙色" },
+      { "english": "purple", "chinese": "紫色" },
+      { "english": "brown", "chinese": "棕色" }
+    ],
+    "numbers": [
+      { "english": "one", "chinese": "一" },
+      { "english": "two", "chinese": "二" },
+      { "english": "three", "chinese": "三" },
+      { "english": "four", "chinese": "四" },
+      { "english": "five", "chinese": "五" },
+      { "english": "six", "chinese": "六" },
+      { "english": "seven", "chinese": "七" },
+      { "english": "eight", "chinese": "八" },
+      { "english": "nine", "chinese": "九" },
+      { "english": "ten", "chinese": "十" }
+    ],
+    "animals": [
+      { "english": "cat", "chinese": "猫" },
+      { "english": "dog", "chinese": "狗" },
+      { "english": "bird", "chinese": "鸟" },
+      { "english": "fish", "chinese": "鱼" },
+      { "english": "duck", "chinese": "鸭子" },
+      { "english": "cow", "chinese": "牛" },
+      { "english": "pig", "chinese": "猪" },
+      { "english": "sheep", "chinese": "羊" },
+      { "english": "horse", "chinese": "马" },
+      { "english": "chicken", "chinese": "鸡" }
+    ],
+    "fruits": [
+      { "english": "apple", "chinese": "苹果" },
+      { "english": "banana", "chinese": "香蕉" },
+      { "english": "orange", "chinese": "橙子" },
+      { "english": "grape", "chinese": "葡萄" },
+      { "english": "watermelon", "chinese": "西瓜" }
+    ],
+    "shapes": [
+      { "english": "circle", "chinese": "圆形" },
+      { "english": "square", "chinese": "正方形" },
+      { "english": "triangle", "chinese": "三角形" },
+      { "english": "star", "chinese": "星形" },
+      { "english": "heart", "chinese": "心形" }
+    ],
+    "actions": [
+      { "english": "run", "chinese": "跑" },
+      { "english": "walk", "chinese": "走" },
+      { "english": "jump", "chinese": "跳" },
+      { "english": "sit", "chinese": "坐" },
+      { "english": "stand", "chinese": "站" },
+      { "english": "eat", "chinese": "吃" },
+      { "english": "sleep", "chinese": "睡觉" }
+    ],
+    "emotions": [
+      { "english": "happy", "chinese": "开心" },
+      { "english": "sad", "chinese": "难过" },
+      { "english": "angry", "chinese": "生气" },
+      { "english": "scared", "chinese": "害怕" },
+      { "english": "tired", "chinese": "累" }
+    ],
+    "transport": [
+      { "english": "car", "chinese": "汽车" },
+      { "english": "bus", "chinese": "巴士" },
+      { "english": "train", "chinese": "火车" },
+      { "english": "bike", "chinese": "自行车" },
+      { "english": "plane", "chinese": "飞机" }
+    ],
+    "nature": [
+      { "english": "sun", "chinese": "太阳" },
+      { "english": "moon", "chinese": "月亮" },
+      { "english": "star", "chinese": "星星" },
+      { "english": "cloud", "chinese": "云" },
+      { "english": "rain", "chinese": "雨" },
+      { "english": "tree", "chinese": "树" },
+      { "english": "flower", "chinese": "花" }
+    ],
+    "clothes": [
+      { "english": "shirt", "chinese": "衬衫 / 上衣" },
+      { "english": "pants", "chinese": "裤子" },
+      { "english": "shoes", "chinese": "鞋子" },
+      { "english": "hat", "chinese": "帽子" }
+    ],
+    "positions": [
+      { "english": "in", "chinese": "里面" },
+      { "english": "on", "chinese": "上面" },
+      { "english": "under", "chinese": "下面" },
+      { "english": "up", "chinese": "上" },
+      { "english": "down", "chinese": "下" }
+    ]
+  }
+}
