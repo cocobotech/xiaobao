@@ -7,6 +7,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
 
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -232,7 +234,7 @@
         /* 卡片网格 */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(var(--card-min-size, 200px), 1fr));
             gap: 25px;
             flex: 1;
             overflow-y: auto;
@@ -300,7 +302,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px 10px;
+            padding: calc(5px * var(--card-scale, 1)) calc(5px * var(--card-scale, 1));
             transition: all 0.3s ease;
             position: relative;
             z-index: 1;
@@ -323,12 +325,14 @@
         .english-section {
             border-bottom: 1px solid rgba(0, 255, 255, 0.2);
         }
+        
 
+        /* Orbitron ,ABeeZee,Fredoka */
         .word-english {
-            font-size: 28px;
-            font-weight: 600;
+            font-size: calc(38px * var(--card-scale, 1));
+            font-weight: 800;
             color: #d7d9db;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Patrick Hand', cursive;
             text-shadow: 
                 -1px -1px 0 #1e3c72,
                 1px -1px 0 #1e3c72,
@@ -337,15 +341,14 @@
                 -2px -2px 0 #1e3c72,
                 2px -2px 0 #1e3c72,
                 -2px 2px 0 #1e3c72,
-                2px 2px 0 #1e3c72,
-
+                2px 2px 0 #1e3c72;
         }
 
         .word-chinese {
-            font-size: 38px;
+            font-size: calc(38px * var(--card-scale, 1));
             font-weight: 600;
             color: #daa107;
-            
+          
         }
 
         /* 状态指示器 */
@@ -490,12 +493,21 @@
                 <div class="panel-title">🎯 Groups</div>
                 <select id="group-list" class="listbox" size="10"></select>
             </div>
+            
+            <div class="panel">
+                <div class="panel-title">📏 Card Size</div>
+                <select id="card-size" class="listbox" size="3">
+                    <option value="1" selected>Default</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                </select>
+            </div>
         </div>
 
         <div class="main-content">
             <div class="header">
                 <div class="title">⚡ COCOBO Vocabulary</div>
-                <div class="subtitle">Desgined by COCOBO.TECH</div>
+                <div class="subtitle">Designed by COCOBO.TECH</div>
             </div>
 
             <div class="cards-grid" id="cards-grid"></div>
@@ -657,8 +669,16 @@
             }
         }
 
+        function updateCardSize() {
+            const scale = parseFloat(document.getElementById('card-size').value);
+            const grid = document.getElementById('cards-grid');
+            grid.style.setProperty('--card-scale', scale);
+            grid.style.setProperty('--card-min-size', `${200 * scale}px`);
+        }
+
         document.getElementById('file-list').addEventListener('change', loadGroups);
         document.getElementById('group-list').addEventListener('change', loadWords);
+        document.getElementById('card-size').addEventListener('change', updateCardSize);
         document.body.addEventListener('click', initAudio, { once: true });
 
         loadFilesFromGitHub();
