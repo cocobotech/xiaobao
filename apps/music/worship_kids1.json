@@ -42,13 +42,23 @@
         ]
     },
     {
-        "name": "🎹 NEW",
+        "name": "🎹 EN",
         "icon": "🎹",
         "collapsed": false,
         "videos": [
             {
                 "id": "hpDrndhk1ko",
                 "title": "I have got the Joy Joy Joy",
+                "duration": "4:41"
+            },
+            {
+                "id": "JRIn9_VUwn4",
+                "title": "This is the Day",
+                "duration": "1"
+            },
+            {
+                "id": "d8Xk1VKl52Y",
+                "title": "This is the day ☀️ Kids Songs",
                 "duration": "4:41"
             }
         ]
