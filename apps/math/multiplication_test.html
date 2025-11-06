@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>COCOBO乘法考试啦</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #aee1f9 0%, #fef6e4 100%);
+    font-family: "Comic Sans MS", "Microsoft YaHei", sans-serif;
+    text-align: center;
+    color: #333;
+  }
+  h1 {
+    color: #ff6f61;
+    font-size: 2.2em;
+    margin-top: 1rem;
+  }
+  #game {
+    margin-top: 2rem;
+  }
+  #question {
+    font-size: 5em;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  #objects {
+    font-size: 4em;
+    margin-bottom: 1rem;
+  }
+  .btn {
+    display: inline-block;
+    margin: 0.5rem;
+    padding: 1rem 2rem;
+    background: #fff8dc;
+    border-radius: 15px;
+    border: 3px solid #ffd700;
+    font-size: 4em;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .btn:hover {
+    background: #fff0b3;
+    transform: scale(1.05);
+  }
+  #message {
+    font-size: 1.8em;
+    margin-top: 1rem;
+    height: 2em;
+  }
+  #score {
+    font-size: 1.2em;
+    color: #555;
+    margin-top: 1rem;
+  }
+  .correct {
+    color: #2ecc71;
+    animation: bounce 0.8s;
+  }
+  .wrong {
+    color: #e74c3c;
+    animation: shake 0.6s;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+</style>
+</head>
+<body>
+  <h1>🌟 COCOBO乘法考试啦 🌟</h1>
+  <div id="game">
+    <div id="objects"></div>
+    <div id="question"></div>
+    <div id="answers"></div>
+    <div id="message"></div>
+    <div id="score">得分：0</div>
+  </div>
+
+  <script>
+  const questionEl = document.getElementById("question");
+  const objectsEl = document.getElementById("objects");
+  const answersEl = document.getElementById("answers");
+  const messageEl = document.getElementById("message");
+  const scoreEl = document.getElementById("score");
+  let score = 0;
+
+  const emojis = ["🍎","🍌","🍓","🍇","🍉","🍒","🥕","🌽","🐠","🐞"];
+  let correctAnswer = 0;
+
+  function newQuestion() {
+    messageEl.textContent = "";
+    messageEl.className = "";
+    answersEl.innerHTML = "";
+
+    const a = Math.floor(Math.random() * 5) + 1; // 1~5
+    const b = Math.floor(Math.random() * 5) + 1; // 1~5
+    correctAnswer = a * b;
+
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    let visuals = "";
+    for (let i = 0; i < a; i++) {
+      visuals += "<div>" + emoji.repeat(b) + "</div>";
+    }
+    objectsEl.innerHTML = visuals;
+    questionEl.textContent = `${a} × ${b} = ?`;
+
+    // create 4 options
+    const options = new Set([correctAnswer]);
+    while (options.size < 4) {
+      options.add(Math.floor(Math.random() * 25) + 1);
+    }
+    const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+
+    for (const num of shuffled) {
+      const btn = document.createElement("div");
+      btn.className = "btn";
+      btn.textContent = num;
+      btn.onclick = () => checkAnswer(num);
+      answersEl.appendChild(btn);
+    }
+  }
+
+  function checkAnswer(ans) {
+    if (ans === correctAnswer) {
+      messageEl.textContent = "🎉 太棒了！";
+      messageEl.className = "correct";
+      score++;
+      scoreEl.textContent = "得分：" + score;
+      setTimeout(newQuestion, 1000);
+    } else {
+      messageEl.textContent = "😅 再试试～";
+      messageEl.className = "wrong";
+    }
+  }
+
+  newQuestion();
+  </script>
+</body>
+</html>
