@@ -4,18 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>可可波乘法探索乐园</title>
-    <!-- 引入 Tailwind CSS CDN for easy, beautiful styling --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS CDN 已移除，所有样式都在下方 <style> 块中 -->
     <style>
-        /* Custom styles for a playful, kid-friendly look */
-        body {
-            background-color: #f0f9ff; /* Light blue background */
-            font-family: 'Inter', sans-serif;
+        /* CSS Variables for colors and dimensions */
+        :root {
+            --color-pink: #ec4899; /* pink-500 */
+            --color-green: #10b981; /* green-500 */
+            --color-blue: #3b82f6; /* blue-500 */
+            --color-purple: #9333ea; /* purple-700 */
+            --color-red: #dc2626; /* red-600 */
+            --bg-light-purple: #f5f3ff; /* purple-50 */
+            --bg-light-teal: #f0fdfa; /* teal-50 */
+            --bg-light-yellow: #fffbeb; /* yellow-50 */
+            --max-width: 56rem; /* max-w-4xl */
         }
+
+        /* Base and Layout (equivalent to p-4 flex justify-center items-start min-h-screen) */
+        body {
+            background-color: #f0f9ff;
+            font-family: 'Inter', sans-serif;
+            padding: 1rem; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        #app {
+            width: 100%;
+            max-width: var(--max-width);
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem; /* mb-8 */
+            padding: 1rem; /* p-4 */
+            background-color: #fef3c7; /* yellow-100 */
+            border-radius: 1rem; /* rounded-2xl */
+            border: 4px solid #f59e0b; /* border-yellow-500 */
+        }
+        h1 {
+            font-size: 2.25rem; /* text-4xl */
+        }
+        header p {
+            color: #4b5563; /* gray-700 */
+            margin-top: 0.5rem; /* mt-2 */
+            font-size: 1.25rem; /* text-xl */
+        }
+
+        /* Main Grid (grid grid-cols-1 gap-6) */
+        main {
+            display: grid;
+            grid-template-columns: 2fr;
+            gap: 1.5rem; 
+        }
+
+        /* Media Query for responsiveness (md and lg breakpoints) */
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem; /* md:p-8 */
+            }
+            .column-container {
+                row-gap: 0.5rem; /* md:gap-2 */
+            }
+            .column-container span {
+                font-size: 2.25rem; /* md:text-4xl */
+            }
+            h1 {
+                font-size: 3rem; /* md:text-5xl */
+            }
+            .result-value {
+                font-size: 3.75rem; /* md:text-6xl */
+            
+        }
+        @media (min-width: 1024px) {
+            main {
+                grid-template-columns: 1fr 2fr; /* lg:grid-cols-3 */
+            }
+            .lg-col-span-1 {
+                grid-column: span 1 / span 1;
+            }
+            .lg-col-span-2 {
+                grid-column: span 1 / span 1;
+            }
+        }
+
+        /* Card and Shadow Styles */
         .card {
             box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s;
             background-color: white;
-            border: 3px solid #3b82f6; /* Blue border */
+            border: 3px solid var(--color-blue);
+            padding: 1.5rem; /* p-6 */
+            border-radius: 1rem; /* rounded-2xl */
+        }
+        .control-panel {
+            border-color: var(--color-purple);
+            background-color: var(--bg-light-purple);
+            height: 100%; /* h-full */
+        }
+        .vis-panel {
+            border-color: #0d9488; /* teal-500 */
+            background-color: var(--bg-light-teal);
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: bold;
+            color: var(--color-purple);
+            margin-bottom: 1.5rem; /* mb-6 */
+            text-align: left;
         }
         .rainbow-text {
             background-image: linear-gradient(to right, #ef4444, #f97316, #facc15, #10b981, #3b82f6, #8b5cf6);
@@ -24,7 +123,45 @@
             color: transparent;
             font-weight: 800;
         }
-        /* Custom range track styling for better visibility on touch devices */
+        .explanation-text {
+            color: #d97706;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Controls and Inputs */
+        .control-group {
+            margin-bottom: 2rem; /* mb-8 */
+            padding: 1rem; /* p-4 */
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        }
+        .control-label {
+            display: block;
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600;
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .text-pink { color: var(--color-pink); }
+        .text-green { color: var(--color-green); }
+        .control-display {
+            font-weight: 800;
+            font-size: 1.875rem; /* text-3xl */
+        }
+        
+        /* Range Slider Track & Thumb */
+        input[type=range] {
+            width: 100%;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+            appearance: none;
+            cursor: pointer;
+        }
+        #factorA { background-color: #fbcfe8; /* pink-200 */ }
+        #factorB { background-color: #a7f3d0; /* green-200 */ }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 28px;
@@ -44,43 +181,172 @@
             border: none;
         }
 
-        /* Styles for the explanation text */
-        .explanation-text {
-            color: #d97706; /* Orange color */
-            font-weight: bold;
+        /* Emoji Selector */
+        .emoji-select-group {
+            background-color: #fef9c3; /* yellow-100 */
+            border: 1px solid #fcd34d; /* border-yellow-400 */
+        }
+        #emojiSelector {
+            width: 100%;
+            padding: 0.75rem; /* p-3 */
             font-size: 1.25rem; /* text-xl */
-            margin-bottom: 1rem; /* mb-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 2px solid #fdba74; /* border-orange-300 */
+            transition: all 0.15s;
+        }
+
+        /* Animation Control */
+        .animation-control-group {
+            margin-top: 1rem; 
+            padding: 1rem; 
+            background-color: #fee2e2; /* red-100 */
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f87171; /* border-red-400 */
+            text-align: center;
+        }
+        .speed-dropdown-container {
+            margin-bottom: 1rem; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .text-red-700 { color: #b91c1c; }
+        #animationSpeed {
+            padding: 0.5rem; 
+            font-size: 1rem; 
+            border-radius: 0.5rem; 
+            border: 2px solid #fca5a5; /* red-300 */
+            transition: all 0.15s;
+        }
+        #animateButton {
+            width: 100%;
+            padding: 0.75rem 1.5rem; 
+            font-size: 1.25rem; 
+            font-weight: 800;
+            color: white;
+            background-color: var(--color-red);
+            border-radius: 0.5rem;
+            transition: background-color 0.15s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        #animateButton:hover:not(:disabled) {
+            background-color: #b91c1c; /* red-700 */
+        }
+        #animateButton:disabled {
+            opacity: 0.5;
+        }
+
+        /* Visualization */
+        #visualization {
+            padding: 1rem; 
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+        .outer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem; 
+            border-radius: 0.75rem;
+            border: 4px solid #f59e0b; /* yellow-500 */
+            background-color: #fffbeb; /* yellow-50 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); /* shadow-xl */
+        }
+        #emojiGrid {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            column-gap: 0.5rem; 
+            padding: 0.5rem; 
+            transition: all 0.3s ease-out;
+        }
+        .column-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            row-gap: 0.375rem; 
+            padding: 0.25rem; 
+            border-radius: 0.5rem;
+            transition: all 0.5s ease-out;
+        }
+        /* Highlight for the multiplicand (first column) */
+        .column-container[data-col="0"] {
+            background-color: #bbf7d0; /* green-200 */
+            border: 2px solid var(--color-green);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+        }
+        .column-container span {
+            font-size: 1.875rem; /* text-3xl */
+            transition: all 0.3s;
         }
         
-        /* Removed unused .multiplicand-highlight-container styles */
+        /* Result Display */
+        .result-display {
+            margin-top: 2rem; 
+            padding: 1.5rem; 
+            background-color: var(--color-blue);
+            color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+            border: 4px solid #1d4ed8; /* blue-700 */
+            text-align: center;
+        }
+        .result-display p:first-child {
+            font-size: 1.5rem; 
+            font-weight: 500;
+        }
+        .result-value {
+            font-size: 5rem; 
+            font-weight: 800;
+            margin-top: 0.5rem;
+        }
+        .result-A { color: #f9a8d4; /* pink-300 */ }
+        .result-B { color: #a7f3d0; /* green-300 */ }
+        .result-Total { color: #fcd34d; /* yellow-300 */ }
+        .text-blue-500 { color: #3b82f6; }
+        .text-red-600 { color: #dc2626; }
     </style>
 </head>
 <body class="p-4 md:p-8 flex justify-center items-start min-h-screen">
 
     <div id="app" class="w-full max-w-4xl">
-        <!-- Header --><header class="text-center mb-8 p-4 bg-yellow-100 rounded-2xl card border-4 border-yellow-500">
-            <h1 class="text-4xl md:text-5xl rainbow-text">可可波乘法探索乐园</h1>
-            <p class="text-gray-700 mt-2 text-xl">COCOBO</p>
+        <!-- Header -->
+        <header>
+            <h1 class="rainbow-text">可可波乘法探索乐园</h1>
+            <p>COCOBO TECH</p>
         </header>
 
-        <!-- Main Content Area --><main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content Area -->
+        <main>
             
-            <!-- Control Panel (Left/Top) --><div class="lg:col-span-1 p-6 rounded-2xl card border-4 border-purple-500 bg-purple-50 h-full">
-                <h2 class="text-3xl font-bold text-purple-700 mb-6 text-left">🌟 设置</h2>
+            <!-- Control Panel (Left/Top) -->
+            <div class="lg-col-span-1 card control-panel">
+                <h2 class="text-purple">🌟 设置乘数</h2>
                 
-                <!-- Factor A (Row) Control --><div class="mb-8 p-4 bg-white rounded-xl shadow-lg">
-                    <label for="factorA" class="block text-2xl font-semibold text-pink-500 mb-3">被乘数 Multiplicand (A - 物品数量): <span id="displayA" class="font-extrabold text-3xl">5</span></label>
+                <!-- Factor A (Row) Control -->
+                <div class="control-group">
+                    <label for="factorA" class="control-label text-pink">被乘数 (A - 物品数量): <span id="displayA" class="control-display">5</span></label>
                     <input type="range" id="factorA" min="1" max="9" value="5" class="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer">
                 </div>
 
-                <!-- Factor B (Column) Control --><div class="mb-8 p-4 bg-white rounded-xl shadow-lg">
-                    <label for="factorB" class="block text-2xl font-semibold text-green-500 mb-3">乘数 Multiplier (B - 重复次数): <span id="displayB" class="font-extrabold text-3xl">5</span></label>
+                <!-- Factor B (Column) Control -->
+                <div class="control-group">
+                    <label for="factorB" class="control-label text-green">乘数 (B - 重复次数): <span id="displayB" class="control-display">5</span></label>
                     <input type="range" id="factorB" min="1" max="9" value="5" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer">
                 </div>
                 
-                <!-- Emoji Selector --><div class="mb-8 p-4 bg-yellow-100 rounded-xl shadow-lg border border-yellow-400">
-                    <label for="emojiSelector" class="block text-2xl font-semibold text-orange-500 mb-3">🎨 选择物品:</label>
-                    <select id="emojiSelector" class="w-full p-3 text-xl rounded-lg border-2 border-orange-300 focus:border-orange-500 focus:ring-orange-500 transition duration-150">
+                <!-- Emoji Selector -->
+                <div class="control-group emoji-select-group">
+                    <label for="emojiSelector" class="control-label" style="color: #f97316;">🎨 选择物品:</label>
+                    <select id="emojiSelector">
                         <option value="⭐">⭐ 星星 (Star)</option>
                         <option value="🍎">🍎 苹果 (Apple)</option>
                         <option value="🎈">🎈 气球 (Balloon)</option>
@@ -94,22 +360,49 @@
                     </select>
                 </div>
 
+                <!-- Animation Control -->
+                <div class="animation-control-group">
+                    
+                    <!-- Dropdown for Animation Speed (New) -->
+                    <div class="speed-dropdown-container">
+                        <label for="animationSpeed" class="text-lg font-semibold text-red-700 mr-2 whitespace-nowrap">动画速度:</label>
+                        <select id="animationSpeed">
+                            <option value="1000">1x (默认)</option>
+                            <option value="1500">1.5x (慢)</option>
+                            <option value="2000">2x (更慢)</option>
+                            <option value="3000">3x (最慢)</option>
+                            <option value="500">0.5x (快)</option>
+                        </select>
+                    </div>
 
-                
+                    <button id="animateButton">
+                        ▶️ 开始动画演示
+                    </button>
+                </div>
             </div>
 
-            <!-- Visualization Area (Right/Bottom) --><div class="lg:col-span-2 p-6 rounded-2xl card border-4 border-teal-500 bg-teal-50">
-                <h2 class="text-3xl font-bold text-teal-700 mb-4 text-center">阵列可视化</h2>
+            <!-- Visualization Area (Right/Bottom) -->
+            <div class="lg-col-span-2 card vis-panel">
+                <h2 style="color: #0d9488; text-align: center;">物品阵列可视化</h2>
                 
-                <!-- Explanation text for the highlight --><p id="multiplicandExplanation" class="explanation-text text-center"></p>
+                <!-- Explanation text for the highlight -->
+                <p id="multiplicandExplanation" class="explanation-text"></p>
 
-                <div id="visualization" class="p-4 md:p-8 bg-white rounded-xl shadow-inner min-h-[300px] flex flex-col justify-center items-center overflow-auto">
-                    <!-- The stars and column indices will be drawn here --></div>
+                <div id="visualization">
+                    <!-- The stars and column indices will be drawn here -->
+                </div>
 
-                <!-- Result Display --><div class="mt-8 p-6 bg-blue-500 text-white rounded-xl shadow-xl border-4 border-blue-700 text-center">
-                    <p class="text-2xl font-medium">计算结果：</p>
-                    <p class="text-5xl md:text-6xl font-extrabold mt-2">
-                        <span id="resultA">5</span> × <span id="resultB">5</span> = <span id="resultTotal" class="text-yellow-300">25</span>
+                <!-- Result Display (Moved) -->
+                <div class="result-display">
+                    <p>计算结果：</p>
+                    <p class="result-value">
+                        <!-- A (被乘数) uses pink color to match its slider -->
+                        <span id="resultA" class="result-A">5</span> 
+                        <span style="color: white;">×</span> 
+                        <!-- B (乘数) uses green color to match its slider -->
+                        <span id="resultB" class="result-B">5</span> 
+                        <span style="color: white;">=</span> 
+                        <span id="resultTotal" class="result-Total">25</span>
                     </p>
                 </div>
             </div>
@@ -128,15 +421,23 @@
         const visualizationDiv = document.getElementById('visualization');
         const emojiSelector = document.getElementById('emojiSelector');
         const multiplicandExplanation = document.getElementById('multiplicandExplanation'); 
+        const animateButton = document.getElementById('animateButton');
+        const animationSpeedSelector = document.getElementById('animationSpeed'); // New element
+
+        let animationTimeout; // 用于存储计时器ID，方便清除
 
         /**
          * @function updateVisualization
-         * 根据当前选择的乘数A和B，更新显示屏上的数字和星星阵列。
+         * 根据当前选择的乘数A和B，更新显示屏上的数字和物品阵列。
+         * @param {boolean} prepareForAnimation - 如果为true，则隐藏除第一列外的所有列。
          */
-        function updateVisualization() {
+        function updateVisualization(prepareForAnimation = false) {
+            // 清除任何正在运行的动画
+            clearTimeout(animationTimeout);
+            
             // 1. 获取乘数 (Factors)
-            const A = parseInt(factorASlider.value); // 行数 (被乘数 - 物品数量)
-            const B = parseInt(factorBSlider.value); // 列数 (乘数 - 重复次数)
+            const A = parseInt(factorASlider.value); // 被乘数 - 物品数量
+            const B = parseInt(factorBSlider.value); // 乘数 - 重复次数
             
             // 获取选择的 Emoji
             const selectedEmoji = emojiSelector.value;
@@ -145,73 +446,186 @@
             displayA.textContent = A;
             displayB.textContent = B;
             resultA.textContent = A;
-            resultB.textContent = B;
+            // 确保 resultB 在静态模式下显示完整的乘数 B
+            resultB.textContent = B; 
             resultTotal.textContent = A * B;
             
-            // --- NEW: 生成完整的重复加法算式 ---
+            // --- 生成完整的重复加法算式 (用于静态显示) ---
             const additionArray = new Array(B).fill(A);
             const additionString = additionArray.join(' + ');
-
-            // NEW: 更新解释文本，使用 <br> 强制换行，并使用完整的加法算式
+            
+            // 更新解释文本
             multiplicandExplanation.innerHTML = 
                 `A (${A} 个物品) 重复 B (${B} 次)，<br>` +
-                `相当于 ${additionString} (${B} 次)`;
+                `相当于 ${additionString} = <span class="text-blue-500">${A * B}</span>`;
 
             // 3. 清空旧的阵列 
             visualizationDiv.innerHTML = '';
             
-            // 4. 创建新的阵列 (Create the new array visualization)
+            // 4. 创建新的阵列 (使用 Flex Columns)
             
             // Outer container for the grid
             const outerContainer = document.createElement('div');
-            outerContainer.className = 'flex flex-col items-center p-4 rounded-xl border-4 border-yellow-500 bg-yellow-50 shadow-xl';
-
-            // Create the grid for Emojis
+            outerContainer.className = 'outer-container'; // Custom class
+            
+            // Create the grid container
             const gridContainer = document.createElement('div');
             gridContainer.id = 'emojiGrid';
-            // Use inline-grid to make the container only as wide as the grid items
-            gridContainer.className = 'inline-grid gap-1.5 md:gap-2 justify-center transition-all duration-300 ease-out p-2';
-            gridContainer.style.gridTemplateColumns = `repeat(${B}, min-content)`;
+            // 使用 flex 来排列列
+            gridContainer.className = 'emoji-grid'; 
+            gridContainer.style.display = 'flex';
+            gridContainer.style.justifyContent = 'center';
+            gridContainer.style.alignItems = 'flex-start';
+            gridContainer.style.columnGap = '0.5rem';
+            gridContainer.style.padding = '0.5rem';
 
-            // 遍历 A (行) 和 B (列) 来放置物品
-            for (let i = 0; i < A; i++) {
-                for (let j = 0; j < B; j++) {
+            // 创建 B 个列容器
+            for (let j = 0; j < B; j++) {
+                const colContainer = document.createElement('div');
+                colContainer.dataset.col = j;
+                // 列容器样式
+                colContainer.className = 'column-container'; // Custom class
+                
+                // 突出显示第一列 (j === 0) 作为被乘数的基数集合
+                if (j === 0) {
+                    // Class styles applied via CSS
+                }
+                
+                // 如果是动画准备阶段，隐藏非第一列
+                if (j > 0 && prepareForAnimation) {
+                    colContainer.style.opacity = '0';
+                    colContainer.style.transform = 'translateY(10px)'; // 稍微偏移，让动画更明显
+                }
+                
+                // 在每列中创建 A 个物品
+                for (let i = 0; i < A; i++) {
                     const star = document.createElement('span');
                     star.textContent = selectedEmoji; 
-                    
-                    let classes = 'text-3xl md:text-4xl transition-all duration-300 hover:scale-110 p-1 rounded-lg';
-                    
-                    // Highlight the first column (j === 0)
-                    if (j === 0) {
-                        // Apply a specific style to the first column elements (the base 'multiplicand' set)
-                        classes += ' bg-green-200 border-2 border-green-500 shadow-md';
-                    }
-
-                    star.className = classes;
-                    gridContainer.appendChild(star);
+                    colContainer.appendChild(star);
                 }
+                
+                gridContainer.appendChild(colContainer);
             }
             
-            // Set scaling (if necessary)
+            // 缩放设置
             const scaleFactor = (A * B > 50) ? 0.7 : 1;
             gridContainer.style.transform = `scale(${scaleFactor})`;
             
             // 5. 将阵列放入外部容器，然后添加到可视化区域
             outerContainer.appendChild(gridContainer);
-            
             visualizationDiv.appendChild(outerContainer);
-            
-            // 6. 滚动到顶部，确保阵列可见（特别是移动端）
             visualizationDiv.scrollTop = 0;
+
+            // 6. 更新动画按钮状态
+            if (A > 0 && B > 0) {
+                animateButton.disabled = false;
+                animateButton.textContent = '▶️ 开始动画演示';
+            } else {
+                animateButton.disabled = true;
+                animateButton.textContent = '❌ 无法演示 (A或B为0)';
+            }
+        }
+
+        /**
+         * @function startAnimation
+         * 启动乘法重复相加的动画演示。
+         */
+        function startAnimation() {
+            clearTimeout(animationTimeout);
+            
+            const A = parseInt(factorASlider.value);
+            const B = parseInt(factorBSlider.value);
+            // 获取选择的动画延迟时间（毫秒）
+            const animationDelay = parseInt(animationSpeedSelector.value); 
+
+            if (A < 1 || B < 1) return;
+            
+            // 1. 设置 UI 为动画状态
+            animateButton.textContent = '⏸️ 动画进行中...';
+            animateButton.disabled = true;
+            factorASlider.disabled = true;
+            factorBSlider.disabled = true;
+            emojiSelector.disabled = true;
+            animationSpeedSelector.disabled = true;
+
+            // 2. 重新渲染初始状态 (只有第一列可见，其他隐藏)
+            updateVisualization(true); 
+
+            const columns = document.querySelectorAll('.column-container');
+            
+            let currentColumnIndex = 0; // 当前正在显示的列 (从 0 开始)
+            let totalItems = 0;
+
+            // 在动画开始时，将乘数和总数显示为 0 (表示 A x 0)
+            resultB.textContent = 0; 
+            resultTotal.textContent = 0;
+
+            function nextStep() {
+                if (currentColumnIndex >= B) {
+                    // 动画结束
+                    animateButton.textContent = '✅ 动画完成';
+                    factorASlider.disabled = false;
+                    factorBSlider.disabled = false;
+                    emojiSelector.disabled = false;
+                    animationSpeedSelector.disabled = false;
+                    
+                    // 设置最终结果文本 (乘数和总数)
+                    resultB.textContent = B; 
+                    resultTotal.textContent = A * B;
+                    return;
+                }
+
+                // 引用当前列
+                const colElement = columns[currentColumnIndex];
+
+                // 1. 动画效果：显示当前列
+                colElement.style.opacity = '1';
+                colElement.style.transform = 'translateY(0) scale(1.05)'; 
+                
+                // 2. 更新运行总数
+                totalItems += A;
+                
+                // 3. 更新计算结果显示 (同步更新乘数 B 和总数)
+                resultB.textContent = currentColumnIndex + 1; 
+                resultTotal.textContent = totalItems;
+                
+                // 4. 更新解释文本 (顶部)
+                const currentAdditionArray = new Array(currentColumnIndex + 1).fill(A);
+                const currentAdditionString = currentAdditionArray.join(' + ');
+
+                multiplicandExplanation.innerHTML = 
+                    `A (${A} 个物品) 重复 <span class="text-red-600">${currentColumnIndex + 1}</span> 次：<br>` +
+                    `当前总数：${currentAdditionString} = <span class="text-red-600">${totalItems}</span>`;
+
+
+                // 5. 稍微延迟后，移除放大效果
+                setTimeout(() => {
+                    colElement.style.transform = 'translateY(0) scale(1)';
+                }, 500);
+
+                currentColumnIndex++;
+
+                // 6. 设置下一个步骤的定时器
+                if (currentColumnIndex <= B) {
+                    // 使用动态的 animationDelay
+                    animationTimeout = setTimeout(nextStep, animationDelay); 
+                }
+            }
+
+            // 立即启动动画
+            nextStep();
         }
 
         // 绑定事件监听器
-        factorASlider.addEventListener('input', updateVisualization);
-        factorBSlider.addEventListener('input', updateVisualization);
-        emojiSelector.addEventListener('change', updateVisualization);
+        factorASlider.addEventListener('input', () => updateVisualization(false));
+        factorBSlider.addEventListener('input', () => updateVisualization(false));
+        emojiSelector.addEventListener('change', () => updateVisualization(false));
+        animateButton.addEventListener('click', startAnimation);
+        // 当速度选择器改变时，重新渲染静态视图以清除动画准备状态
+        animationSpeedSelector.addEventListener('change', () => updateVisualization(false)); 
 
         // 首次加载时执行一次，显示初始状态
-        window.onload = updateVisualization;
+        window.onload = () => updateVisualization(false);
     </script>
 
 </body>
