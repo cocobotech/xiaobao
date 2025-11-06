@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可可波乘法探索乐园</title>
+    <!-- 引入 Tailwind CSS CDN for easy, beautiful styling --><script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a playful, kid-friendly look */
+        body {
+            background-color: #f0f9ff; /* Light blue background */
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            background-color: white;
+            border: 3px solid #3b82f6; /* Blue border */
+        }
+        .rainbow-text {
+            background-image: linear-gradient(to right, #ef4444, #f97316, #facc15, #10b981, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        /* Custom range track styling for better visibility on touch devices */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #f87171;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #f87171;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            border: none;
+        }
+
+        /* Styles for the explanation text */
+        .explanation-text {
+            color: #d97706; /* Orange color */
+            font-weight: bold;
+            font-size: 1.25rem; /* text-xl */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        
+        /* Removed unused .multiplicand-highlight-container styles */
+    </style>
+</head>
+<body class="p-4 md:p-8 flex justify-center items-start min-h-screen">
+
+    <div id="app" class="w-full max-w-4xl">
+        <!-- Header --><header class="text-center mb-8 p-4 bg-yellow-100 rounded-2xl card border-4 border-yellow-500">
+            <h1 class="text-4xl md:text-5xl rainbow-text">可可波乘法探索乐园</h1>
+            <p class="text-gray-700 mt-2 text-xl">COCOBO</p>
+        </header>
+
+        <!-- Main Content Area --><main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Control Panel (Left/Top) --><div class="lg:col-span-1 p-6 rounded-2xl card border-4 border-purple-500 bg-purple-50 h-full">
+                <h2 class="text-3xl font-bold text-purple-700 mb-6 text-left">🌟 设置</h2>
+                
+                <!-- Factor A (Row) Control --><div class="mb-8 p-4 bg-white rounded-xl shadow-lg">
+                    <label for="factorA" class="block text-2xl font-semibold text-pink-500 mb-3">被乘数 Multiplicand (A - 物品数量): <span id="displayA" class="font-extrabold text-3xl">5</span></label>
+                    <input type="range" id="factorA" min="1" max="9" value="5" class="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Factor B (Column) Control --><div class="mb-8 p-4 bg-white rounded-xl shadow-lg">
+                    <label for="factorB" class="block text-2xl font-semibold text-green-500 mb-3">乘数 Multiplier (B - 重复次数): <span id="displayB" class="font-extrabold text-3xl">5</span></label>
+                    <input type="range" id="factorB" min="1" max="9" value="5" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                
+                <!-- Emoji Selector --><div class="mb-8 p-4 bg-yellow-100 rounded-xl shadow-lg border border-yellow-400">
+                    <label for="emojiSelector" class="block text-2xl font-semibold text-orange-500 mb-3">🎨 选择物品:</label>
+                    <select id="emojiSelector" class="w-full p-3 text-xl rounded-lg border-2 border-orange-300 focus:border-orange-500 focus:ring-orange-500 transition duration-150">
+                        <option value="⭐">⭐ 星星 (Star)</option>
+                        <option value="🍎">🍎 苹果 (Apple)</option>
+                        <option value="🎈">🎈 气球 (Balloon)</option>
+                        <option value="🚀">🚀 火箭 (Rocket)</option>
+                        <option value="🍇">🍇 葡萄 (Grape)</option>
+                        <option value="🍉">🍉 西瓜 (Watermelon)</option>
+                        <option value="🍌">🍌 香蕉 (Banana)</option>
+                        <option value="🍓">🍓 草莓 (Strawberry)</option>
+                        <option value="🐠">🐠 鱼 (Fish)</option>
+                        <option value="🐞">🐞 瓢虫 (Ladybug)</option>
+                    </select>
+                </div>
+
+
+                
+            </div>
+
+            <!-- Visualization Area (Right/Bottom) --><div class="lg:col-span-2 p-6 rounded-2xl card border-4 border-teal-500 bg-teal-50">
+                <h2 class="text-3xl font-bold text-teal-700 mb-4 text-center">阵列可视化</h2>
+                
+                <!-- Explanation text for the highlight --><p id="multiplicandExplanation" class="explanation-text text-center"></p>
+
+                <div id="visualization" class="p-4 md:p-8 bg-white rounded-xl shadow-inner min-h-[300px] flex flex-col justify-center items-center overflow-auto">
+                    <!-- The stars and column indices will be drawn here --></div>
+
+                <!-- Result Display --><div class="mt-8 p-6 bg-blue-500 text-white rounded-xl shadow-xl border-4 border-blue-700 text-center">
+                    <p class="text-2xl font-medium">计算结果：</p>
+                    <p class="text-5xl md:text-6xl font-extrabold mt-2">
+                        <span id="resultA">5</span> × <span id="resultB">5</span> = <span id="resultTotal" class="text-yellow-300">25</span>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 获取所有必要的DOM元素
+        const factorASlider = document.getElementById('factorA');
+        const factorBSlider = document.getElementById('factorB');
+        const displayA = document.getElementById('displayA');
+        const displayB = document.getElementById('displayB');
+        const resultA = document.getElementById('resultA');
+        const resultB = document.getElementById('resultB');
+        const resultTotal = document.getElementById('resultTotal');
+        const visualizationDiv = document.getElementById('visualization');
+        const emojiSelector = document.getElementById('emojiSelector');
+        const multiplicandExplanation = document.getElementById('multiplicandExplanation'); 
+
+        /**
+         * @function updateVisualization
+         * 根据当前选择的乘数A和B，更新显示屏上的数字和星星阵列。
+         */
+        function updateVisualization() {
+            // 1. 获取乘数 (Factors)
+            const A = parseInt(factorASlider.value); // 行数 (被乘数 - 物品数量)
+            const B = parseInt(factorBSlider.value); // 列数 (乘数 - 重复次数)
+            
+            // 获取选择的 Emoji
+            const selectedEmoji = emojiSelector.value;
+
+            // 2. 更新数字显示 (Update text displays)
+            displayA.textContent = A;
+            displayB.textContent = B;
+            resultA.textContent = A;
+            resultB.textContent = B;
+            resultTotal.textContent = A * B;
+            
+            // --- NEW: 生成完整的重复加法算式 ---
+            const additionArray = new Array(B).fill(A);
+            const additionString = additionArray.join(' + ');
+
+            // NEW: 更新解释文本，使用 <br> 强制换行，并使用完整的加法算式
+            multiplicandExplanation.innerHTML = 
+                `A (${A} 个物品) 重复 B (${B} 次)，<br>` +
+                `相当于 ${additionString} (${B} 次)`;
+
+            // 3. 清空旧的阵列 
+            visualizationDiv.innerHTML = '';
+            
+            // 4. 创建新的阵列 (Create the new array visualization)
+            
+            // Outer container for the grid
+            const outerContainer = document.createElement('div');
+            outerContainer.className = 'flex flex-col items-center p-4 rounded-xl border-4 border-yellow-500 bg-yellow-50 shadow-xl';
+
+            // Create the grid for Emojis
+            const gridContainer = document.createElement('div');
+            gridContainer.id = 'emojiGrid';
+            // Use inline-grid to make the container only as wide as the grid items
+            gridContainer.className = 'inline-grid gap-1.5 md:gap-2 justify-center transition-all duration-300 ease-out p-2';
+            gridContainer.style.gridTemplateColumns = `repeat(${B}, min-content)`;
+
+            // 遍历 A (行) 和 B (列) 来放置物品
+            for (let i = 0; i < A; i++) {
+                for (let j = 0; j < B; j++) {
+                    const star = document.createElement('span');
+                    star.textContent = selectedEmoji; 
+                    
+                    let classes = 'text-3xl md:text-4xl transition-all duration-300 hover:scale-110 p-1 rounded-lg';
+                    
+                    // Highlight the first column (j === 0)
+                    if (j === 0) {
+                        // Apply a specific style to the first column elements (the base 'multiplicand' set)
+                        classes += ' bg-green-200 border-2 border-green-500 shadow-md';
+                    }
+
+                    star.className = classes;
+                    gridContainer.appendChild(star);
+                }
+            }
+            
+            // Set scaling (if necessary)
+            const scaleFactor = (A * B > 50) ? 0.7 : 1;
+            gridContainer.style.transform = `scale(${scaleFactor})`;
+            
+            // 5. 将阵列放入外部容器，然后添加到可视化区域
+            outerContainer.appendChild(gridContainer);
+            
+            visualizationDiv.appendChild(outerContainer);
+            
+            // 6. 滚动到顶部，确保阵列可见（特别是移动端）
+            visualizationDiv.scrollTop = 0;
+        }
+
+        // 绑定事件监听器
+        factorASlider.addEventListener('input', updateVisualization);
+        factorBSlider.addEventListener('input', updateVisualization);
+        emojiSelector.addEventListener('change', updateVisualization);
+
+        // 首次加载时执行一次，显示初始状态
+        window.onload = updateVisualization;
+    </script>
+
+</body>
+</html>
