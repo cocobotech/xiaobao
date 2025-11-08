@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO 动物学习 Animal Learning App</title>
+<style>
+body {
+  font-family: "Comic Neue", "Microsoft Yahei", sans-serif;
+  background: linear-gradient(180deg, #f9fcff 0%, #eaf6ff 100%);
+  margin: 0; padding: 0;
+  display: flex; flex-direction: column; align-items: center;
+}
+h1 {
+  margin: 20px 0 10px; color: #3366cc; text-shadow: 1px 1px 2px #aad;
+}
+.switch-container { margin-bottom: 15px; }
+.switch-btn {
+  padding: 8px 15px; border-radius: 25px; border: 2px solid #aaf;
+  background: white; color: #3366cc; cursor: pointer; font-weight: bold;
+  transition: all 0.3s; margin: 0 5px;
+}
+.switch-btn.active {
+  background: #3366cc; color: white; box-shadow: 0 0 10px rgba(51,102,204,0.4);
+}
+.category-bar {
+  display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;
+}
+.category {
+  background: white; border: 2px solid #aaf; color: #3366cc;
+  border-radius: 25px; padding: 8px 15px; margin: 5px;
+  cursor: pointer; font-weight: bold; transition: all 0.3s;
+}
+.category:hover, .category.active { background: #3366cc; color: white; box-shadow: 0 0 10px rgba(51,102,204,0.4); }
+.animal-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 15px; width: 90%; max-width: 700px;
+}
+.animal-card {
+  background: white; border-radius: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center; padding: 10px; transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.animal-card:hover {
+  transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.emoji { font-size: 36px; }
+.name-cn { font-size: 14px; color: #333; }
+.name-en { font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<h1>COCOBO 动物学习 🐾 Animal Learning</h1>
+
+<div class="switch-container">
+  <button class="switch-btn active" id="speechBtn">朗读模式</button>
+  <button class="switch-btn" id="soundBtn">动物叫声模式</button>
+</div>
+
+<div class="category-bar" id="categoryBar"></div>
+<div class="animal-grid" id="animalGrid"></div>
+
+<script>
+let data = {};
+let mode = 'speech'; // 'speech' or 'sound'
+
+document.getElementById("speechBtn").onclick = () => { mode='speech'; toggleBtn(); };
+document.getElementById("soundBtn").onclick = () => { mode='sound'; toggleBtn(); };
+function toggleBtn() {
+  document.getElementById("speechBtn").classList.toggle("active", mode==='speech');
+  document.getElementById("soundBtn").classList.toggle("active", mode==='sound');
+}
+
+// 加载远程 JSON
+async function loadData() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/cocobotech/cocobotech.github.io/refs/heads/main/assets/emoji_animals.json');
+    data = await res.json();
+    initCategories();
+  } catch(err) {
+    console.error("加载动物数据失败", err);
+  }
+}
+
+// 初始化分类按钮
+function initCategories() {
+  const categoryBar = document.getElementById("categoryBar");
+  categoryBar.innerHTML = "";
+  Object.keys(data).forEach((cat, i)=>{
+    const btn = document.createElement("div");
+    btn.className = "category" + (i===0?" active":"");
+    btn.textContent = cat;
+    btn.onclick = () => {
+      document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      showCategory(cat);
+    };
+    categoryBar.appendChild(btn);
+  });
+  // 默认显示第一个分类
+  showCategory(Object.keys(data)[0]);
+}
+
+// 显示动物
+function showCategory(catName){
+  const animals = data[catName];
+  const animalGrid = document.getElementById("animalGrid");
+  animalGrid.innerHTML = "";
+  animals.forEach(animal=>{
+    const card = document.createElement("div");
+    card.className = "animal-card";
+    card.innerHTML = `<div class="emoji">${animal.emoji}</div>
+                      <div class="name-cn">${animal.name_cn}</div>
+                      <div class="name-en">${animal.name_en}</div>`;
+    card.onclick = () => playAnimal(animal);
+    animalGrid.appendChild(card);
+  });
+}
+
+// 播放动物发声
+function playAnimal(animal){
+  if(mode==='speech'){
+    const utter = new SpeechSynthesisUtterance(animal.name_en);
+    utter.lang="en-US"; utter.rate=0.9;
+    speechSynthesis.speak(utter);
+  } else {
+    if(animal.sound){ // 如果 JSON 有提供声音 URL
+      const audio = new Audio(animal.sound);
+      audio.play();
+    } else {
+      console.warn("该动物没有音频:", animal.name_en);
+    }
+  }
+}
+
+// 开始加载数据
+loadData();
+</script>
+</body>
+</html>
