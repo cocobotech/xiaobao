@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COCOBO数学测试 - 加减法</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #314e8b 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgb(240, 243, 242);
+      border-radius: 30px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+    .setup-screen, .test-screen, .results-screen {
+      display: none;
+    }
+    .setup-screen.active, .test-screen.active, .results-screen.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .setting-group {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+    .setting-group h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+    .option-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .option-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 15px;
+      border: 3px solid #ddd;
+      background: white;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #555;
+    }
+    .option-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .option-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #667eea;
+    }
+    .number-input {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .number-input button {
+      width: 50px;
+      height: 50px;
+      border: none;
+      background: #667eea;
+      color: white;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .number-input button:hover {
+      transform: scale(1.1);
+      background: #764ba2;
+    }
+    .number-input input {
+      width: 100px;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .start-btn {
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .progress-bar {
+      background: #e9ecef;
+      height: 30px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    .question-box {
+      background: #f8f9fa;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .question-text {
+      font-size: 3rem;
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .answers-grid {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .answer-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 25px 15px;
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      border: 4px solid transparent;
+      border-radius: 15px;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #333;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2),
+                  inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .answer-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      transition: left 0.5s ease;
+    }
+    .answer-btn:hover::before {
+      left: 100%;
+    }
+    .answer-btn:hover {
+      transform: translateY(-3px);
+      border-color: #667eea;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4),
+                  inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+    }
+    .answer-btn.correct {
+      background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+      border-color: #28a745;
+      animation: bounce 0.5s ease;
+    }
+    .answer-btn.wrong {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      border-color: #dc3545;
+      animation: shake 0.5s ease;
+    }
+    .answer-btn.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    .results-summary {
+      text-align: center;
+      padding: 30px;
+    }
+    .score-display {
+      font-size: 5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 20px 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .stat-label {
+      color: #666;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+    .emoji {
+      font-size: 4rem;
+      margin: 20px 0;
+    }
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .back-btn {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(240, 147, 251, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧮 COCOBO数学测试 - 加减法</h1>
+
+    <!-- Setup Screen -->
+    <div class="setup-screen active" id="setupScreen">
+      <div class="setting-group">
+        <h2>📝 选择题目类型</h2>
+        <div class="option-buttons">
+          <button class="option-btn selected" onclick="selectType('addition')">➕ 加法</button>
+          <button class="option-btn" onclick="selectType('subtraction')">➖ 减法</button>
+          <button class="option-btn" onclick="selectType('mixed')">🔀 混合</button>
+        </div>
+      </div>
+
+      <div class="setting-group" id="subtractionOptions" style="display:none;">
+        <h2>🔢 减法类型</h2>
+        <div class="option-buttons">
+          <button class="option-btn" onclick="selectBorrowing('with')">需要借位</button>
+          <button class="option-btn" onclick="selectBorrowing('without')">不需要借位</button>
+          <button class="option-btn selected" onclick="selectBorrowing('both')">两种都有</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h2>🔢 设置题目数量</h2>
+        <div class="number-input">
+          <button onclick="changeCount(-5)">-5</button>
+          <button onclick="changeCount(-1)">-1</button>
+          <input type="number" id="questionCount" value="10" min="5" max="50" readonly>
+          <button onclick="changeCount(1)">+1</button>
+          <button onclick="changeCount(5)">+5</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h2>⚙️ 难度设置</h2>
+        <div class="option-buttons">
+          <button class="option-btn selected" onclick="selectDifficulty('easy')">简单 (0-20)</button>
+          <button class="option-btn" onclick="selectDifficulty('medium')">中等 (0-50)</button>
+          <button class="option-btn" onclick="selectDifficulty('hard')">困难 (0-100)</button>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startTest()">🚀 开始测试</button>
+    </div>
+
+    <!-- Test Screen -->
+    <div class="test-screen" id="testScreen">
+      <button class="back-btn" onclick="confirmBackToSetup()">🏠 返回设置</button>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar">0/0</div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-text" id="questionText">1 + 1 = ?</div>
+      </div>
+
+      <div class="answers-grid" id="answersGrid"></div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-screen" id="resultsScreen">
+      <div class="results-summary">
+        <div class="emoji" id="resultEmoji">🎉</div>
+        <h2>测试完成！</h2>
+        <div class="score-display" id="scoreDisplay">100%</div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="correctCount">0</div>
+            <div class="stat-label">✅ 答对</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="wrongCount">0</div>
+            <div class="stat-label">❌ 答错</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalTime">0s</div>
+            <div class="stat-label">⏱️ 用时</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="restartTest()">🔄 重新测试</button>
+          <button class="btn btn-secondary" onclick="backToSetup()">⚙️ 返回设置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var testType = 'addition';
+    var questionCount = 10;
+    var difficulty = 'easy';
+    var borrowing = 'both';
+    var currentQuestion = 0;
+    var correctAnswers = 0;
+    var wrongAnswers = 0;
+    var startTime = 0;
+    var questions = [];
+    var maxNumber = 20;
+
+    function selectType(type) {
+      testType = type;
+      var btns = document.querySelectorAll('.setting-group:nth-child(1) .option-btn');
+      btns.forEach(function(btn) { btn.classList.remove('selected'); });
+      event.target.classList.add('selected');
+      
+      var subOptions = document.getElementById('subtractionOptions');
+      if (type === 'subtraction' || type === 'mixed') {
+        subOptions.style.display = 'block';
+        if (type === 'mixed') {
+          subOptions.querySelector('h2').textContent = '🔢 减法类型（混合模式中的减法）';
+        } else {
+          subOptions.querySelector('h2').textContent = '🔢 减法类型';
+        }
+      } else {
+        subOptions.style.display = 'none';
+      }
+    }
+
+    function selectBorrowing(type) {
+      borrowing = type;
+      var btns = document.querySelectorAll('#subtractionOptions .option-btn');
+      btns.forEach(function(btn) { btn.classList.remove('selected'); });
+      event.target.classList.add('selected');
+    }
+
+    function selectDifficulty(level) {
+      difficulty = level;
+      if (level === 'easy') maxNumber = 20;
+      else if (level === 'medium') maxNumber = 50;
+      else maxNumber = 100;
+      
+      var btns = document.querySelectorAll('.setting-group:nth-child(3) .option-btn');
+      btns.forEach(function(btn) { btn.classList.remove('selected'); });
+      event.target.classList.add('selected');
+    }
+
+    function changeCount(delta) {
+      var input = document.getElementById('questionCount');
+      var newValue = parseInt(input.value) + delta;
+      if (newValue >= 5 && newValue <= 50) {
+        input.value = newValue;
+        questionCount = newValue;
+      }
+    }
+
+    function generateQuestion() {
+      var isAddition = testType === 'addition' || (testType === 'mixed' && Math.random() > 0.5);
+      var num1, num2, answer, operator;
+
+      if (isAddition) {
+        num1 = Math.floor(Math.random() * maxNumber);
+        num2 = Math.floor(Math.random() * maxNumber);
+        answer = num1 + num2;
+        operator = '+';
+      } else {
+        // Generate subtraction based on borrowing preference
+        var needsBorrowing;
+        
+        if (testType === 'mixed') {
+          // For mixed mode, respect the borrowing setting
+          needsBorrowing = borrowing === 'with' || (borrowing === 'both' && Math.random() > 0.5);
+        } else {
+          // For pure subtraction mode
+          needsBorrowing = borrowing === 'with' || (borrowing === 'both' && Math.random() > 0.5);
+        }
+        
+        if (needsBorrowing) {
+          // Create a subtraction that REQUIRES borrowing
+          // Ensure ones digit of num1 < ones digit of num2
+          do {
+            num1 = Math.floor(Math.random() * (maxNumber - 10)) + 10;
+            var tens1 = Math.floor(num1 / 10);
+            var ones1 = num1 % 10;
+            
+            // Choose ones2 to be greater than ones1
+            var ones2 = ones1 + 1 + Math.floor(Math.random() * (9 - ones1));
+            
+            // Choose tens2 to be less than tens1
+            var maxTens2 = Math.max(0, tens1 - 1);
+            var tens2 = Math.floor(Math.random() * (maxTens2 + 1));
+            
+            num2 = tens2 * 10 + ones2;
+          } while (num2 >= num1 || num2 === 0 || ones1 >= ones2);
+          
+        } else if (borrowing === 'without') {
+          // Create a subtraction that does NOT require borrowing
+          // Ensure ones digit of num1 >= ones digit of num2
+          do {
+            num1 = Math.floor(Math.random() * maxNumber) + 10;
+            var ones1 = num1 % 10;
+            
+            // Choose ones2 to be less than or equal to ones1
+            var ones2 = Math.floor(Math.random() * (ones1 + 1));
+            
+            var maxTens = Math.floor(num1 / 10);
+            var tens = Math.floor(Math.random() * (maxTens + 1));
+            
+            num2 = tens * 10 + ones2;
+          } while (num2 > num1 || num2 === 0);
+          
+        } else {
+          // borrowing === 'both', randomly choose
+          num1 = Math.floor(Math.random() * maxNumber) + 10;
+          num2 = Math.floor(Math.random() * num1);
+          if (num2 === 0) num2 = Math.floor(Math.random() * 9) + 1;
+        }
+        
+        answer = num1 - num2;
+        operator = '-';
+      }
+
+      var wrongAnswers = generateWrongAnswers(answer);
+      var allAnswers = [answer].concat(wrongAnswers);
+      shuffleArray(allAnswers);
+
+      return {
+        text: num1 + ' ' + operator + ' ' + num2 + ' = ?',
+        correct: answer,
+        answers: allAnswers
+      };
+    }
+
+    function generateWrongAnswers(correct) {
+      var wrongs = [];
+      
+      // Two answers with ones digit off by ±1
+      var ones1 = correct + 1;
+      var ones2 = correct - 1;
+      if (ones2 < 0) ones2 = correct + 2;
+      
+      // Two answers with tens digit off by ±1
+      var tens1 = correct + 10;
+      var tens2 = correct - 10;
+      if (tens2 < 0) tens2 = correct + 20;
+
+      wrongs.push(ones1, ones2, tens1, tens2);
+      
+      // Remove duplicates and the correct answer
+      wrongs = wrongs.filter(function(val, idx, self) {
+        return self.indexOf(val) === idx && val !== correct && val >= 0;
+      });
+
+      // If we don't have enough unique wrong answers, add more
+      while (wrongs.length < 4) {
+        var offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
+        var newWrong = correct + offset;
+        if (newWrong >= 0 && wrongs.indexOf(newWrong) === -1 && newWrong !== correct) {
+          wrongs.push(newWrong);
+        }
+      }
+
+      return wrongs.slice(0, 4);
+    }
+
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+    }
+
+    function startTest() {
+      questionCount = parseInt(document.getElementById('questionCount').value);
+      questions = [];
+      for (var i = 0; i < questionCount; i++) {
+        questions.push(generateQuestion());
+      }
+
+      currentQuestion = 0;
+      correctAnswers = 0;
+      wrongAnswers = 0;
+      startTime = Date.now();
+
+      document.getElementById('setupScreen').classList.remove('active');
+      document.getElementById('testScreen').classList.add('active');
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        showResults();
+        return;
+      }
+
+      var q = questions[currentQuestion];
+      document.getElementById('questionText').textContent = q.text;
+
+      var progress = ((currentQuestion) / questions.length * 100).toFixed(0);
+      var progressBar = document.getElementById('progressBar');
+      progressBar.style.width = progress + '%';
+      progressBar.textContent = (currentQuestion + 1) + '/' + questions.length;
+
+      var grid = document.getElementById('answersGrid');
+      grid.innerHTML = '';
+
+      for (var i = 0; i < q.answers.length; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = q.answers[i];
+        btn.onclick = (function(answer) {
+          return function() { checkAnswer(answer); };
+        })(q.answers[i]);
+        grid.appendChild(btn);
+      }
+    }
+
+    function checkAnswer(selected) {
+      var q = questions[currentQuestion];
+      var btns = document.querySelectorAll('.answer-btn');
+
+      btns.forEach(function(btn) {
+        btn.classList.add('disabled');
+        if (parseInt(btn.textContent) === q.correct) {
+          btn.classList.add('correct');
+        } else if (parseInt(btn.textContent) === selected) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      if (selected === q.correct) {
+        correctAnswers++;
+        speak('正确');
+      } else {
+        wrongAnswers++;
+        speak('错误');
+      }
+
+      setTimeout(function() {
+        currentQuestion++;
+        showQuestion();
+      }, 1500);
+    }
+
+    function showResults() {
+      var endTime = Date.now();
+      var totalSeconds = Math.floor((endTime - startTime) / 1000);
+
+      document.getElementById('testScreen').classList.remove('active');
+      document.getElementById('resultsScreen').classList.add('active');
+
+      var score = Math.floor((correctAnswers / questions.length) * 100);
+      document.getElementById('scoreDisplay').textContent = score + '%';
+      document.getElementById('correctCount').textContent = correctAnswers;
+      document.getElementById('wrongCount').textContent = wrongAnswers;
+      document.getElementById('totalTime').textContent = totalSeconds + 's';
+
+      var emoji = score >= 90 ? '🎉' : score >= 70 ? '😊' : score >= 50 ? '🙂' : '😅';
+      document.getElementById('resultEmoji').textContent = emoji;
+
+      if (score >= 90) speak('太棒了！满分！');
+      else if (score >= 70) speak('很好！继续努力！');
+      else speak('加油！多多练习！');
+    }
+
+    function restartTest() {
+      currentQuestion = 0;
+      correctAnswers = 0;
+      wrongAnswers = 0;
+      
+      questions = [];
+      for (var i = 0; i < questionCount; i++) {
+        questions.push(generateQuestion());
+      }
+      
+      startTime = Date.now();
+      
+      document.getElementById('resultsScreen').classList.remove('active');
+      document.getElementById('testScreen').classList.add('active');
+      showQuestion();
+    }
+
+    function backToSetup() {
+      document.getElementById('resultsScreen').classList.remove('active');
+      document.getElementById('setupScreen').classList.add('active');
+    }
+
+    function confirmBackToSetup() {
+      var confirmReturn = confirm('确定要返回设置吗？当前测试进度将会丢失。');
+      if (confirmReturn) {
+        currentQuestion = 0;
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        questions = [];
+        document.getElementById('testScreen').classList.remove('active');
+        document.getElementById('setupScreen').classList.add('active');
+      }
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.9;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  </script>
+</body>
+</html>
