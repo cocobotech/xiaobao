@@ -342,15 +342,6 @@
         </div>
       </div>
 
-      <div class="setting-group">
-        <h2>⚙️ 难度设置</h2>
-        <div class="option-buttons">
-          <button class="option-btn selected" onclick="selectDifficulty('easy')">简单 (0-20)</button>
-          <button class="option-btn" onclick="selectDifficulty('medium')">中等 (0-50)</button>
-          <button class="option-btn" onclick="selectDifficulty('hard')">困难 (0-100)</button>
-        </div>
-      </div>
-
       <button class="start-btn" onclick="startTest()">🚀 开始测试</button>
     </div>
 
@@ -409,7 +400,7 @@
     var wrongAnswers = 0;
     var startTime = 0;
     var questions = [];
-    var maxNumber = 20;
+    var maxNumber = 99;
 
     function selectType(type) {
       testType = type;
@@ -462,10 +453,25 @@
       var num1, num2, answer, operator;
 
       if (isAddition) {
-        num1 = Math.floor(Math.random() * maxNumber);
-        num2 = Math.floor(Math.random() * maxNumber);
+        // ============ 关键修改：确保加法结果不超过100 ============
+        // 生成第一个数字 (0-99)
+        num1 = Math.floor(Math.random() * 100);
+        
+        // 生成第二个数字，确保 num1 + num2 <= 100
+        var maxNum2 = 100 - num1;
+        num2 = Math.floor(Math.random() * (maxNum2 + 1));
+        
         answer = num1 + num2;
         operator = '+';
+        
+        // 双重验证：确保结果不超过99
+        if (answer > 99) {
+          console.error('加法结果超过100！', num1, '+', num2, '=', answer);
+          // 如果超过，重新生成
+          return generateQuestion();
+        }
+        // ========================================================
+        
       } else {
         // Generate subtraction based on borrowing preference
         var needsBorrowing;
@@ -542,7 +548,7 @@
       var ones2 = correct - 1;
       if (ones2 < 0) ones2 = correct + 2;
       
-      // Two answers with tens digit off by ±1
+      // Two answers with tens digit off by ±10
       var tens1 = correct + 10;
       var tens2 = correct - 10;
       if (tens2 < 0) tens2 = correct + 20;
@@ -664,8 +670,9 @@
       var emoji = score >= 90 ? '🎉' : score >= 70 ? '😊' : score >= 50 ? '🙂' : '😅';
       document.getElementById('resultEmoji').textContent = emoji;
 
-      if (score >= 90) speak('太棒了！满分！');
-      else if (score >= 70) speak('很好！继续努力！');
+      if (score == 100) speak('小宝，太棒了！满分！100分');
+      else if (score >= 90) speak('挺好的，哈哈！');
+      else if (score >= 70) speak('还可以！继续努力！');
       else speak('加油！多多练习！');
     }
 
