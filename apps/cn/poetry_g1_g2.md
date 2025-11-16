@@ -40,10 +40,10 @@
 
 ### 1. 咏鹅 — 骆宾王
 **原文 + 拼音**：
-鹅 鹅 鹅    ，曲 项 向 天 歌。  
-é é é    , qū xiàng xiàng tiān gē。  
+鹅 鹅 鹅，曲 项 向 天 歌。  
+
 白 毛 浮 绿 水，红 掌 拨 清 波。  
-bái máo fú lǜ shuǐ, hóng zhǎng bō qīng bō。
+
 
 ---
 
@@ -310,4 +310,11 @@ qiáng jiǎo shù zhī méi, líng hán dú zì kāi。
 遥 知 不 是 雪，为 有 暗 香 来。  
 yáo zhī bù shì xuě, wèi yǒu àn xiāng lái。  
 
+
+### 51. 咏鹅 — 骆宾王
+**原文 + 拼音**：
+鹅 鹅 鹅，曲 项 向 天 歌。  
+é é é, qū xiàng xiàng tiān gē。  
+白 毛 浮 绿 水，红 掌 拨 清 波。  
+bái máo fú lǜ shuǐ, hóng zhǎng bō qīng bō。
 ---
