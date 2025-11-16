@@ -41,9 +41,9 @@
 ### 1. 咏鹅 — 骆宾王
 **原文 + 拼音**：
 鹅 鹅 鹅，曲 项 向 天 歌。  
-É É É, qū xiàng xiàng tiān gē。  
+é é é, qū xiàng xiàng tiān gē。  
 白 毛 浮 绿 水，红 掌 拨 清 波。  
-bái máo fú lǜ shuǐ, hóng zhǎng bō qīng bō。  
+bái máo fú lǜ shuǐ, hóng zhǎng bō qīng bō。
 
 ---
 
@@ -114,8 +114,8 @@ yě huǒ shāo bù jìn, chūn fēng chuī yòu shēng。
 **原文 + 拼音**：
 草 长 莺 飞 二 月 天，拂 堤 杨 柳 醉 春 烟。  
 cǎo zhǎng yīng fēi èr yuè tiān, fú dī yáng liǔ zuì chūn yān。  
-儿童 散 学 归 来 早，忙 趁 东 风 放 纸 鸢。  
-értóng sàn xué guī lái zǎo, máng chèn dōng fēng fàng zhǐ yuān。  
+儿 童 散 学 归 来 早，忙 趁 东 风 放 纸 鸢。  
+ér tóng sàn xué guī lái zǎo, máng chèn dōng fēng fàng zhǐ yuān。  
 
 ---
 
