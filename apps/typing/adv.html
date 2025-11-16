@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COCOBO-Typing Practice</title>
     <style>
-        /* 深蓝色 (Navy) 主题 */
+        /* COCOBO 深蓝色 (Navy) 主题 */
         :root {
             --navy-blue: #667eea;
             --dark-purple: #2e5863;
@@ -14,12 +14,13 @@
             --light-gray: #e9ecef;
             --current-bg: #ffd700;
         }
- 
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--navy-blue) 0%, var(--dark-purple) 100%);
@@ -29,6 +30,7 @@
             align-items: center;
             padding: 20px;
         }
+
         .container {
             background: var(--white);
             border-radius: 20px;
@@ -37,18 +39,21 @@
             max-width: 1200px;
             width: 100%;
         }
+
         h1 {
             text-align: center;
             color: var(--navy-blue);
             margin-bottom: 30px;
             font-size: 2.5em;
         }
+
         .level-selection {
             display: grid;
             grid-template-columns: repeat(7, 1fr); /* 第一行最多7个按钮（Level 1-7） */
             gap: 12px;
             margin-bottom: 30px;
         }
+
         .level-btn {
             padding: 15px 10px;
             border: 3px solid var(--navy-blue);
@@ -61,20 +66,24 @@
             transition: all 0.3s;
             text-align: center;
         }
+
         .level-btn:hover {
             background: var(--navy-blue);
             color: var(--white);
             transform: translateY(-2px);
         }
+
         .level-btn.active {
             background: var(--navy-blue);
             color: var(--white);
         }
+
         .level-description {
             font-size: 0.85em;
             margin-top: 5px;
             opacity: 0.9;
         }
+
         .file-upload {
             margin-bottom: 20px;
             padding: 20px;
@@ -82,9 +91,11 @@
             border-radius: 10px;
             display: none;
         }
+
         .vocab-selector {
             margin-bottom: 15px;
         }
+
         .vocab-selector label {
             display: block;
             font-weight: bold;
@@ -92,6 +103,7 @@
             margin-bottom: 10px;
             font-size: 1.1em;
         }
+
         .vocab-selector select {
             width: 100%;
             padding: 12px;
@@ -102,17 +114,21 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .vocab-selector select:hover {
             border-color: var(--dark-purple);
         }
+
         .vocab-selector select:focus {
             outline: none;
             border-color: var(--green);
             box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
         }
+
         .file-upload input[type="file"] {
             display: none;
         }
+
         .file-upload label {
             display: inline-block;
             padding: 10px 20px;
@@ -123,15 +139,18 @@
             transition: all 0.3s;
             margin-top: 10px;
         }
+
         .file-upload label:hover {
             background: var(--dark-purple);
         }
+
         .loading {
             color: var(--navy-blue);
             font-weight: bold;
             text-align: center;
             padding: 10px;
         }
+
         .practice-area {
             background: #f8f9fa;
             padding: 30px;
@@ -139,51 +158,65 @@
             margin-bottom: 20px;
             min-height: 200px;
         }
+
         .text-display {
             font-size: 2em;
             line-height: 1.8;
             letter-spacing: 2px;
-            word-wrap: break-word;
+            overflow-wrap: normal;
             font-family: 'Courier New', monospace;
         }
+
         .letter {
             display: inline-block;
             padding: 2px;
             transition: all 0.2s;
         }
+
         .letter.space {
             background: #e0e0e0;
             border: 1px solid #999;
             border-radius: 3px;
             margin: 0 2px;
         }
+
         .letter.space.current {
             background: var(--current-bg);
             border: 2px solid #ff8c00;
         }
+
         .letter.current {
             background: var(--current-bg);
             color: #000;
             font-weight: bold;
             animation: pulse 0.8s infinite;
         }
+
         .letter.correct {
             color: var(--green);
         }
+
         .letter.incorrect {
             background: #dc3545;
             color: var(--white);
             animation: shake 0.3s;
         }
+
+        .word {
+            display: inline-block;
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
+
         .stats {
             display: flex;
             justify-content: space-around;
@@ -192,19 +225,23 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+
         .stat-item {
             text-align: center;
         }
+
         .stat-label {
             font-size: 0.9em;
             color: #666;
             margin-bottom: 5px;
         }
+
         .stat-value {
             font-size: 1.5em;
             font-weight: bold;
             color: var(--navy-blue);
         }
+
         .reset-btn {
             width: 100%;
             padding: 15px;
@@ -218,74 +255,53 @@
             margin-top: 20px;
             transition: all 0.3s;
         }
+
         .reset-btn:hover {
             background: #218838;
             transform: translateY(-2px);
         }
+
         .filename {
             color: var(--green);
             font-weight: bold;
             margin-top: 10px;
         }
+
         .or-divider {
             text-align: center;
             margin: 15px 0;
             color: #666;
             font-weight: bold;
         }
+
+        .lowercase-option {
+            grid-column: span 3;
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            color: var(--navy-blue);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⌨️ COCOBO Typing Practice2</h1>
-       
         <div class="level-selection">
-            <button class="level-btn" data-level="1">
-                Level 1
-                <div class="level-description">asdfg (Left)</div>
-            </button>
-            <button class="level-btn" data-level="2">
-                Level 2
-                <div class="level-description">hjkl; (Right)</div>
-            </button>
-            <button class="level-btn" data-level="3">
-                Level 3
-                <div class="level-description">qwert (Top-L)</div>
-            </button>
-            <button class="level-btn" data-level="4">
-                Level 4
-                <div class="level-description">yuiop (Top-R)</div>
-            </button>
-            <button class="level-btn" data-level="5">
-                Level 5
-                <div class="level-description">zxcvb (Bot-L)</div>
-            </button>
-            <button class="level-btn" data-level="6">
-                Level 6
-                <div class="level-description">nm,./ (Bot-R)</div>
-            </button>
-            <button class="level-btn" data-level="7">
-                Level 7
-                <div class="level-description">Vocabulary</div>
-            </button>
-            <button class="level-btn" data-level="8">
-                Level 8
-                <div class="level-description">1+2 Combo</div>
-            </button>
-            <button class="level-btn" data-level="9">
-                Level 9
-                <div class="level-description">1+3 Combo</div>
-            </button>
-            <button class="level-btn" data-level="10">
-                Level 10
-                <div class="level-description">1+5 Combo</div>
-            </button>
-            <button class="level-btn" data-level="11">
-                Level 11
-                <div class="level-description">2+4 Combo</div>
-            </button>
+            <button class="level-btn" data-level="1"> Level 1 <div class="level-description">asdfg (Left)</div> </button>
+            <button class="level-btn" data-level="2"> Level 2 <div class="level-description">hjkl; (Right)</div> </button>
+            <button class="level-btn" data-level="3"> Level 3 <div class="level-description">qwert (Top-L)</div> </button>
+            <button class="level-btn" data-level="4"> Level 4 <div class="level-description">yuiop (Top-R)</div> </button>
+            <button class="level-btn" data-level="5"> Level 5 <div class="level-description">zxcvb (Bot-L)</div> </button>
+            <button class="level-btn" data-level="6"> Level 6 <div class="level-description">nm,./ (Bot-R)</div> </button>
+            <button class="level-btn" data-level="7"> Level 7 <div class="level-description">Vocabulary</div> </button>
+            <button class="level-btn" data-level="8"> Level 8 <div class="level-description">1+2 Combo</div> </button>
+            <button class="level-btn" data-level="9"> Level 9 <div class="level-description">1+3 Combo</div> </button>
+            <button class="level-btn" data-level="10"> Level 10 <div class="level-description">1+5 Combo</div> </button>
+            <button class="level-btn" data-level="11"> Level 11 <div class="level-description">2+4 Combo</div> </button>
+            <label class="lowercase-option" id="lowercaseLabel" style="display: none;">
+                <input type="checkbox" id="lowercaseCheckbox" checked> 全部小写
+            </label>
         </div>
-       
         <div class="file-upload" id="fileUpload">
             <div class="vocab-selector">
                 <label for="vocabSelect">📚 Select Vocabulary Dictionary:</label>
@@ -293,24 +309,19 @@
                     <option value="">-- Choose a dictionary --</option>
                 </select>
             </div>
-           
             <div id="loadingMsg" class="loading" style="display: none;">Loading vocabulary...</div>
-           
             <div class="or-divider">- OR -</div>
-           
             <div style="text-align: center;">
                 <label for="fileInput">📁 Upload Custom CSV/TXT File</label>
                 <input type="file" id="fileInput" accept=".txt,.csv">
                 <div class="filename" id="filename"></div>
             </div>
         </div>
-       
         <div class="practice-area">
             <div class="text-display" id="textDisplay">
                 Select a level to start practicing!
             </div>
         </div>
-       
         <div class="stats">
             <div class="stat-item">
                 <div class="stat-label">Correct</div>
@@ -325,47 +336,37 @@
                 <div class="stat-value" id="accuracy">100%</div>
             </div>
         </div>
-       
         <button class="reset-btn" id="resetBtn">🔄 Reset Practice</button>
     </div>
-   
     <script>
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-       
+
         function playErrorSound() {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-           
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-           
             oscillator.frequency.value = 200;
             oscillator.type = 'square';
-           
             gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-           
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.2);
         }
-       
+
         function playTypingSound() {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-           
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-           
             oscillator.frequency.value = 800;
             oscillator.type = 'sine';
-           
             gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
-           
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.05);
         }
-       
+
         const levelChars = {
             1: 'asdfg',
             2: 'hjkl',
@@ -378,7 +379,7 @@
             10: 'asdfgzxcvb',
             11: 'hjklyuiop'
         };
- 
+
         function generateRandomText(letters, numLetters = 100) {
             let text = '';
             let lastChar = '';
@@ -396,17 +397,21 @@
             }
             return text.trim();
         }
-       
+
         let currentText = '';
         let currentPosition = 0;
         let correctCount = 0;
         let errorCount = 0;
         let currentLevel = null;
         let currentVocabWords = [];
-       
+        let currentOriginalText = '';
+        let isLowercase = true;
+
         const textDisplay = document.getElementById('textDisplay');
         const levelBtns = document.querySelectorAll('.level-btn');
         const fileUpload = document.getElementById('fileUpload');
+        const lowercaseLabel = document.getElementById('lowercaseLabel');
+        const lowercaseCheckbox = document.getElementById('lowercaseCheckbox');
         const vocabSelect = document.getElementById('vocabSelect');
         const loadingMsg = document.getElementById('loadingMsg');
         const fileInput = document.getElementById('fileInput');
@@ -415,23 +420,24 @@
         const correctCountEl = document.getElementById('correctCount');
         const errorCountEl = document.getElementById('errorCount');
         const accuracyEl = document.getElementById('accuracy');
-       
+
         levelBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const level = btn.dataset.level;
                 currentLevel = level;
-               
                 levelBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-               
                 if (level === '7') {
                     fileUpload.style.display = 'block';
+                    lowercaseLabel.style.display = 'flex';
                     textDisplay.innerHTML = 'Please select a vocabulary dictionary or upload a file.';
                     currentText = '';
                     currentVocabWords = [];
+                    currentOriginalText = '';
                     populateVocabSelect();
                 } else {
                     fileUpload.style.display = 'none';
+                    lowercaseLabel.style.display = 'none';
                     const chars = levelChars[level];
                     if (chars) {
                         const randomText = generateRandomText(chars, 100);
@@ -439,6 +445,11 @@
                     }
                 }
             });
+        });
+
+        lowercaseCheckbox.addEventListener('change', (e) => {
+            isLowercase = e.target.checked;
+            regeneratePracticeText();
         });
 
         // Function to dynamically populate the vocabulary select
@@ -452,26 +463,28 @@
                     throw new Error('Failed to fetch directory contents');
                 }
                 const data = await response.json();
-                const jsonFiles = data.filter(item => item.type === 'file' && item.name.startsWith('dict_') && item.name.endsWith('.json'));
-                
-                jsonFiles.forEach(file => {
+                const dictFiles = data.filter(item => item.type === 'file' && 
+                    (item.name.startsWith('dict_') && item.name.endsWith('.json') ||
+                     item.name.startsWith('txt_') && item.name.endsWith('.txt')));
+                dictFiles.forEach(file => {
                     const option = document.createElement('option');
                     option.value = `https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/Vocabulary/${file.name}`;
-                    
                     // Parse filename to create nice label
-                    const parts = file.name.replace('dict_', '').replace('.json', '').split('_');
-                    if (parts.length === 2) {
-                        let type = parts[0].toUpperCase().replace('CET', 'CET-');
-                        let level = parts[1];
-                        option.textContent = `${type} Level ${level}`;
-                    } else {
-                        option.textContent = file.name.replace('dict_', '').replace('.json', '');
+                    if (file.name.startsWith('dict_')) {
+                        const parts = file.name.replace('dict_', '').replace('.json', '').split('_');
+                        if (parts.length === 2) {
+                            let type = parts[0].toUpperCase().replace('CET', 'CET-');
+                            let level = parts[1];
+                            option.textContent = `${type} Level ${level}`;
+                        } else {
+                            option.textContent = file.name.replace('dict_', '').replace('.json', '');
+                        }
+                    } else if (file.name.startsWith('txt_')) {
+                        option.textContent = `Article: ${file.name.replace('txt_', '').replace('.txt', '')}`;
                     }
-                    
                     vocabSelect.appendChild(option);
                 });
-                
-                if (jsonFiles.length === 0) {
+                if (dictFiles.length === 0) {
                     textDisplay.innerHTML = 'No vocabulary files found.';
                 }
             } catch (error) {
@@ -481,59 +494,60 @@
                 loadingMsg.style.display = 'none';
             }
         }
-       
+
         // Vocabulary selector handler
         vocabSelect.addEventListener('change', async (e) => {
             const url = e.target.value;
             if (!url) return;
-           
             loadingMsg.style.display = 'block';
             textDisplay.innerHTML = 'Loading vocabulary...';
-           
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error('Failed to load vocabulary file');
+                    throw new Error('Failed to load file');
                 }
-               
-                const data = await response.json();
-               
-                // Extract English words from groups
-                const words = [];
-                if (data.groups) {
-                    for (const groupKey in data.groups) {
-                        const group = data.groups[groupKey];
-                        group.forEach(item => {
-                            if (item.english) {
-                                words.push(item.english.toLowerCase());
-                            }
-                        });
+                let practiceText = '';
+                currentVocabWords = [];
+                currentOriginalText = '';
+                if (url.endsWith('.json')) {
+                    const data = await response.json();
+                    // Extract English words from groups
+                    const words = [];
+                    if (data.groups) {
+                        for (const groupKey in data.groups) {
+                            const group = data.groups[groupKey];
+                            group.forEach(item => {
+                                if (item.english) {
+                                    words.push(item.english);
+                                }
+                            });
+                        }
                     }
+                    if (words.length === 0) {
+                        throw new Error('No words found in vocabulary file');
+                    }
+                    // Shuffle words randomly
+                    const shuffledWords = words.sort(() => Math.random() - 0.5);
+                    // Store original words for reset functionality
+                    currentVocabWords = shuffledWords.slice();
+                    // Apply lowercase if checked
+                    const processedWords = isLowercase ? shuffledWords.map(w => w.toLowerCase()) : shuffledWords;
+                    practiceText = processedWords.join(' ');
+                } else if (url.endsWith('.txt')) {
+                    let text = await response.text();
+                    text = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+                    currentOriginalText = text;
+                    practiceText = isLowercase ? text.toLowerCase() : text;
                 }
-               
-                if (words.length === 0) {
-                    throw new Error('No words found in vocabulary file');
-                }
-               
-                // Shuffle words randomly
-                const shuffledWords = words.sort(() => Math.random() - 0.5);
-               
-                // Store words for reset functionality
-                currentVocabWords = shuffledWords;
-               
-                // Create text with words separated by spaces
-                const practiceText = shuffledWords.join(' ');
-               
                 loadingMsg.style.display = 'none';
                 startPractice(practiceText);
-               
             } catch (error) {
-                console.error('Error loading vocabulary:', error);
+                console.error('Error loading file:', error);
                 loadingMsg.style.display = 'none';
-                textDisplay.innerHTML = `❌ Error loading vocabulary: ${error.message}<br>Please try another dictionary.`;
+                textDisplay.innerHTML = `❌ Error loading file: ${error.message}<br>Please try another dictionary.`;
             }
         });
-       
+
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -546,12 +560,14 @@
                     }
                     text = text.replace(/\s+/g, ' ').trim();
                     currentVocabWords = [];
-                    startPractice(text);
+                    currentOriginalText = text;
+                    const practiceText = isLowercase ? text.toLowerCase() : text;
+                    startPractice(practiceText);
                 };
                 reader.readAsText(file);
             }
         });
-       
+
         resetBtn.addEventListener('click', () => {
             if (currentLevel && currentLevel !== '7') {
                 const chars = levelChars[currentLevel];
@@ -560,17 +576,26 @@
                     startPractice(randomText);
                 }
             } else if (currentLevel === '7') {
-                if (currentVocabWords.length > 0) {
-                    // Re-shuffle the words
-                    const shuffledWords = currentVocabWords.sort(() => Math.random() - 0.5);
-                    const practiceText = shuffledWords.join(' ');
-                    startPractice(practiceText);
-                } else if (currentText) {
-                    startPractice(currentText);
-                }
+                regeneratePracticeText();
             }
         });
-       
+
+        function regeneratePracticeText() {
+            let practiceText = '';
+            if (currentVocabWords.length > 0) {
+                // Re-shuffle the original words
+                const shuffledWords = currentVocabWords.sort(() => Math.random() - 0.5);
+                // Apply lowercase if checked
+                const processedWords = isLowercase ? shuffledWords.map(w => w.toLowerCase()) : shuffledWords;
+                practiceText = processedWords.join(' ');
+            } else if (currentOriginalText) {
+                practiceText = isLowercase ? currentOriginalText.toLowerCase() : currentOriginalText;
+            }
+            if (practiceText) {
+                startPractice(practiceText);
+            }
+        }
+
         function startPractice(text) {
             currentText = text;
             currentPosition = 0;
@@ -579,27 +604,41 @@
             updateStats();
             displayText();
         }
-       
+
         function displayText() {
             textDisplay.innerHTML = '';
-            for (let i = 0; i < currentText.length; i++) {
-                const span = document.createElement('span');
-                span.className = 'letter';
-               
-                if (currentText[i] === ' ') {
-                    span.textContent = '_';
-                    span.classList.add('space');
-                } else {
-                    span.textContent = currentText[i];
+            if (!currentText) return;
+            const words = currentText.split(' ');
+            let pos = 0;
+            for (let w = 0; w < words.length; w++) {
+                const word = words[w];
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word';
+                for (let c = 0; c < word.length; c++) {
+                    const char = word[c];
+                    const span = document.createElement('span');
+                    span.className = 'letter';
+                    span.textContent = char;
+                    if (pos === currentPosition) {
+                        span.classList.add('current');
+                    }
+                    wordSpan.appendChild(span);
+                    pos++;
                 }
-               
-                if (i === currentPosition) {
-                    span.classList.add('current');
+                textDisplay.appendChild(wordSpan);
+                if (w < words.length - 1) {
+                    const spaceSpan = document.createElement('span');
+                    spaceSpan.className = 'letter space';
+                    spaceSpan.textContent = '_';
+                    if (pos === currentPosition) {
+                        spaceSpan.classList.add('current');
+                    }
+                    textDisplay.appendChild(spaceSpan);
+                    pos++;
                 }
-                textDisplay.appendChild(span);
             }
         }
-       
+
         function updateStats() {
             correctCountEl.textContent = correctCount;
             errorCountEl.textContent = errorCount;
@@ -607,44 +646,37 @@
             const acc = total === 0 ? 100 : Math.round((correctCount / total) * 100);
             accuracyEl.textContent = acc + '%';
         }
-       
+
         document.addEventListener('keydown', (e) => {
             if (!currentText || currentPosition >= currentText.length) return;
-           
             if (e.key === ' ') {
                 e.preventDefault();
             }
-           
             const expectedChar = currentText[currentPosition];
             const letters = textDisplay.querySelectorAll('.letter');
             const currentLetter = letters[currentPosition];
-           
             if (e.key === expectedChar) {
-                playTypingSound(); 
-               
+                playTypingSound();
                 currentLetter.classList.remove('current');
                 currentLetter.classList.add('correct');
                 correctCount++;
                 currentPosition++;
-               
                 if (currentPosition < currentText.length) {
                     letters[currentPosition].classList.add('current');
                 } else {
                     setTimeout(() => {
-                        alert('🎉 Congratulations! You completed the practice!\n\n' +
-                              `Correct: ${correctCount}\n` +
-                              `Errors: ${errorCount}\n` +
-                              `Accuracy: ${accuracyEl.textContent}`);
+                        alert(`🎉 Congratulations! You completed the practice!\n\n` +
+                            `Correct: ${correctCount}\n` +
+                            `Errors: ${errorCount}\n` +
+                            `Accuracy: ${accuracyEl.textContent}`);
                     }, 100);
                 }
-               
                 updateStats();
             } else if (e.key.length === 1) {
                 currentLetter.classList.add('incorrect');
                 playErrorSound();
                 errorCount++;
                 updateStats();
-               
                 setTimeout(() => {
                     currentLetter.classList.remove('incorrect');
                 }, 300);
