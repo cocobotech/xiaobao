@@ -501,7 +501,7 @@
                 document.getElementById('loadingView').classList.remove('hidden');
                 document.getElementById('errorView').classList.add('hidden');
                 
-                const response = await fetch('https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/cn/%E8%AF%97%E8%AF%8D1-2%E5%B9%B4%E7%BA%A7.md');
+                const response = await fetch('https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/cn/poetry_g1_g2.md');
                 if (!response.ok) throw new Error('Failed to load');
                 
                 const text = await response.text();
