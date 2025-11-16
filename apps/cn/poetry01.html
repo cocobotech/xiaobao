@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古诗词学习卡片</title>
+    <title>COCOBO古诗词学习卡片</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
@@ -390,8 +390,8 @@
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
                         <div>
-                            <h1>古诗词学习</h1>
-                            <p style="font-size: 0.9em; color: #6b7280;">小学一、二年级必背古诗</p>
+                            <h1>COCOBO古诗词学习</h1>
+                            <p style="font-size: 0.9em; color: #6b7280;">小学一、二年级古诗</p>
                         </div>
                     </div>
                     <button class="btn btn-reset" onclick="resetProgress()">
@@ -609,48 +609,64 @@
             content.innerHTML = '';
             
             poem.content.forEach((line, idx) => {
-                const div = document.createElement('div');
-                div.className = 'poem-line';
-                
-                // Remove all spaces from Chinese line
-                const chineseChars = line.replace(/\s+/g, '');
-                
-                // Split pinyin and clean up
                 const pinyinLine = poem.pinyin[idx] || '';
-                // Remove punctuation from pinyin, split by space
-                const pinyinParts = pinyinLine
-                    .replace(/[，。、！？；：""''（）,.\!?;:""''()]/g, ' ')
-                    .split(/\s+/)
-                    .filter(p => p.length > 0);
+                const pinyinParts = pinyinLine.split(/\s+/).filter(p => p.length > 0);
                 
-                let html = '';
                 let pinyinIndex = 0;
+                let sentenceChars = [];
                 
-                for (let i = 0; i < chineseChars.length; i++) {
-                    const char = chineseChars[i];
-                    // Check if character is Chinese
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    
                     if (/[\u4e00-\u9fa5]/.test(char)) {
-                        const py = pinyinParts[pinyinIndex] || '';
-                        html += `
-                            <span class="char-group">
-                                <span class="pinyin">${py}</span>
-                                <span class="chinese">${char}</span>
-                            </span>
-                        `;
+                        // Chinese character with pinyin
+                        sentenceChars.push({ char, pinyin: pinyinParts[pinyinIndex] || '' });
                         pinyinIndex++;
-                    } else {
-                        // Punctuation
-                        html += `
-                            <span class="char-group">
-                                <span class="pinyin"></span>
-                                <span class="chinese">${char}</span>
-                            </span>
-                        `;
+                    } else if (/[，。、！？；：]/.test(char)) {
+                        // Punctuation - add to current sentence
+                        sentenceChars.push({ char, pinyin: '' });
+                        
+                        // Create a line for this sentence including the punctuation
+                        const div = document.createElement('div');
+                        div.className = 'poem-line';
+                        
+                        let html = '';
+                        sentenceChars.forEach(item => {
+                            html += `
+                                <span class="char-group">
+                                    <span class="pinyin">${item.pinyin}</span>
+                                    <span class="chinese">${item.char}</span>
+                                </span>
+                            `;
+                        });
+                        
+                        div.innerHTML = html;
+                        content.appendChild(div);
+                        sentenceChars = [];
+                    } else if (char.trim()) {
+                        // Other characters (spaces, etc)
+                        sentenceChars.push({ char, pinyin: '' });
                     }
                 }
                 
-                div.innerHTML = html;
-                content.appendChild(div);
+                // Handle any remaining text without punctuation
+                if (sentenceChars.length > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'poem-line';
+                    
+                    let html = '';
+                    sentenceChars.forEach(item => {
+                        html += `
+                            <span class="char-group">
+                                <span class="pinyin">${item.pinyin}</span>
+                                <span class="chinese">${item.char}</span>
+                            </span>
+                        `;
+                    });
+                    
+                    div.innerHTML = html;
+                    content.appendChild(div);
+                }
             });
             
             updateStarButton();
