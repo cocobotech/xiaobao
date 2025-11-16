@@ -380,7 +380,7 @@
             11: 'hjklyuiop'
         };
 
-        function generateRandomText(letters, numLetters = 100) {
+        function generateRandomText(letters, numLetters = 60) {
             let text = '';
             let lastChar = '';
             for (let i = 0; i < numLetters; i++) {
@@ -440,7 +440,7 @@
                     lowercaseLabel.style.display = 'none';
                     const chars = levelChars[level];
                     if (chars) {
-                        const randomText = generateRandomText(chars, 90);
+                        const randomText = generateRandomText(chars, 60);
                         startPractice(randomText);
                     }
                 }
@@ -572,7 +572,7 @@
             if (currentLevel && currentLevel !== '7') {
                 const chars = levelChars[currentLevel];
                 if (chars) {
-                    const randomText = generateRandomText(chars, 200);
+                    const randomText = generateRandomText(chars, 60);
                     startPractice(randomText);
                 }
             } else if (currentLevel === '7') {
