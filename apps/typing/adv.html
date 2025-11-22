@@ -382,6 +382,8 @@
             12: 'hjklyuiop'
         };
 
+        const cocoText = `cocobotech.github.io jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan`;
+
         function generateRandomText(letters, numLetters = 60) {
             let text = '';
             let lastChar = '';
@@ -440,7 +442,7 @@
                 } else if (level === '12') {
                     fileUpload.style.display = 'none';
                     lowercaseLabel.style.display = 'none';
-                    const cocoText = `cocobotech.github.io jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan`;
+                    
                     startPractice(cocoText);
                 } else {
                     fileUpload.style.display = 'none';
@@ -576,14 +578,16 @@
         });
 
         resetBtn.addEventListener('click', () => {
-            if (currentLevel && currentLevel !== '7') {
+            if (currentLevel && currentLevel !== '7' && currentLevel !== '12') {
                 const chars = levelChars[currentLevel];
                 if (chars) {
                     const randomText = generateRandomText(chars, 60);
                     startPractice(randomText);
                 }
-            } else if (currentLevel === '7') {
+            } else if (currentLevel === '7'  ) {
                 regeneratePracticeText();
+            } else if (currentLevel === '12') {
+                startPractice(cocoText);
             }
         });
 
