@@ -298,6 +298,7 @@
             <button class="level-btn" data-level="9"> Level 9 <div class="level-description">1+3 Combo</div> </button>
             <button class="level-btn" data-level="10"> Level 10 <div class="level-description">1+5 Combo</div> </button>
             <button class="level-btn" data-level="11"> Level 11 <div class="level-description">2+4 Combo</div> </button>
+            <button class="level-btn" data-level="12"> Level 12 <div class="level-description">COCOBO</div> </button>
             <label class="lowercase-option" id="lowercaseLabel" style="display: none;">
                 <input type="checkbox" id="lowercaseCheckbox" checked> 全部小写
             </label>
@@ -377,7 +378,8 @@
             8: 'asdfghjkl',
             9: 'asdfgqwert',
             10: 'asdfgzxcvb',
-            11: 'hjklyuiop'
+            11: 'hjklyuiop',
+            12: 'hjklyuiop'
         };
 
         function generateRandomText(letters, numLetters = 60) {
@@ -435,6 +437,11 @@
                     currentVocabWords = [];
                     currentOriginalText = '';
                     populateVocabSelect();
+                } else if (level === '12') {
+                    fileUpload.style.display = 'none';
+                    lowercaseLabel.style.display = 'none';
+                    const cocoText = `cocobotech.github.io jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan`;
+                    startPractice(cocoText);
                 } else {
                     fileUpload.style.display = 'none';
                     lowercaseLabel.style.display = 'none';
