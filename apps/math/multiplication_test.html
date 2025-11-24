@@ -11,57 +11,164 @@
     font-family: "Comic Sans MS", "Microsoft YaHei", sans-serif;
     text-align: center;
     color: #333;
+    user-select: none;
+    overflow-x: hidden; 
   }
   h1 {
     color: #ff6f61;
-    font-size: 2.2em;
-    margin-top: 1rem;
+    font-size: 2em;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 0px #fff;
   }
-  #game {
-    margin-top: 2rem;
+  
+  #settings {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 8px;
+    border-radius: 15px;
+    display: inline-block;
+    margin-bottom: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
-  #question {
-    font-size: 5em;
+  select {
+    font-size: 1.1em;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 2px solid #ffa502;
+    background: #fff;
+    color: #e67e22;
     font-weight: bold;
-    margin-bottom: 1rem;
+    cursor: pointer;
+    outline: none;
   }
+  .x-sign {
+    font-size: 1.5em;
+    color: #ff6f61;
+    font-weight: bold;
+    margin: 0 10px;
+  }
+
+  #game {
+    padding: 5px;
+  }
+  
+  /* 固定容器 */
+  #objects-container {
+    width: 95%;
+    max-width: 520px; 
+    height: 340px;    
+    margin: 0 auto;   
+    border: 5px solid #f1c40f; 
+    background-color: #fff;    
+    border-radius: 20px;       
+    box-shadow: inset 0 0 15px rgba(241, 196, 15, 0.3); 
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;     
+    overflow: hidden;        
+  }
+
   #objects {
-    font-size: 4em;
-    margin-bottom: 1rem;
+    line-height: 1.1;
+    width: 100%;
+    transition: font-size 0.3s;
   }
+  
+  .emoji-row {
+    display: block;
+    white-space: nowrap; 
+    /* 居中显示每一行 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* --- 新增：单个Emoji的样式 --- */
+  .emoji-item {
+    display: inline-block;
+    padding: 0 2px; /* 左右稍微留点空隙 */
+    border-radius: 8px;
+    border: 2px solid transparent; /* 默认透明边框，占位用，保证对齐 */
+    box-sizing: border-box;
+  }
+
+  /* --- 新增：第一列的高亮样式 --- */
+  .first-col {
+    background-color: #d1eeff; /* 淡淡的黄色背景 */
+    border: 2px dashed #225aad; /* 橙色虚线框 */
+    color: #000; /* 确保内部颜色正常，虽然emoji不受影响 */
+  }
+
+  .separator {
+    width: 60%;  
+    height: 0px;
+    border-top: 2px dashed rgba(0, 0, 0, 0.1); 
+    margin: 6px auto; 
+  }
+
+  #question {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: #2c3e50;
+  }
+  
+  #answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   .btn {
     display: inline-block;
-    margin: 0.5rem;
-    padding: 1rem 2rem;
+    margin: 0.3rem;
+    padding: 0.3rem 1rem;
     background: #fff8dc;
     border-radius: 15px;
-    border: 3px solid #ffd700;
-    font-size: 4em;
+    border: 4px solid #ffd700;
+    font-size: 2.2em;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: all 0.2s;
+    min-width: 1.5em;
+    box-shadow: 0 5px 0 #d4b200;
   }
-  .btn:hover {
-    background: #fff0b3;
-    transform: scale(1.05);
+  .btn:active {
+    transform: translateY(5px);
+    box-shadow: none;
   }
+  .btn.wrong-choice {
+    background-color: #ffcccc !important;
+    border-color: #e74c3c !important;
+    color: #c0392b;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: scale(0.95);
+  }
+  .btn.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  
   #message {
     font-size: 1.8em;
-    margin-top: 1rem;
-    height: 2em;
+    margin-top: 0.5rem;
+    height: 1.5em;
+    font-weight: bold;
   }
   #score {
-    font-size: 1.2em;
+    font-size: 1.5em;
     color: #555;
-    margin-top: 1rem;
+    margin-top: 0;
+    background: rgba(255,255,255,0.5);
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 20px;
   }
-  .correct {
-    color: #2ecc71;
-    animation: bounce 0.8s;
-  }
-  .wrong {
-    color: #e74c3c;
-    animation: shake 0.6s;
-  }
+  .correct-msg { color: #2ecc71; animation: bounce 0.8s; }
+  .wrong-msg { color: #e74c3c; animation: shake 0.6s; }
+  
   @keyframes bounce {
     0%,100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
@@ -75,8 +182,28 @@
 </head>
 <body>
   <h1>🌟 COCOBO乘法考试啦 🌟</h1>
+  
+  <div id="settings">
+    <select id="maxA" onchange="newQuestion()">
+        <option value="3">3以内</option>
+        <option value="5" >5以内</option>
+        <option value="9" selected>9以内</option>
+        <option value="12">12以内</option>
+    </select>
+    <span class="x-sign">×</span>
+    <select id="maxB" onchange="newQuestion()">
+        <option value="3">3以内</option>
+        <option value="5" selected>5以内</option>
+        <option value="9">9以内</option>
+        <option value="12">12以内</option>
+    </select>
+  </div>
+
   <div id="game">
-    <div id="objects"></div>
+    <div id="objects-container">
+        <div id="objects"></div>
+    </div>
+    
     <div id="question"></div>
     <div id="answers"></div>
     <div id="message"></div>
@@ -89,54 +216,154 @@
   const answersEl = document.getElementById("answers");
   const messageEl = document.getElementById("message");
   const scoreEl = document.getElementById("score");
+  const maxAEl = document.getElementById("maxA");
+  const maxBEl = document.getElementById("maxB");
+  
   let score = 0;
-
-  const emojis = ["🍎","🍌","🍓","🍇","🍉","🍒","🥕","🌽","🐠","🐞"];
   let correctAnswer = 0;
+  let isAnswering = true; 
+  const emojis = ["🍎","🍌","🍓","🍇","🍉","🍒","🥕","🌽","🐠","🐞","🍄","🍔","🍬","🍩"];
+
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioContext();
+
+  function playTone(freq, type, duration) {
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.start();
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function playCorrectSound() {
+    playTone(880, 'sine', 0.1); 
+    setTimeout(() => playTone(1760, 'sine', 0.3), 100);
+  }
+
+  function playWrongSound() {
+    playTone(150, 'sawtooth', 0.3);
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 1.2;
+      utterance.pitch = 1.2; 
+      window.speechSynthesis.speak(utterance);
+    }
+  }
 
   function newQuestion() {
+    isAnswering = true;
     messageEl.textContent = "";
     messageEl.className = "";
     answersEl.innerHTML = "";
+    
+    const maxA = parseInt(maxAEl.value);
+    const maxB = parseInt(maxBEl.value);
 
-    const a = Math.floor(Math.random() * 5) + 1; // 1~5
-    const b = Math.floor(Math.random() * 5) + 1; // 1~5
+    const a = Math.floor(Math.random() * maxA) + 1; 
+    const b = Math.floor(Math.random() * maxB) + 1; 
     correctAnswer = a * b;
-
+    
     const emoji = emojis[Math.floor(Math.random() * emojis.length)];
     let visuals = "";
+    
+    // --- 修改：双重循环构建HTML ---
     for (let i = 0; i < a; i++) {
-      visuals += "<div>" + emoji.repeat(b) + "</div>";
+      // 5行分段线
+      if (i === 5) {
+          visuals += '<div class="separator"></div>';
+      }
+      
+      visuals += '<div class="emoji-row">';
+      for (let j = 0; j < b; j++) {
+          // 判断是否是第一列 (j == 0)
+          if (j === 0) {
+              visuals += `<span class="emoji-item first-col">${emoji}</span>`;
+          } else {
+              visuals += `<span class="emoji-item">${emoji}</span>`;
+          }
+      }
+      visuals += "</div>";
     }
+    
     objectsEl.innerHTML = visuals;
+    
+    // --- 字体适配逻辑 (由于加了padding和border，字体需要比之前稍微调小一点点) ---
+    if (a > 9) {
+        objectsEl.style.fontSize = "1.5em";
+    } else if (a > 6) {
+        objectsEl.style.fontSize = "1.8em";
+    } else if (a > 4) {
+        objectsEl.style.fontSize = "2.3em";
+    } else {
+        if (b > 8) {
+            objectsEl.style.fontSize = "2.3em";
+        } else {
+            objectsEl.style.fontSize = "3.2em";
+        }
+    }
+
     questionEl.textContent = `${a} × ${b} = ?`;
 
-    // create 4 options
     const options = new Set([correctAnswer]);
+    const maxOptionRange = Math.max(25, maxA * maxB + 10);
+    
     while (options.size < 4) {
-      options.add(Math.floor(Math.random() * 25) + 1);
+      let offset = Math.floor(Math.random() * 10) - 5; 
+      let wrongAns = correctAnswer + offset;
+      if (Math.random() > 0.7) {
+          wrongAns = Math.floor(Math.random() * maxOptionRange) + 1;
+      }
+      if (wrongAns > 0 && wrongAns !== correctAnswer) {
+        options.add(wrongAns);
+      }
     }
+    
     const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
 
     for (const num of shuffled) {
       const btn = document.createElement("div");
       btn.className = "btn";
       btn.textContent = num;
-      btn.onclick = () => checkAnswer(num);
+      btn.onclick = (e) => checkAnswer(num, btn);
       answersEl.appendChild(btn);
     }
   }
 
-  function checkAnswer(ans) {
+  function checkAnswer(ans, btnElement) {
+    if (!isAnswering) return;
+
     if (ans === correctAnswer) {
+      isAnswering = false;
       messageEl.textContent = "🎉 太棒了！";
-      messageEl.className = "correct";
+      messageEl.className = "correct-msg";
+      playCorrectSound();
+      setTimeout(() => speakText("回答正确"), 400);
       score++;
       scoreEl.textContent = "得分：" + score;
-      setTimeout(newQuestion, 1000);
+      
+      const allBtns = document.querySelectorAll('.btn');
+      allBtns.forEach(b => b.classList.add('disabled'));
+      btnElement.style.backgroundColor = "#2ecc71";
+      btnElement.style.color = "white";
+      btnElement.style.borderColor = "#27ae60";
+
+      setTimeout(newQuestion, 2000);
     } else {
       messageEl.textContent = "😅 再试试～";
-      messageEl.className = "wrong";
+      messageEl.className = "wrong-msg";
+      playWrongSound();
+      btnElement.classList.add("wrong-choice");
+      btnElement.onclick = null;
     }
   }
 
