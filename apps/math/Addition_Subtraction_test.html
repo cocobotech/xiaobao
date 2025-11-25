@@ -453,49 +453,32 @@
       var num1, num2, answer, operator;
 
       if (isAddition) {
-        // ============ 关键修改：确保加法结果不超过100 ============
-        // 生成第一个数字 (0-99)
         num1 = Math.floor(Math.random() * 99);
-        
-        // 生成第二个数字，确保 num1 + num2 <= 100
         var maxNum2 = 99 - num1;
         num2 = Math.floor(Math.random() * (maxNum2 + 1));
-        
         answer = num1 + num2;
         operator = '+';
         
-        // 双重验证：确保结果不超过99
         if (answer > 99) {
-          console.error('加法结果超过100！', num1, '+', num2, '=', answer);
-          // 如果超过，重新生成
           return generateQuestion();
         }
-        // ========================================================
-        
       } else {
-        // Generate subtraction based on borrowing preference
         var needsBorrowing;
         
         if (testType === 'mixed') {
-          // For mixed mode, respect the borrowing setting
           needsBorrowing = borrowing === 'with' || (borrowing === 'both' && Math.random() > 0.5);
         } else {
-          // For pure subtraction mode
           needsBorrowing = borrowing === 'with' || (borrowing === 'both' && Math.random() > 0.5);
         }
         
         if (needsBorrowing) {
-          // Create a subtraction that REQUIRES borrowing
-          // Ensure ones digit of num1 < ones digit of num2
           do {
             num1 = Math.floor(Math.random() * (maxNumber - 10)) + 10;
             var tens1 = Math.floor(num1 / 10);
             var ones1 = num1 % 10;
             
-            // Choose ones2 to be greater than ones1
             var ones2 = ones1 + 1 + Math.floor(Math.random() * (9 - ones1));
             
-            // Choose tens2 to be less than tens1
             var maxTens2 = Math.max(0, tens1 - 1);
             var tens2 = Math.floor(Math.random() * (maxTens2 + 1));
             
@@ -503,13 +486,10 @@
           } while (num2 >= num1 || num2 === 0 || ones1 >= ones2);
           
         } else if (borrowing === 'without') {
-          // Create a subtraction that does NOT require borrowing
-          // Ensure ones digit of num1 >= ones digit of num2
           do {
             num1 = Math.floor(Math.random() * maxNumber) + 10;
             var ones1 = num1 % 10;
             
-            // Choose ones2 to be less than or equal to ones1
             var ones2 = Math.floor(Math.random() * (ones1 + 1));
             
             var maxTens = Math.floor(num1 / 10);
@@ -519,7 +499,6 @@
           } while (num2 > num1 || num2 === 0);
           
         } else {
-          // borrowing === 'both', randomly choose
           num1 = Math.floor(Math.random() * maxNumber) + 10;
           num2 = Math.floor(Math.random() * num1);
           if (num2 === 0) num2 = Math.floor(Math.random() * 9) + 1;
@@ -543,24 +522,20 @@
     function generateWrongAnswers(correct) {
       var wrongs = [];
       
-      // Two answers with ones digit off by ±1
       var ones1 = correct + 1;
       var ones2 = correct - 1;
       if (ones2 < 0) ones2 = correct + 2;
       
-      // Two answers with tens digit off by ±10
       var tens1 = correct + 10;
       var tens2 = correct - 10;
       if (tens2 < 0) tens2 = correct + 20;
 
       wrongs.push(ones1, ones2, tens1, tens2);
       
-      // Remove duplicates and the correct answer
       wrongs = wrongs.filter(function(val, idx, self) {
         return self.indexOf(val) === idx && val !== correct && val >= 0;
       });
 
-      // If we don't have enough unique wrong answers, add more
       while (wrongs.length < 4) {
         var offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
         var newWrong = correct + offset;
@@ -631,27 +606,47 @@
       var q = questions[currentQuestion];
       var btns = document.querySelectorAll('.answer-btn');
 
-      btns.forEach(function(btn) {
-        btn.classList.add('disabled');
-        if (parseInt(btn.textContent) === q.correct) {
-          btn.classList.add('correct');
-        } else if (parseInt(btn.textContent) === selected) {
-          btn.classList.add('wrong');
-        }
-      });
-
       if (selected === q.correct) {
+        // 答对了：显示正确动画，然后进入下一题
+        btns.forEach(function(btn) {
+          btn.classList.add('disabled');
+          if (parseInt(btn.textContent) === q.correct) {
+            btn.classList.add('correct');
+          }
+        });
+        
         correctAnswers++;
         speak('正确');
+        
+        setTimeout(function() {
+          currentQuestion++;
+          showQuestion();
+        }, 1500);
+        
       } else {
+        // 答错了：只显示错误动画，然后重置按钮状态，让用户继续答题
         wrongAnswers++;
-        speak('错误');
+        speak('错误，再试一次');
+        
+        btns.forEach(function(btn) {
+          if (parseInt(btn.textContent) === selected) {
+            btn.classList.add('wrong');
+            btn.classList.add('disabled');
+          }
+        });
+        
+        // 1秒后移除错误动画，让用户可以继续选择其他答案
+        setTimeout(function() {
+          btns.forEach(function(btn) {
+            if (parseInt(btn.textContent) === selected) {
+              btn.classList.remove('wrong');
+              btn.classList.remove('disabled');
+              btn.style.opacity = '0.3';
+              btn.style.pointerEvents = 'none';
+            }
+          });
+        }, 1000);
       }
-
-      setTimeout(function() {
-        currentQuestion++;
-        showQuestion();
-      }, 1500);
     }
 
     function showResults() {
