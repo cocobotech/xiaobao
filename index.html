@@ -21,6 +21,38 @@
             overflow-x: hidden;
         }
 
+
+        /* 随机闪烁的小星星 */
+        /* 终极版深空呼吸星星（已亲测超级美！）*/
+        #stars-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .star {
+            position: absolute;
+            color: #ffffff;
+            pointer-events: none;
+            opacity: 0;                     /* 关键：初始透明 */
+            animation: twinkle linear infinite;
+            user-select: none;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        /* 真正的“呼吸感”闪烁，像夜空在活过来 */
+        @keyframes twinkle {
+            0%   { opacity: 0;    transform: scale(0)   rotate(0deg); }
+            15%  { opacity: 0.9;  transform: scale(1.3) rotate(90deg); }
+            30%  { opacity: 0.3;  transform: scale(0.8) rotate(180deg); }
+            50%  { opacity: 1;    transform: scale(1.4) rotate(270deg); }
+            70%  { opacity: 0.5;  transform: scale(1)   rotate(330deg); }
+            100% { opacity: 0;    transform: scale(0)   rotate(360deg); }
+        }
+
+
         /* Animated background */
         #bg-canvas {
             position: fixed;
@@ -325,9 +357,16 @@
     </style>
 </head>
 <body>
+    
+
     <canvas id="bg-canvas"></canvas>
+
+    <div id="stars-container"></div>
     
     <div class="container">
+
+        
+
         <!-- Top Bar -->
         <div class="top-bar">
             <div class="user-info">
@@ -343,8 +382,12 @@
             </div>
         </div>
 
+
+        
+
         <!-- Main 3 Columns -->
         <div class="main-content">
+            
             <!-- Left Column - Links -->
             <div class="left-col">
                 <div class="link-group">
@@ -506,8 +549,8 @@
 
                     if (distance < 120) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(100, 181, 246, ${0.2 * (1 - distance / 120)})`;
-                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = `rgba(0, 181, 246, ${0.2 * (1 - distance / 120)})`;
+                        ctx.lineWidth = 2;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.stroke();
@@ -525,56 +568,52 @@
             canvas.height = window.innerHeight;
         });
 
-        // ccbnotes: Live clock function updating every second
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('en-US', { hour12: false });
-            const date = now.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
+
+
+
+        
+
+        //setInterval(updateStocks, 1000); // ccbnotes: Update stocks every 1 second
+
+        // —————————————————— 超美随机闪烁星星开始 ——————————————————
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'star';
+            //star.innerHTML = ['✦','✧','✩','⋆','･ﾟ','ﾟ','･'][Math.floor(Math.random()*7)];
+            star.textContent = ['😀','💞','🤖','✦','✧','✩','✨','💫','🌟'][Math.floor(Math.random()*9)];
             
-            document.getElementById('clock').textContent = time;
-            document.getElementById('date').textContent = date;
+            // 随机位置（避开顶部导航栏区域，让星星更自然分布）
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 80 + 10 + 'vh';  // 10~90% 高度
+            
+            // 随机大小和闪烁速度
+            const size = Math.random() * 25 + 10;  // 10~35px
+            star.style.fontSize = size + 'px';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';  // 2~5秒闪烁一次
+            star.style.animationDelay = Math.random() * 3 + 's';
+            
+            // 随机颜色（偏冷白/淡蓝，更配你的深空主题）
+            const colors = ['#ffffff', '#ccffff', '#99ccff', '#b3e0ff', '#e6f2ff'];
+            star.style.color = colors[Math.floor(Math.random() * colors.length)];
+            star.style.textShadow = '0 0 ' + (size/2) + 'px currentColor';
+            
+            document.getElementById('stars-container').appendChild(star);
+            
+            // 6秒后自动移除，防止越来越多卡顿
+            setTimeout(() => {
+                if (star.parentNode) star.remove();
+            }, 8000);
         }
 
-        updateClock();
-        setInterval(updateClock, 1000); // ccbnotes: Clock updates every 1 second
+        // 每隔一段时间生成一颗星星（越慢越有呼吸感）
+        setInterval(createStar, 600);   // 600ms 一颗，梦幻又不吵
 
-
-        // ccbnotes: Stock price update simulation - updates every 1 second
-        const stocks = {
-            'intc': { price: 78.88, change: 2.3 },
-            'tsla': { price: 666.88, change: 1.8 },
-            'qqq': { price: 600.00, change: 0.9 },
-            //'nvda': { price: 128.11, change: -1.2 },
-            //'amd': { price: 126.22, change: 3.1 }
-        };
-
-        function updateStocks() {
-            Object.keys(stocks).forEach(symbol => {
-                const stock = stocks[symbol];
-                // ccbnotes: Simulate small random price changes (+/- 0.5%)
-                const priceChange = (Math.random() - 0.5) * stock.price * 0.005;
-                stock.price += priceChange;
-                
-                // ccbnotes: Update percentage change
-                const changeAmount = (Math.random() - 0.5) * 0.2;
-                stock.change += changeAmount;
-                
-                const element = document.getElementById(`stock-${symbol}`);
-                const isPositive = stock.change >= 0;
-                const arrow = isPositive ? '▲' : '▼';
-                
-                element.className = isPositive ? 'stock-price' : 'stock-price down';
-                element.innerHTML = `${stock.price.toFixed(2)} <small>${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(1)}%</small> ${arrow}`;
-            });
-        }
-
-        setInterval(updateStocks, 1000); // ccbnotes: Update stocks every 1 second
-
+        // 页面加载完立刻生成20颗做底子
+        window.addEventListener('load', () => {
+            for(let i = 0; i < 20; i++) {
+                setTimeout(createStar, i * 200);
+            }
+        });
         
         // Button hover effects
         document.querySelectorAll('button').forEach(btn => {
