@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COCOBO-Typing Practice</title>
+    <!-- 引入 Roboto Mono 用于代码和数字显示 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* COCOBO 深蓝色 (Navy) 主题 */
         :root {
             --navy-blue: #667eea;
             --dark-purple: #2e5863;
@@ -13,6 +14,10 @@
             --white: white;
             --light-gray: #e9ecef;
             --current-bg: #ffd700;
+            --panel-bg: rgba(26, 32, 44, 0.95);
+            --text-color: #2d3748;
+            --stat-label: #a0aec0;
+            --stat-val: #e2e8f0;
         }
 
         * {
@@ -22,67 +27,156 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--navy-blue) 0%, var(--dark-purple) 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        .container {
+        /* --- 布局容器 --- */
+        .layout-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1400px; /* 稍微加宽以容纳7列按钮 */
+            margin: 0 auto;
+            gap: 40px;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: 5vh;
+        }
+
+        /* --- 左侧侧边栏 --- */
+        .left-sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 40px;
+        }
+
+        .side-panel {
+            background: var(--panel-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: var(--white);
+        }
+
+        /* 计时器样式 */
+        .timer-label {
+            font-size: 0.8em;
+            letter-spacing: 3px;
+            color: var(--stat-label);
+            margin-bottom: 5px;
+            border-bottom: 1px solid #4a5568;
+            padding-bottom: 5px;
+        }
+
+        .timer-display {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.2em;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+            font-weight: 500;
+        }
+
+        .timer-ms {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2em;
+            color: #718096;
+        }
+
+        .side-panel.finished {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .side-panel.finished .timer-display {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        /* 统计样式 */
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+        .stat-item:last-child { border-bottom: none; }
+
+        .stat-label { font-size: 0.9em; color: var(--stat-label); }
+        .stat-value { font-family: 'Roboto Mono', monospace; font-size: 1.1em; font-weight: 500; color: var(--stat-val); }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--green);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .reset-btn:hover { background: #218838; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
+
+        /* --- 右侧主要内容区 --- */
+        .main-container {
+            flex-grow: 1;
+            max-width: 1100px;
             background: var(--white);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 1200px;
-            width: 100%;
         }
 
         h1 {
             text-align: center;
             color: var(--navy-blue);
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 700;
         }
 
+        /* 关卡网格 - 改为7列以适应 Level 7 在第一行 */
         .level-selection {
             display: grid;
-            grid-template-columns: repeat(7, 1fr); /* 第一行最多7个按钮（Level 1-7） */
-            gap: 12px;
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 10px;
             margin-bottom: 30px;
         }
 
         .level-btn {
-            padding: 15px 10px;
-            border: 3px solid var(--navy-blue);
+            padding: 12px 5px;
+            border: 2px solid var(--navy-blue);
             background: var(--white);
             color: var(--navy-blue);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95em;
-            font-weight: bold;
-            transition: all 0.3s;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.2s;
             text-align: center;
         }
 
-        .level-btn:hover {
-            background: var(--navy-blue);
-            color: var(--white);
-            transform: translateY(-2px);
-        }
-
-        .level-btn.active {
-            background: var(--navy-blue);
-            color: var(--white);
-        }
-
-        .level-description {
-            font-size: 0.85em;
-            margin-top: 5px;
-            opacity: 0.9;
-        }
+        .level-btn:hover { background: var(--navy-blue); color: var(--white); transform: translateY(-2px); }
+        .level-btn.active { background: var(--navy-blue); color: var(--white); box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); }
+        .level-description { font-size: 0.75em; margin-top: 3px; opacity: 0.8; font-weight: 400; }
 
         .file-upload {
             margin-bottom: 20px;
@@ -90,255 +184,164 @@
             border: 2px dashed var(--navy-blue);
             border-radius: 10px;
             display: none;
+            background: #f8f9fa;
         }
-
-        .vocab-selector {
-            margin-bottom: 15px;
-        }
-
-        .vocab-selector label {
-            display: block;
-            font-weight: bold;
-            color: var(--navy-blue);
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .vocab-selector select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--navy-blue);
-            border-radius: 8px;
-            font-size: 1em;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .vocab-selector select:hover {
-            border-color: var(--dark-purple);
-        }
-
-        .vocab-selector select:focus {
-            outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
-        }
-
-        .file-upload input[type="file"] {
-            display: none;
-        }
-
-        .file-upload label {
-            display: inline-block;
-            padding: 10px 20px;
-            background: var(--navy-blue);
-            color: var(--white);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .vocab-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--navy-blue); }
+        
+        .lowercase-option {
+            grid-column: span 7; /* 跨越7列 */
             margin-top: 10px;
-        }
-
-        .file-upload label:hover {
-            background: var(--dark-purple);
-        }
-
-        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             color: var(--navy-blue);
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .practice-area {
-            background: #f8f9fa;
+            background: #fdfdfd;
             padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            min-height: 200px;
+            border-radius: 12px;
+            margin-bottom: 0;
+            min-height: 250px;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .text-display {
-            font-size: 2em;
+            font-size: 24px;
             line-height: 1.8;
-            letter-spacing: 2px;
-            overflow-wrap: normal;
-            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            font-family: 'Roboto Mono', 'Consolas', monospace; 
+            font-weight: 400;
+            color: #4a5568;
         }
 
         .letter {
             display: inline-block;
-            padding: 2px;
-            transition: all 0.2s;
+            padding: 0 1px;
+            border-radius: 2px;
+            position: relative;
         }
 
-        .letter.space {
-            background: #e0e0e0;
-            border: 1px solid #999;
-            border-radius: 3px;
-            margin: 0 2px;
-        }
-
-        .letter.space.current {
-            background: var(--current-bg);
-            border: 2px solid #ff8c00;
-        }
+        .letter.space { min-width: 12px; }
 
         .letter.current {
-            background: var(--current-bg);
+            background-color: rgba(255, 215, 0, 0.4);
             color: #000;
-            font-weight: bold;
-            animation: pulse 0.8s infinite;
+            border-bottom: 2px solid #ff8c00;
+            animation: blink 1s infinite;
         }
 
-        .letter.correct {
-            color: var(--green);
+        .letter.correct { color: var(--green); }
+        .letter.incorrect { background-color: #fed7d7; color: #e53e3e; text-decoration: line-through; }
+
+        @keyframes blink {
+            0%, 100% { border-bottom-color: #ff8c00; }
+            50% { border-bottom-color: transparent; }
         }
 
-        .letter.incorrect {
-            background: #dc3545;
-            color: var(--white);
-            animation: shake 0.3s;
+        @media (max-width: 1200px) {
+            .level-selection { grid-template-columns: repeat(4, 1fr); }
+            .lowercase-option { grid-column: span 4; }
         }
 
-        .word {
-            display: inline-block;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            background: var(--light-gray);
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--navy-blue);
-        }
-
-        .reset-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--green);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-
-        .reset-btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .filename {
-            color: var(--green);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .or-divider {
-            text-align: center;
-            margin: 15px 0;
-            color: #666;
-            font-weight: bold;
-        }
-
-        .lowercase-option {
-            grid-column: span 3;
-            display: flex;
-            align-items: center;
-            font-size: 0.95em;
-            color: var(--navy-blue);
+        @media (max-width: 1000px) {
+            .layout-wrapper { flex-direction: column; align-items: center; }
+            .left-sidebar { width: 100%; flex-direction: row; justify-content: center; position: static; }
+            .side-panel { flex: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⌨️ COCOBO Typing Practice2</h1>
-        <div class="level-selection">
-            <button class="level-btn" data-level="1"> Level 1 <div class="level-description">asdfg (Left)</div> </button>
-            <button class="level-btn" data-level="2"> Level 2 <div class="level-description">hjkl; (Right)</div> </button>
-            <button class="level-btn" data-level="3"> Level 3 <div class="level-description">qwert (Top-L)</div> </button>
-            <button class="level-btn" data-level="4"> Level 4 <div class="level-description">yuiop (Top-R)</div> </button>
-            <button class="level-btn" data-level="5"> Level 5 <div class="level-description">zxcvb (Bot-L)</div> </button>
-            <button class="level-btn" data-level="6"> Level 6 <div class="level-description">nm,./ (Bot-R)</div> </button>
-            <button class="level-btn" data-level="7"> Level 7 <div class="level-description">Vocabulary</div> </button>
-            <button class="level-btn" data-level="8"> Level 8 <div class="level-description">1+2 Combo</div> </button>
-            <button class="level-btn" data-level="9"> Level 9 <div class="level-description">1+3 Combo</div> </button>
-            <button class="level-btn" data-level="10"> Level 10 <div class="level-description">1+3+5 Combo</div> </button>
-            <button class="level-btn" data-level="11"> Level 11 <div class="level-description">2+4 Combo</div> </button>
-            <button class="level-btn" data-level="12"> Level 12 <div class="level-description">COCOBO</div> </button>
-            <label class="lowercase-option" id="lowercaseLabel" style="display: none;">
-                <input type="checkbox" id="lowercaseCheckbox" checked> 全部小写
-            </label>
-        </div>
-        <div class="file-upload" id="fileUpload">
-            <div class="vocab-selector">
-                <label for="vocabSelect">📚 Select Vocabulary Dictionary:</label>
-                <select id="vocabSelect">
-                    <option value="">-- Choose a dictionary --</option>
-                </select>
+
+    <div class="layout-wrapper">
+        
+        <!-- 左侧功能区 -->
+        <aside class="left-sidebar">
+            <div class="side-panel" id="timerPanel">
+                <div class="timer-label">TIME</div>
+                <div>
+                    <span class="timer-display" id="timerSec">00</span>
+                    <span class="timer-display">:</span>
+                    <span class="timer-ms" id="timerMs">00</span>
+                </div>
             </div>
-            <div id="loadingMsg" class="loading" style="display: none;">Loading vocabulary...</div>
-            <div class="or-divider">- OR -</div>
-            <div style="text-align: center;">
-                <label for="fileInput">📁 Upload Custom CSV/TXT File</label>
-                <input type="file" id="fileInput" accept=".txt,.csv">
-                <div class="filename" id="filename"></div>
+
+            <div class="side-panel">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Correct</span>
+                        <span class="stat-value" id="correctCount" style="color: #48bb78;">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Errors</span>
+                        <span class="stat-value" id="errorCount" style="color: #f56565;">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Accuracy</span>
+                        <span class="stat-value" id="accuracy" style="color: #63b3ed;">100%</span>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="practice-area">
-            <div class="text-display" id="textDisplay">
-                Select a level to start practicing!
+
+            <button class="reset-btn" id="resetBtn">🔄 Reset</button>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-container">
+            <h1>⌨️ COCOBO Typing Practice</h1>
+            
+            <div class="level-selection">
+                <button class="level-btn" data-level="1"> Level 1 <div class="level-description">asdfg (L)</div> </button>
+                <button class="level-btn" data-level="2"> Level 2 <div class="level-description">hjkl; (R)</div> </button>
+                <button class="level-btn" data-level="3"> Level 3 <div class="level-description">qwert (TL)</div> </button>
+                <button class="level-btn" data-level="4"> Level 4 <div class="level-description">yuiop (TR)</div> </button>
+                <button class="level-btn" data-level="5"> Level 5 <div class="level-description">zxcvb (BL)</div> </button>
+                <button class="level-btn" data-level="6"> Level 6 <div class="level-description">nm,./ (BR)</div> </button>
+                <button class="level-btn" data-level="7"> Level 7 <div class="level-description">Vocab</div> </button>
+                
+                <button class="level-btn" data-level="8"> Level 8 <div class="level-description">1+2 Mix</div> </button>
+                <button class="level-btn" data-level="9"> Level 9 <div class="level-description">1+3 Mix</div> </button>
+                <button class="level-btn" data-level="10"> Level 10 <div class="level-description">1+3+5</div> </button>
+                <button class="level-btn" data-level="11"> Level 11 <div class="level-description">2+4 Mix</div> </button>
+                <button class="level-btn" data-level="12"> Level 12 <div class="level-description">COCOBO</div> </button>
+                <!-- 空的div占位，保持排版整齐 (如果需要) -->
+                <div></div> 
+                <div></div>
+
+                <label class="lowercase-option" id="lowercaseLabel" style="display: none;">
+                    <input type="checkbox" id="lowercaseCheckbox" checked> &nbsp;Force Lowercase
+                </label>
             </div>
-        </div>
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-label">Correct</div>
-                <div class="stat-value" id="correctCount">0</div>
+
+            <div class="file-upload" id="fileUpload">
+                <div class="vocab-selector">
+                    <label for="vocabSelect" style="display:block;margin-bottom:8px;font-weight:600;color:var(--navy-blue)">📚 Select Dictionary:</label>
+                    <select id="vocabSelect">
+                        <option value="">-- Choose --</option>
+                    </select>
+                </div>
+                <div id="loadingMsg" class="loading" style="display:none; text-align:center; color:var(--navy-blue); margin:10px;">Loading...</div>
+                <div class="or-divider" style="text-align:center; margin:10px 0; color:#888;">- OR -</div>
+                <div style="text-align: center;">
+                    <label for="fileInput" style="background:var(--navy-blue); color:white; padding:8px 16px; border-radius:5px; cursor:pointer;">📁 Upload File</label>
+                    <input type="file" id="fileInput" accept=".txt,.csv" style="display:none;">
+                    <div class="filename" id="filename" style="margin-top:5px; color:var(--green);"></div>
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">Errors</div>
-                <div class="stat-value" id="errorCount">0</div>
+
+            <div class="practice-area">
+                <div class="text-display" id="textDisplay">
+                    Select a level to start practicing...
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">Accuracy</div>
-                <div class="stat-value" id="accuracy">100%</div>
-            </div>
-        </div>
-        <button class="reset-btn" id="resetBtn">🔄 Reset Practice</button>
+        </main>
     </div>
+
     <script>
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -347,12 +350,12 @@
             const gainNode = audioContext.createGain();
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 200;
-            oscillator.type = 'square';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            oscillator.frequency.value = 150; 
+            oscillator.type = 'sawtooth';
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
+            oscillator.stop(audioContext.currentTime + 0.15);
         }
 
         function playTypingSound() {
@@ -360,30 +363,86 @@
             const gainNode = audioContext.createGain();
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            oscillator.frequency.value = 600; 
+            oscillator.type = 'triangle';
+            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.05);
         }
 
+        // --- Config ---
         const levelChars = {
-            1: 'asdfg',
-            2: 'hjkl',
-            3: 'qwert',
-            4: 'yuiop',
-            5: 'zxcvb',
-            6: 'nm,.',
-            8: 'asdfghjkl',
-            9: 'asdfgqwert',
-            10: 'asdfgzxcvbqwert',
-            11: 'hjklyuiop',
-            12: 'hjklyuiop'
+            1: 'asdfg', 2: 'hjkl', 3: 'qwert', 4: 'yuiop', 5: 'zxcvb', 6: 'nm,.',
+            8: 'asdfghjkl', 9: 'asdfgqwert', 10: 'asdfgzxcvbqwert', 11: 'hjklyuiop', 12: 'hjklyuiop'
         };
-
         const cocoText = `abcdefghijklmnopqrstuvwxyz abcdefgh ijklmn opqrst uvwxyz jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan cocobotech.github.io`;
 
+        // --- State ---
+        let currentText = '';
+        let currentPosition = 0;
+        let correctCount = 0;
+        let errorCount = 0;
+        let currentLevel = null;
+        let currentVocabWords = [];
+        let currentOriginalText = '';
+        let isLowercase = true;
+        let startTime = 0;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        const textDisplay = document.getElementById('textDisplay');
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const fileUpload = document.getElementById('fileUpload');
+        const lowercaseLabel = document.getElementById('lowercaseLabel');
+        const lowercaseCheckbox = document.getElementById('lowercaseCheckbox');
+        const vocabSelect = document.getElementById('vocabSelect');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const fileInput = document.getElementById('fileInput');
+        const filename = document.getElementById('filename');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        const correctCountEl = document.getElementById('correctCount');
+        const errorCountEl = document.getElementById('errorCount');
+        const accuracyEl = document.getElementById('accuracy');
+        const timerSecEl = document.getElementById('timerSec');
+        const timerMsEl = document.getElementById('timerMs');
+        const timerPanel = document.getElementById('timerPanel');
+
+        // --- Timer ---
+        function resetTimer() {
+            stopTimer();
+            isTimerRunning = false;
+            timerSecEl.textContent = '00';
+            timerMsEl.textContent = '00';
+            timerPanel.classList.remove('finished');
+        }
+
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 37);
+            }
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const ms = Math.floor((elapsed % 1000) / 10);
+            timerSecEl.textContent = seconds.toString().padStart(2, '0');
+            timerMsEl.textContent = ms.toString().padStart(2, '0');
+        }
+
+        // --- Helpers ---
         function generateRandomText(letters, numLetters = 60) {
             let text = '';
             let lastChar = '';
@@ -396,34 +455,11 @@
                 lastChar = newChar;
                 if ((i + 1) % 5 === 0) {
                     text += ' ';
-                    lastChar = ''; // Reset after space
+                    lastChar = '';
                 }
             }
             return text.trim();
         }
-
-        let currentText = '';
-        let currentPosition = 0;
-        let correctCount = 0;
-        let errorCount = 0;
-        let currentLevel = null;
-        let currentVocabWords = [];
-        let currentOriginalText = '';
-        let isLowercase = true;
-
-        const textDisplay = document.getElementById('textDisplay');
-        const levelBtns = document.querySelectorAll('.level-btn');
-        const fileUpload = document.getElementById('fileUpload');
-        const lowercaseLabel = document.getElementById('lowercaseLabel');
-        const lowercaseCheckbox = document.getElementById('lowercaseCheckbox');
-        const vocabSelect = document.getElementById('vocabSelect');
-        const loadingMsg = document.getElementById('loadingMsg');
-        const fileInput = document.getElementById('fileInput');
-        const filename = document.getElementById('filename');
-        const resetBtn = document.getElementById('resetBtn');
-        const correctCountEl = document.getElementById('correctCount');
-        const errorCountEl = document.getElementById('errorCount');
-        const accuracyEl = document.getElementById('accuracy');
 
         levelBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -431,26 +467,26 @@
                 currentLevel = level;
                 levelBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                
+                fileUpload.style.display = 'none';
+                lowercaseLabel.style.display = 'none';
+
                 if (level === '7') {
                     fileUpload.style.display = 'block';
                     lowercaseLabel.style.display = 'flex';
-                    textDisplay.innerHTML = 'Please select a vocabulary dictionary or upload a file.';
+                    textDisplay.innerHTML = 'Please select a dictionary or upload a file.';
                     currentText = '';
                     currentVocabWords = [];
                     currentOriginalText = '';
+                    resetTimer();
+                    updateStats();
                     populateVocabSelect();
                 } else if (level === '12') {
-                    fileUpload.style.display = 'none';
-                    lowercaseLabel.style.display = 'none';
-                    
                     startPractice(cocoText);
                 } else {
-                    fileUpload.style.display = 'none';
-                    lowercaseLabel.style.display = 'none';
                     const chars = levelChars[level];
                     if (chars) {
-                        const randomText = generateRandomText(chars, 60);
-                        startPractice(randomText);
+                        startPractice(generateRandomText(chars, 60));
                     }
                 }
             });
@@ -461,150 +497,101 @@
             regeneratePracticeText();
         });
 
-        // Function to dynamically populate the vocabulary select
         async function populateVocabSelect() {
-            vocabSelect.innerHTML = '<option value="">-- Choose a dictionary --</option>'; // Reset options
+            vocabSelect.innerHTML = '<option value="">-- Choose --</option>';
             loadingMsg.style.display = 'block';
             try {
                 const apiUrl = 'https://api.github.com/repos/cocobotech/xiaobao/contents/apps/Vocabulary';
                 const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch directory contents');
-                }
+                if (!response.ok) throw new Error('Fetch failed');
                 const data = await response.json();
-                const dictFiles = data.filter(item => item.type === 'file' && 
-                    (item.name.startsWith('dict_') && item.name.endsWith('.json') ||
-                     item.name.startsWith('txt_') && item.name.endsWith('.txt')));
+                const dictFiles = data.filter(item => item.type === 'file' && (item.name.startsWith('dict_') || item.name.startsWith('txt_')));
+                
                 dictFiles.forEach(file => {
                     const option = document.createElement('option');
                     option.value = `https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/Vocabulary/${file.name}`;
-                    // Parse filename to create nice label
                     if (file.name.startsWith('dict_')) {
                         const parts = file.name.replace('dict_', '').replace('.json', '').split('_');
-                        if (parts.length === 2) {
-                            let type = parts[0].toUpperCase().replace('CET', 'CET-');
-                            let level = parts[1];
-                            option.textContent = `${type} Level ${level}`;
-                        } else {
-                            option.textContent = file.name.replace('dict_', '').replace('.json', '');
-                        }
-                    } else if (file.name.startsWith('txt_')) {
-                        option.textContent = `Article: ${file.name.replace('txt_', '').replace('.txt', '')}`;
+                        option.textContent = parts.length === 2 ? `${parts[0].toUpperCase().replace('CET', 'CET-')} Level ${parts[1]}` : file.name;
+                    } else {
+                        option.textContent = file.name.replace('txt_', '').replace('.txt', '');
                     }
                     vocabSelect.appendChild(option);
                 });
-                if (dictFiles.length === 0) {
-                    textDisplay.innerHTML = 'No vocabulary files found.';
-                }
             } catch (error) {
-                console.error('Error populating vocabulary select:', error);
-                textDisplay.innerHTML = `❌ Error loading dictionaries: ${error.message}`;
+                textDisplay.innerHTML = `Error: ${error.message}`;
             } finally {
                 loadingMsg.style.display = 'none';
             }
         }
 
-        // Vocabulary selector handler
         vocabSelect.addEventListener('change', async (e) => {
             const url = e.target.value;
             if (!url) return;
             loadingMsg.style.display = 'block';
-            textDisplay.innerHTML = 'Loading vocabulary...';
+            textDisplay.innerHTML = 'Loading...';
             try {
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Failed to load file');
-                }
+                if (!response.ok) throw new Error('Load failed');
                 let practiceText = '';
                 currentVocabWords = [];
                 currentOriginalText = '';
+
                 if (url.endsWith('.json')) {
                     const data = await response.json();
-                    // Extract English words from groups
                     const words = [];
                     if (data.groups) {
-                        for (const groupKey in data.groups) {
-                            const group = data.groups[groupKey];
-                            group.forEach(item => {
-                                if (item.english) {
-                                    words.push(item.english);
-                                }
-                            });
-                        }
+                        for (const k in data.groups) data.groups[k].forEach(i => { if (i.english) words.push(i.english); });
                     }
-                    if (words.length === 0) {
-                        throw new Error('No words found in vocabulary file');
-                    }
-                    // Shuffle words randomly
-                    const shuffledWords = words.sort(() => Math.random() - 0.5);
-                    // Store original words for reset functionality
-                    currentVocabWords = shuffledWords.slice();
-                    // Apply lowercase if checked
-                    const processedWords = isLowercase ? shuffledWords.map(w => w.toLowerCase()) : shuffledWords;
-                    practiceText = processedWords.join(' ');
-                } else if (url.endsWith('.txt')) {
+                    if (words.length === 0) throw new Error('No words');
+                    currentVocabWords = words.sort(() => Math.random() - 0.5);
+                    practiceText = (isLowercase ? currentVocabWords.map(w => w.toLowerCase()) : currentVocabWords).join(' ');
+                } else {
                     let text = await response.text();
                     text = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
                     currentOriginalText = text;
                     practiceText = isLowercase ? text.toLowerCase() : text;
                 }
-                loadingMsg.style.display = 'none';
                 startPractice(practiceText);
             } catch (error) {
-                console.error('Error loading file:', error);
+                textDisplay.innerHTML = `Error: ${error.message}`;
+            } finally {
                 loadingMsg.style.display = 'none';
-                textDisplay.innerHTML = `❌ Error loading file: ${error.message}<br>Please try another dictionary.`;
             }
         });
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                filename.textContent = `Loaded: ${file.name}`;
+                filename.textContent = file.name;
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    let text = event.target.result;
-                    if (file.name.endsWith('.csv')) {
-                        text = text.split(/[,\n\r]+/).join(' ');
-                    }
-                    text = text.replace(/\s+/g, ' ').trim();
-                    currentVocabWords = [];
+                reader.onload = (ev) => {
+                    let text = ev.target.result.replace(/\s+/g, ' ').trim();
                     currentOriginalText = text;
-                    const practiceText = isLowercase ? text.toLowerCase() : text;
-                    startPractice(practiceText);
+                    startPractice(isLowercase ? text.toLowerCase() : text);
                 };
                 reader.readAsText(file);
             }
         });
 
         resetBtn.addEventListener('click', () => {
-            if (currentLevel && currentLevel !== '7' && currentLevel !== '12') {
+            if (currentLevel === '7') regeneratePracticeText();
+            else if (currentLevel === '12') startPractice(cocoText);
+            else if (currentLevel) {
                 const chars = levelChars[currentLevel];
-                if (chars) {
-                    const randomText = generateRandomText(chars, 60);
-                    startPractice(randomText);
-                }
-            } else if (currentLevel === '7'  ) {
-                regeneratePracticeText();
-            } else if (currentLevel === '12') {
-                startPractice(cocoText);
+                if (chars) startPractice(generateRandomText(chars, 60));
             }
         });
 
         function regeneratePracticeText() {
             let practiceText = '';
             if (currentVocabWords.length > 0) {
-                // Re-shuffle the original words
-                const shuffledWords = currentVocabWords.sort(() => Math.random() - 0.5);
-                // Apply lowercase if checked
-                const processedWords = isLowercase ? shuffledWords.map(w => w.toLowerCase()) : shuffledWords;
-                practiceText = processedWords.join(' ');
+                const shuffled = currentVocabWords.sort(() => Math.random() - 0.5);
+                practiceText = (isLowercase ? shuffled.map(w => w.toLowerCase()) : shuffled).join(' ');
             } else if (currentOriginalText) {
                 practiceText = isLowercase ? currentOriginalText.toLowerCase() : currentOriginalText;
             }
-            if (practiceText) {
-                startPractice(practiceText);
-            }
+            if (practiceText) startPractice(practiceText);
         }
 
         function startPractice(text) {
@@ -612,6 +599,7 @@
             currentPosition = 0;
             correctCount = 0;
             errorCount = 0;
+            resetTimer();
             updateStats();
             displayText();
         }
@@ -622,17 +610,13 @@
             const words = currentText.split(' ');
             let pos = 0;
             for (let w = 0; w < words.length; w++) {
-                const word = words[w];
                 const wordSpan = document.createElement('span');
                 wordSpan.className = 'word';
-                for (let c = 0; c < word.length; c++) {
-                    const char = word[c];
+                for (let c = 0; c < words[w].length; c++) {
                     const span = document.createElement('span');
                     span.className = 'letter';
-                    span.textContent = char;
-                    if (pos === currentPosition) {
-                        span.classList.add('current');
-                    }
+                    span.textContent = words[w][c];
+                    if (pos === currentPosition) span.classList.add('current');
                     wordSpan.appendChild(span);
                     pos++;
                 }
@@ -641,9 +625,7 @@
                     const spaceSpan = document.createElement('span');
                     spaceSpan.className = 'letter space';
                     spaceSpan.textContent = '_';
-                    if (pos === currentPosition) {
-                        spaceSpan.classList.add('current');
-                    }
+                    if (pos === currentPosition) spaceSpan.classList.add('current');
                     textDisplay.appendChild(spaceSpan);
                     pos++;
                 }
@@ -659,38 +641,44 @@
         }
 
         document.addEventListener('keydown', (e) => {
+            // 修复特殊按键Bug：忽略功能键
+            if (e.repeat) return; // 忽略长按连发
+            if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape'].includes(e.key)) return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return; // 忽略快捷键组合
+
             if (!currentText || currentPosition >= currentText.length) return;
-            if (e.key === ' ') {
-                e.preventDefault();
-            }
-            const expectedChar = currentText[currentPosition];
+            if (e.key === ' ') e.preventDefault();
+            
             const letters = textDisplay.querySelectorAll('.letter');
             const currentLetter = letters[currentPosition];
+            const expectedChar = currentText[currentPosition];
+
             if (e.key === expectedChar) {
+                if (currentPosition === 0) startTimer();
                 playTypingSound();
-                currentLetter.classList.remove('current');
+                currentLetter.classList.remove('current', 'incorrect');
                 currentLetter.classList.add('correct');
                 correctCount++;
                 currentPosition++;
+                
                 if (currentPosition < currentText.length) {
-                    letters[currentPosition].classList.add('current');
+                    const next = letters[currentPosition];
+                    next.classList.add('current');
+                    const area = document.querySelector('.practice-area');
+                    if (next.offsetTop > area.scrollTop + area.clientHeight - 40) {
+                        next.scrollIntoView({block: 'center', behavior: 'smooth'});
+                    }
                 } else {
-                    setTimeout(() => {
-                        alert(`🎉 Congratulations! You completed the practice!\n\n` +
-                            `Correct: ${correctCount}\n` +
-                            `Errors: ${errorCount}\n` +
-                            `Accuracy: ${accuracyEl.textContent}`);
-                    }, 100);
+                    stopTimer();
+                    timerPanel.classList.add('finished');
                 }
                 updateStats();
             } else if (e.key.length === 1) {
-                currentLetter.classList.add('incorrect');
                 playErrorSound();
+                currentLetter.classList.add('incorrect');
                 errorCount++;
                 updateStats();
-                setTimeout(() => {
-                    currentLetter.classList.remove('incorrect');
-                }, 300);
+                setTimeout(() => currentLetter.classList.remove('incorrect'), 200);
             }
         });
     </script>
