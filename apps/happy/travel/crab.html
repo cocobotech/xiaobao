@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO TRAVEL | COCOBO抓蟹指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    colors: {
+                        ocean: '#0f172a', // 深海蓝
+                        foam: '#e2e8f0',  // 浪花白
+                        crab: '#ff6b6b',  // 螃蟹红
+                        teal: '#2dd4bf',  // 潮池绿
+                        grid: 'rgba(255, 255, 255, 0.08)',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), 
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+        }
+        /* 图片悬停放大效果 */
+        .img-zoom-container {
+            overflow: hidden;
+        }
+        .img-zoom {
+            transition: transform 0.7s ease;
+        }
+        .group:hover .img-zoom {
+            transform: scale(1.05);
+        }
+        /* 玻璃磨砂 */
+        .glass-header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        /* 文字阴影，保证图片上的文字清晰 */
+        .text-shadow {
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body class="bg-ocean min-h-screen bg-grid font-sans selection:bg-crab selection:text-white">
+
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 glass-header border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="leading-none">
+                    <h1 class="font-bold text-xl tracking-wide text-white">COCOBO</h1>
+                    <span class="text-[10px] text-teal tracking-[0.3em] uppercase">Travel & Explore</span>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-6 text-sm text-slate-400 font-medium">
+                <span class="px-3 py-1 rounded-full border border-white/10 bg-white/5">Fremont 出发</span>
+                <span class="px-3 py-1 rounded-full border border-white/10 bg-white/5">1-2 小时圈</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center relative overflow-hidden">
+        <!-- 装饰背景字 -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] font-bold text-white/5 pointer-events-none whitespace-nowrap z-0">
+            CRAB HUNT
+        </div>
+        
+        <div class="relative z-10">
+            <span class="text-crab font-mono text-sm tracking-widest uppercase mb-4 block animate-pulse">Weekend Getaway Guide</span>
+            <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+                COCOBO<span class="text-transparent bg-clip-text bg-gradient-to-r from-teal to-blue-500">抓蟹地图</span>
+            </h2>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto font-light">
+                COCOBO带你
+                周末海洋探索指南。
+            </p>
+        </div>
+    </header>
+
+    <!-- 主内容区：网格布局列表 -->
+    <main class="max-w-7xl mx-auto px-6 pb-24">
+        
+        <!-- 表头 -->
+        <div class="flex items-center justify-between pb-4 border-b border-white/20 mb-px">
+            <span class="text-xs font-mono text-slate-500 uppercase">Top Destinations</span>
+            <span class="text-xs font-mono text-slate-500 uppercase">2025 Edition</span>
+        </div>
+
+        <!-- 列表容器 (Grid System) -->
+        <div class="grid grid-cols-1 border-t border-l border-white/10">
+
+            <!-- Spot 1: Pillar Point -->
+            <article class="group grid grid-cols-1 md:grid-cols-12 border-r border-b border-white/10 bg-ocean hover:bg-white/[0.02] transition-colors relative">
+                <!-- 排名标记 -->
+                <div class="absolute top-0 left-0 bg-crab text-white text-xs font-bold px-3 py-1 z-10">No.1 最强王者</div>
+                
+                <!-- 图片区 (占4列) -->
+                <div class="md:col-span-4 h-64 md:h-auto img-zoom-container relative border-r border-white/10">
+                    <!-- 替换为 Half Moon Bay 港口/防波堤的图片 -->
+                    <img src="https://images.unsplash.com/photo-1566827054817-25e170923573?q=80&w=800&auto=format&fit=crop" alt="Pillar Point Harbor" class="img-zoom w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-4 left-4 text-white font-bold text-shadow">Half Moon Bay (Harbor)</div>
+                </div>
+                
+                <!-- 内容区 (占8列) -->
+                <div class="md:col-span-8 p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-teal transition-colors">Pillar Point Harbor</h3>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500 mb-1">Fremont 车程</div>
+                                <div class="font-mono text-teal">45-55 min</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            <strong class="text-white">内侧防波堤 + 码头下。</strong> 这里是新手村也是满级区。水仅没过脚踝，红岩蟹成群躲在石头下。浪极小，对低龄儿童非常安全。
+                        </p>
+
+                        <!-- 参数 Grid -->
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">螃蟹密度</div>
+                                <div class="text-crab flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">儿童友好</div>
+                                <div class="text-teal flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">停车</div>
+                                <div class="text-white text-xs mt-1 font-mono">FREE</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                        <i class="fa-solid fa-lightbulb text-yellow-500"></i>
+                        <span>TIP: 带小抄网+头灯，退大潮晚上去简直是进货。</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Spot 2: Fitzgerald -->
+            <article class="group grid grid-cols-1 md:grid-cols-12 border-r border-b border-white/10 bg-ocean hover:bg-white/[0.02] transition-colors relative">
+                <div class="absolute top-0 left-0 bg-teal text-ocean text-xs font-bold px-3 py-1 z-10">No.2 生态双杀</div>
+                
+                <div class="md:col-span-4 h-64 md:h-auto img-zoom-container relative border-r border-white/10">
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/e6/23/33/fitzgerald-marine-reserve.jpg?w=1000&h=-1&s=1" alt="Moss Beach" class="img-zoom w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-4 left-4 text-white font-bold text-shadow">Moss Beach</div>
+                </div>
+                
+                <div class="md:col-span-8 p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-teal transition-colors">Fitzgerald Marine Reserve</h3>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500 mb-1">Fremont 车程</div>
+                                <div class="font-mono text-teal">50-60 min</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            <strong class="text-white">全世界最美的潮汐池之一。</strong> 这是一个保护区，严禁带走生物，但视觉体验无敌。满地的海星、海葵、海胆，是最好的自然课堂。
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">生物种类</div>
+                                <div class="text-crab flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">儿童友好</div>
+                                <div class="text-teal flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">费用</div>
+                                <div class="text-white text-xs mt-1 font-mono">$0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400"></i>
+                        <span>MUST: 必须查潮汐表 (低于 0 ft 才好玩)。不可带桶。</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Spot 3: Seacliff State Beach -->
+            <article class="group grid grid-cols-1 md:grid-cols-12 border-r border-b border-white/10 bg-ocean hover:bg-white/[0.02] transition-colors relative">
+                <div class="absolute top-0 left-0 bg-blue-700 text-white text-xs font-bold px-3 py-1 z-10">No.3 隐藏神滩</div>
+                
+                <div class="md:col-span-4 h-64 md:h-auto img-zoom-container relative border-r border-white/10">
+                    <img src="https://images.unsplash.com/photo-1615674312067-27b0032b8423?q=80&w=800&auto=format&fit=crop" alt="Seacliff" class="img-zoom w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-4 left-4 text-white font-bold text-shadow">Aptos (Cement Ship)</div>
+                </div>
+                
+                <div class="md:col-span-8 p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-teal transition-colors">Seacliff State Beach</h3>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500 mb-1">Fremont 车程</div>
+                                <div class="font-mono text-teal">70 min</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            <strong class="text-white">沉船遗迹下的蟹群。</strong> 水泥船残骸附近是红岩蟹的聚集地。涨潮前礁石区随便抓。这里沙滩质量也不错，适合抓完螃蟹玩沙子。
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">螃蟹体型</div>
+                                <div class="text-crab flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">儿童友好</div>
+                                <div class="text-teal flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">停车</div>
+                                <div class="text-white text-xs mt-1 font-mono">$10</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                        <i class="fa-solid fa-umbrella text-blue-400"></i>
+                        <span>TIP: 冬天雨后蟹最多。</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Spot 4: Capitola -->
+            <article class="group grid grid-cols-1 md:grid-cols-12 border-r border-b border-white/10 bg-ocean hover:bg-white/[0.02] transition-colors relative">
+                <div class="absolute top-0 left-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 z-10">No.4 市区休闲</div>
+                
+                <div class="md:col-span-4 h-64 md:h-auto img-zoom-container relative border-r border-white/10">
+                    <img src="https://images.unsplash.com/photo-1617416396901-8b21c4308560?q=80&w=800&auto=format&fit=crop" alt="Capitola" class="img-zoom w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-4 left-4 text-white font-bold text-shadow">Capitola Village</div>
+                </div>
+                
+                <div class="md:col-span-8 p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-teal transition-colors">Capitola Wharf & Beach</h3>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500 mb-1">Fremont 车程</div>
+                                <div class="font-mono text-teal">75 min</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            <strong class="text-white">不用下水也能抓。</strong> 码头柱子上爬满了小螃蟹，小孩在栈桥上就能看。旁边就是著名的彩色小房子，适合妈妈拍照，爸爸带娃抓蟹，然后一起吃冰淇淋。
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">休闲指数</div>
+                                <div class="text-crab flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">儿童友好</div>
+                                <div class="text-teal flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">停车</div>
+                                <div class="text-white text-xs mt-1 font-mono">$2/hr</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                        <i class="fa-solid fa-camera text-purple-400"></i>
+                        <span>TIP: 带上面包做诱饵，螃蟹会疯抢。</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Spot 5: Natural Bridges -->
+            <article class="group grid grid-cols-1 md:grid-cols-12 border-r border-b border-white/10 bg-ocean hover:bg-white/[0.02] transition-colors relative">
+                <div class="absolute top-0 left-0 bg-slate-600 text-white text-xs font-bold px-3 py-1 z-10">No.5 天然桥</div>
+                
+                <div class="md:col-span-4 h-64 md:h-auto img-zoom-container relative border-r border-white/10">
+                    <img src="https://images.unsplash.com/photo-1495304312644-8d48416043bc?q=80&w=800&auto=format&fit=crop" alt="Natural Bridges" class="img-zoom w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-4 left-4 text-white font-bold text-shadow">Santa Cruz (Arch)</div>
+                </div>
+                
+                <div class="md:col-span-8 p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-teal transition-colors">Natural Bridges State Beach</h3>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500 mb-1">Fremont 车程</div>
+                                <div class="font-mono text-teal">80 min</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            <strong class="text-white">蝴蝶与螃蟹共舞。</strong> 退潮后的礁石区巨大，海葵和螃蟹超多。这里还有著名的帝王蝶保护区，是经典的亲子一日游路线。
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">风景指数</div>
+                                <div class="text-crab flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">儿童友好</div>
+                                <div class="text-teal flex justify-center gap-1 text-xs mt-1">
+                                    <i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i><i class="fa-solid fa-child"></i>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded border border-white/5 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase">停车</div>
+                                <div class="text-white text-xs mt-1 font-mono">$10</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                        <i class="fa-solid fa-clock text-blue-400"></i>
+                        <span>TIP: 停车场易满，建议早晨到达。</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+    </main>
+
+    <!-- 底部装备清单 -->
+    <section class="border-t border-white/10 bg-ocean relative overflow-hidden">
+        <div class="absolute inset-0 bg-grid opacity-50"></div>
+        <div class="max-w-7xl mx-auto px-6 py-16">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">COCOBO <span class="text-teal">GEAR LIST</span></h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+                    <i class="fa-solid fa-book-open text-3xl text-teal mb-4"></i>
+                    <h4 class="font-bold text-white mb-2">潮汐表</h4>
+                    <p class="text-xs text-slate-400">App: Tide Charts. 必须选择负潮 (Negative Tide) 或低于 1.0 ft 的时间。</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+                    <i class="fa-solid fa-mitten text-3xl text-crab mb-4"></i>
+                    <h4 class="font-bold text-white mb-2">防护装备</h4>
+                    <p class="text-xs text-slate-400">礁石防滑鞋 (必穿)、园艺手套 (防蟹钳)、防风外套。</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+                    <i class="fa-solid fa-bucket text-3xl text-yellow-500 mb-4"></i>
+                    <h4 class="font-bold text-white mb-2">工具组</h4>
+                    <p class="text-xs text-slate-400">透明观察盒 (优于水桶)、小抄网、鸡腿骨头/面包 (诱饵)。</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+                    <i class="fa-solid fa-id-card text-3xl text-purple-400 mb-4"></i>
+                    <h4 class="font-bold text-white mb-2">规则</h4>
+                    <p class="text-xs text-slate-400">16岁以上需 Fishing License。保护区严禁带走任何生物。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-8 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-slate-600 font-mono">
+            <div>&copy; 2025 COCOBO TRAVEL. DESIGNED FOR EXPLORERS.</div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-teal">Fremont Base</a>
+                <a href="#" class="hover:text-teal">Kids Club</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
