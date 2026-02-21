@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -950,7 +952,14 @@ const DEMO_MOVES = {
     rook(r,c)   { return{move:demoSlide(r,c,[[-1,0],[1,0],[0,-1],[0,1]]),capture:[]}; },
     bishop(r,c) { return{move:demoSlide(r,c,[[-1,-1],[-1,1],[1,-1],[1,1]]),capture:[]}; },
     knight(r,c) { const j=[[-2,-1],[-2,1],[2,-1],[2,1],[-1,-2],[-1,2],[1,-2],[1,2]],m=[];for(const [dr,dc] of j){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<8&&nc>=0&&nc<8)m.push({row:nr,col:nc});}return{move:m,capture:[]}; },
-    pawn(r,c)   { const move=[],capture=[];if(r-1>=0)move.push({row:r-1,col:c});if(r===6&&r-2>=0)move.push({row:r-2,col:c});if(r-1>=0&&c-1>=0)capture.push({row:r-1,col:c-1});if(r-1>=0&&c+1<8)capture.push({row:r-1,col:c+1});return{move,capture}; }
+    pawn(r,c)   { 
+        const move=[],capture=[];
+        // 修复：在空演示棋盘上，兵只能向前走。除非斜前方有子（演示模式暂无敌子），否则不应显示斜向吃子。
+        if(r-1>=0) move.push({row:r-1,col:c});
+        if(r===6 && r-2>=0) move.push({row:r-2,col:c});
+        // 斜向格子仅在真正的比赛逻辑（存在敌子时）才有效，此处演示模式为了避免“无子可吃却显示交叉剑”的Bug，移除了硬编码的斜向坐标。
+        return{move,capture}; 
+    }
 };
 
 function renderDemoBoard(type) {
