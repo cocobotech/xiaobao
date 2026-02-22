@@ -168,6 +168,35 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,.4);
     pointer-events: none;
 }
+
+/* 专门针对易位的提示 */
+.custom-cell[data-demo="castle"] {
+    position: relative;
+}
+
+/* 易位演示专用箭头容器 */
+.arrow-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* 目标格特殊效果 */
+.cell-target-k::after { background: #27ae60 !important; } /* 王的目标格-绿点 */
+.cell-target-r::after { background: #d4a15e !important; } /* 针的目标格-金点 */
+
+/* 动画箭头 */
+.castle-arrow {
+    stroke-dasharray: 10;
+    animation: dash 0.5s linear infinite;
+}
+@keyframes dash {
+    to { stroke-dashoffset: -20; }
+}
+
+
 .capture-arrow::before {
     content: "⚔️";
     position: absolute;
@@ -911,11 +940,12 @@ function glyphOf(piece) {
 }
 
 /* ── DEMO MODE ── */
-const DEMO_SYMBOLS = { king:'♔', queen:'♕', rook:'♖', bishop:'♗', knight:'♘', pawn:'♙' };
+const DEMO_SYMBOLS = { king:'♔', queen:'♕', rook:'♖', bishop:'♗', knight:'♘', pawn:'♙', castling:'🏰'  };
 const DEMO_LABELS  = {
     king:{zh:'王',en:'King'}, queen:{zh:'后',en:'Queen'},
     rook:{zh:'车',en:'Rook'}, bishop:{zh:'象',en:'Bishop'},
-    knight:{zh:'马',en:'Knight'}, pawn:{zh:'兵',en:'Pawn'}
+    knight:{zh:'马',en:'Knight'}, pawn:{zh:'兵',en:'Pawn'},
+    castling:{zh:'易位',en:'Castling'} // 新增
 };
 const DEMO_POS = {
     king:{row:4,col:4}, queen:{row:4,col:3}, rook:{row:4,col:2},
@@ -953,6 +983,95 @@ function renderDemoBoard(type) {
     const board = document.getElementById('mainBoard');
     board.innerHTML = '';
     board.style.cursor = 'default';
+
+    if (type === 'castling') {
+        const row = 7; // 底线索引
+        const pieces = [
+            { r: row, c: 4, char: '♔', id: 'k' }, // 王 e1
+            { r: row, c: 0, char: '♖', id: 'rl' }, // 左车 a1
+            { r: row, c: 7, char: '♖', id: 'rr' }  // 右车 h1
+        ];
+
+        // 定义目标点
+        const targets = [
+            { r: row, c: 6, type: 'k' }, // 短易位王位 g1
+            { r: row, c: 2, type: 'k' }, // 长易位王位 c1
+            { r: row, c: 5, type: 'r' }, // 短易位车位 f1
+            { r: row, c: 3, type: 'r' }  // 长易位车位 d1
+        ];
+
+        // 1. 渲染格子
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                const cell = document.createElement('div');
+                cell.className = `custom-cell ${(r + c) % 2 === 0 ? 'custom-light' : 'custom-dark'}`;
+                
+                // 放置初始棋子
+                const p = pieces.find(x => x.r === r && x.c === c);
+                if (p) {
+                    const sp = document.createElement('span');
+                    sp.className = 'piece-white style-' + currentStyle;
+                    sp.textContent = p.char;
+                    cell.appendChild(sp);
+                }
+
+                // 放置目标提示点
+                const t = targets.find(x => x.r === r && x.c === c);
+                if (t) {
+                    cell.classList.add('move-dot');
+                    cell.classList.add(t.type === 'k' ? 'cell-target-k' : 'cell-target-r');
+                }
+                board.appendChild(cell);
+            }
+        }
+
+        // 2. 添加 SVG 箭头
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "arrow-overlay");
+        
+        // 箭头定义 (箭头头)
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrowhead-g" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 0 3.5, 0 7" fill="#27ae60" />
+                </marker>
+                <marker id="arrowhead-y" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 0 3.5, 0 7" fill="#d4a15e" />
+                </marker>
+            </defs>
+        `;
+
+        // 绘制函数：从格(r1,c1)到格(r2,c2)
+        const drawArrow = (c1, r1, c2, r2, color, marker,shift) => {
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            // 计算格中心百分比位置
+            const x1 = (c1 * 12.5 + 6.25) + "%";
+            const y1 = (r1 * 12.5 + 6.25+shift) + "%";
+            const x2 = (c2 * 12.5 + 6.25) + "%";
+            const y2 = (r2 * 12.5 + 6.25+shift) + "%";
+            
+            line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+            line.setAttribute("stroke", color);
+            line.setAttribute("stroke-width", "4");
+            line.setAttribute("marker-end", `url(#${marker})`);
+            line.setAttribute("class", "castle-arrow");
+            line.setAttribute("opacity", "0.8");
+            svg.appendChild(line);
+        };
+
+        // 短易位路线
+        drawArrow(4, 7, 6, 7, "#27ae60", "arrowhead-g",1); // 王 e1->g1
+        drawArrow(7, 7, 5, 7, "#d4a15e", "arrowhead-y",-1); // 车 h1->f1
+        // 长易位路线
+        drawArrow(4, 7, 2, 7, "#27ae60", "arrowhead-g",1); // 王 e1->c1
+        drawArrow(0, 7, 3, 7, "#d4a15e", "arrowhead-y",-1); // 车 a1->d1
+
+        board.appendChild(svg);
+        return;
+    }
+
+    // --- 以下是原有的单棋子演示逻辑 ---
     const pos = DEMO_POS[type];
     const mainPath = DEMO_MOVES[type](pos.row, pos.col);
     const pawn2 = (type === 'pawn') ? {row:6, col:1} : null;
@@ -984,7 +1103,7 @@ function renderDemoBoard(type) {
 }
 
 const demoButtonsDiv = document.getElementById('demoButtons');
-['king','queen','rook','bishop','knight','pawn'].forEach(type => {
+['king','queen','rook','bishop','knight','pawn','castling'].forEach(type => {
     const btn = document.createElement('button');
     btn.className = 'demo-piece-btn';
     btn.innerHTML = `
