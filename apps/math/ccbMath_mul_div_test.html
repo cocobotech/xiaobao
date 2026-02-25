@@ -23,15 +23,16 @@
 html{scroll-behavior:smooth;}
 body{
   font-family:'Noto Sans SC',sans-serif;
-  background:var(--sky); color:var(--white);
+  background: linear-gradient(135deg, #0b1829 0%, #0d2240 100%);
+  color:var(--white);
   min-height:100vh; overflow-x:hidden;
 }
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--sky);}
 ::-webkit-scrollbar-thumb{background:#1a3a5c;border-radius:3px;}
 
-/* ═══════════════════ WEBGL BG ════════════════════════ */
-#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.55;}
+/* 彻底移除 WebGL 背景画布 */
+#bg-canvas{display:none;}
 
 /* ═══════════════════ TOPBAR / LOGO ══════════════════ */
 .topbar{
@@ -471,25 +472,11 @@ body{
   .footer-right{text-align:center;}
   .result-stats{grid-template-columns:repeat(3,1fr);}
 }
-
-/* ═══════════════════ FLOATING PARTICLES ════════════ */
-.particle{
-  position:fixed;pointer-events:none;z-index:0;
-  animation:floatUp var(--dur,10s) var(--delay,0s) linear infinite;
-  opacity:0;
-}
-@keyframes floatUp{
-  0%{transform:translateY(110vh) rotate(0deg);opacity:0}
-  5%{opacity:.12}95%{opacity:.08}
-  100%{transform:translateY(-10vh) rotate(360deg);opacity:0}
-}
 </style>
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
 <canvas id="confetti-canvas"></canvas>
-<div id="particles-wrap"></div>
 
 <!-- ── TOPBAR ───────────────────────────────────────── -->
 <nav class="topbar">
@@ -510,10 +497,8 @@ body{
         <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="10s" repeatCount="indefinite"/>
       </circle>
       <circle cx="18" cy="18" r="11.5" fill="rgba(0,194,203,0.07)" stroke="url(#lg1)" stroke-width="1.3"/>
-      <!-- × symbol -->
       <line x1="13" y1="13" x2="23" y2="23" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round"/>
       <line x1="23" y1="13" x2="13" y2="23" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round"/>
-      <!-- sparkles -->
       <circle cx="28" cy="10" r="1.2" fill="#f5c842" opacity=".8">
         <animate attributeName="opacity" values=".8;.2;.8" dur="2.2s" repeatCount="indefinite"/>
       </circle>
@@ -535,14 +520,13 @@ body{
 <!-- ── PAGE ─────────────────────────────────────────── -->
 <div class="page">
 
-  <!-- ══ SETUP SCREEN ══════════════════════════════ -->
+  <!-- SETUP SCREEN -->
   <div id="screen-setup">
     <div class="card">
       <div class="section-label">开始测试</div>
       <div class="setup-title">乘除法速算挑战</div>
       <div class="setup-sub">选择题型和题目数量，开始你的数学冒险！</div>
 
-      <!-- Mode -->
       <div class="section-label" style="margin-bottom:10px">选择题型</div>
       <div class="mode-row">
         <button class="mode-btn" data-mode="mult" onclick="setMode('mult')">
@@ -559,14 +543,13 @@ body{
         </button>
       </div>
 
-      <!-- Count -->
       <div class="section-label" style="margin-bottom:10px">选择题目数量</div>
       <div class="count-row">
         <span class="count-label">共</span>
         <div class="count-ctrl">
           <button class="count-btn" id="btn-minus" onclick="changeCount(-5)">−</button>
           <div class="count-num" id="count-display">10</div>
-          <button class="count-btn" id="btn-plus"  onclick="changeCount(+5)">+</button>
+          <button class="count-btn" id="btn-plus" onclick="changeCount(+5)">+</button>
         </div>
         <span class="count-label">道题</span>
       </div>
@@ -575,11 +558,9 @@ body{
     </div>
   </div>
 
-  <!-- ══ QUIZ SCREEN ════════════════════════════════ -->
+  <!-- QUIZ SCREEN -->
   <div id="screen-quiz">
     <div class="card">
-
-      <!-- Progress -->
       <div class="progress-wrap">
         <div class="progress-info">
           <span class="prog-label">题目进度</span>
@@ -588,14 +569,12 @@ body{
         <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       </div>
 
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-chip correct"><span class="chip-icon">✓</span> <span id="stat-c">0</span> 答对</div>
         <div class="stat-chip wrong"><span class="chip-icon">✗</span> <span id="stat-w">0</span> 答错</div>
         <div class="stat-chip streak"><span class="chip-icon">🔥</span> 连对 <span id="stat-s">0</span></div>
       </div>
 
-      <!-- Question -->
       <div class="question-card">
         <div class="q-type-badge" id="q-type-badge">乘法</div>
         <div class="question-text" id="question-text">
@@ -604,15 +583,13 @@ body{
         <div class="q-hint" id="q-hint">选择正确答案</div>
       </div>
 
-      <!-- Options -->
       <div class="options-grid" id="options-grid"></div>
 
-      <!-- Next -->
       <button class="btn-next" id="btn-next" onclick="nextQuestion()">下一题 →</button>
     </div>
   </div>
 
-  <!-- ══ RESULT SCREEN ══════════════════════════════ -->
+  <!-- RESULT SCREEN -->
   <div id="screen-result">
     <div class="result-hero card">
       <span class="result-emoji" id="result-emoji">🏆</span>
@@ -642,14 +619,14 @@ body{
 
       <div class="result-btn-row">
         <button class="btn-retry" onclick="retryQuiz()">🔁 再来一次</button>
-        <button class="btn-home"  onclick="goHome()">⚙ 重新设置</button>
+        <button class="btn-home" onclick="goHome()">⚙ 重新设置</button>
       </div>
     </div>
   </div>
 
-</div><!-- /page -->
+</div>
 
-<!-- ── FOOTER ──────────────────────────────────────── -->
+<!-- FOOTER -->
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-logo-wrap">
@@ -673,72 +650,13 @@ body{
 </footer>
 
 <script>
-/* ════════════════════════════════════════════════════
-   WEBGL BACKGROUND
-════════════════════════════════════════════════════ */
-(function(){
-  const cv = document.getElementById('bg-canvas');
-  const gl = cv.getContext('webgl') || cv.getContext('experimental-webgl');
-  if (!gl) { cv.style.display='none'; return; }
-  function resize(){ cv.width=innerWidth; cv.height=innerHeight; gl.viewport(0,0,cv.width,cv.height); }
-  resize(); window.addEventListener('resize', resize);
-
-  const vSrc=`attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-  const fSrc=`
-    precision mediump float;
-    uniform float t; uniform vec2 r;
-    float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
-    float n(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);
-      return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
-    void main(){
-      vec2 uv=gl_FragCoord.xy/r; uv.x*=r.x/r.y;
-      float v=n(uv*3.+t*.1)*.5+n(uv*7.-t*.07)*.25+n(uv*14.+t*.04)*.125;
-      vec3 c=mix(vec3(.04,.09,.18),vec3(.06,.15,.32),uv.y*.8);
-      c=mix(c,vec3(0.,.42,.52),v*.16*smoothstep(.2,.8,uv.y));
-      float s=step(.996,h(floor(uv*180.)+floor(t*.04)))*(.4+.4*sin(t*2.+uv.x*25.));
-      c+=vec3(s); gl_FragColor=vec4(c,1.);}`;
-
-  function mk(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-  const prog=gl.createProgram();
-  gl.attachShader(prog,mk(gl.VERTEX_SHADER,vSrc));
-  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fSrc));
-  gl.linkProgram(prog);gl.useProgram(prog);
-  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  const pa=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(pa);gl.vertexAttribPointer(pa,2,gl.FLOAT,false,0,0);
-  const uT=gl.getUniformLocation(prog,'t'),uR=gl.getUniformLocation(prog,'r');
-  const s0=Date.now();
-  (function loop(){
-    const t=(Date.now()-s0)/1000;
-    gl.uniform1f(uT,t);gl.uniform2f(uR,cv.width,cv.height);
-    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-    requestAnimationFrame(loop);
-  })();
-})();
-
-/* ════════════════════════════════════════════════════
-   FLOATING SYMBOLS
-════════════════════════════════════════════════════ */
-(function(){
-  const wrap=document.getElementById('particles-wrap');
-  const syms=['×','÷','+','-','=','²','½','³'];
-  for(let i=0;i<16;i++){
-    const d=document.createElement('div'); d.className='particle';
-    d.textContent=syms[Math.floor(Math.random()*syms.length)];
-    d.style.cssText=`left:${Math.random()*100}vw;font-size:${14+Math.random()*16}px;
-      --dur:${11+Math.random()*12}s;--delay:${Math.random()*10}s;
-      color:${['#00c2cb22','#a78bfa22','#f5c84222','#43e9b022'][Math.floor(Math.random()*4)]};`;
-    wrap.appendChild(d);
-  }
-})();
-
-/* ════════════════════════════════════════════════════
-   QUIZ STATE
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// QUIZ STATE
+// ──────────────────────────────────────────────
 let cfg = { mode:'mix', count:10 };
 
 let quiz = {
-  questions: [],   // [{type,a,b,ans,tries,correct}]
+  questions: [],
   current: 0,
   correctCount: 0,
   wrongCount: 0,
@@ -747,9 +665,9 @@ let quiz = {
   totalWrongPresses: 0
 };
 
-/* ════════════════════════════════════════════════════
-   SETUP
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// SETUP FUNCTIONS
+// ──────────────────────────────────────────────
 function setMode(m){
   cfg.mode = m;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode===m));
@@ -763,9 +681,9 @@ function changeCount(d){
   document.getElementById('btn-minus').disabled = cfg.count <= 5;
 }
 
-/* ════════════════════════════════════════════════════
-   QUESTION GENERATION
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// QUESTION GENERATION
+// ──────────────────────────────────────────────
 function randInt(mn,mx){ return Math.floor(Math.random()*(mx-mn+1))+mn; }
 
 function genQuestion(type){
@@ -773,7 +691,6 @@ function genQuestion(type){
     const a=randInt(1,9), b=randInt(1,9);
     return {type:'mult', a, b, ans:a*b};
   } else {
-    // divisor and quotient both 1-9
     const divisor=randInt(1,9), quotient=randInt(1,9);
     const total=divisor*quotient;
     return {type:'div', a:total, b:divisor, ans:quotient};
@@ -783,10 +700,7 @@ function genQuestion(type){
 function generateAllQuestions(){
   const qs=[];
   for(let i=0;i<cfg.count;i++){
-    let type;
-    if(cfg.mode==='mult')      type='mult';
-    else if(cfg.mode==='div')  type='div';
-    else                       type=Math.random()<.5?'mult':'div';
+    let type = cfg.mode==='mult' ? 'mult' : cfg.mode==='div' ? 'div' : Math.random()<.5?'mult':'div';
     const q=genQuestion(type);
     q.tries=0; q.correct=false;
     qs.push(q);
@@ -794,44 +708,30 @@ function generateAllQuestions(){
   return qs;
 }
 
-/* ════════════════════════════════════════════════════
-   GENERATE OPTIONS (4 choices, 1 correct)
-════════════════════════════════════════════════════ */
 function generateOptions(ans, type){
   const opts=new Set([ans]);
   const maxAns = type==='mult' ? 81 : 9;
   const minAns = 1;
 
-  // Generate 3 plausible wrong answers
   let attempts=0;
   while(opts.size < 4 && attempts<200){
     attempts++;
     let wrong;
     const r=Math.random();
-    if(r<0.4){
-      // close: ±1 to ±4
-      wrong = ans + randInt(-4,4);
-    } else if(r<0.7){
-      // same magnitude
-      wrong = randInt(Math.max(minAns,ans-8), Math.min(maxAns,ans+8));
-    } else {
-      wrong = randInt(minAns, maxAns);
-    }
+    if(r<0.4) wrong = ans + randInt(-4,4);
+    else if(r<0.7) wrong = randInt(Math.max(minAns,ans-8), Math.min(maxAns,ans+8));
+    else wrong = randInt(minAns, maxAns);
     if(wrong>0 && wrong!==ans && wrong>=minAns && wrong<=maxAns) opts.add(wrong);
   }
 
-  // Convert to array and shuffle
   const arr=[...opts];
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
+  arr.sort(()=>Math.random()-0.5);
   return arr;
 }
 
-/* ════════════════════════════════════════════════════
-   START QUIZ
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// START QUIZ
+// ──────────────────────────────────────────────
 function startQuiz(){
   quiz.questions = generateAllQuestions();
   quiz.current = 0;
@@ -846,24 +746,20 @@ function startQuiz(){
   renderQuestion();
 }
 
-/* ════════════════════════════════════════════════════
-   RENDER QUESTION
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// RENDER QUESTION
+// ──────────────────────────────────────────────
 function renderQuestion(){
   const q = quiz.questions[quiz.current];
   const qIdx = quiz.current;
 
-  // Progress
-  const pct = (qIdx / cfg.count) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.width = ((qIdx / cfg.count) * 100) + '%';
   document.getElementById('q-current').textContent = qIdx + 1;
 
-  // Stats
   document.getElementById('stat-c').textContent = quiz.correctCount;
   document.getElementById('stat-w').textContent = quiz.totalWrongPresses;
   document.getElementById('stat-s').textContent = quiz.streak;
 
-  // Type badge
   const badge = document.getElementById('q-type-badge');
   if(q.type==='mult'){
     badge.textContent='乘法'; badge.className='q-type-badge mult';
@@ -871,47 +767,41 @@ function renderQuestion(){
     badge.textContent='除法'; badge.className='q-type-badge div';
   }
 
-  // Question text
   document.getElementById('q-a').textContent = q.a;
   document.getElementById('q-op').textContent = q.type==='mult' ? '×' : '÷';
   document.getElementById('q-b').textContent = q.b;
 
-  // Hint
   const hint = document.getElementById('q-hint');
   hint.textContent = '选择正确答案';
   hint.className = 'q-hint';
 
-  // Options — re-animate question
   const qText = document.getElementById('question-text');
   qText.style.animation='none';
   void qText.offsetWidth;
   qText.style.animation='qIn .4s cubic-bezier(.34,1.56,.64,1) both';
 
-  // Generate and render options
   const opts = generateOptions(q.ans, q.type);
   const grid = document.getElementById('options-grid');
-  grid.innerHTML='';
+  grid.innerHTML = '';
   opts.forEach(val => {
-    const btn=document.createElement('button');
-    btn.className='opt-btn';
-    btn.textContent=val;
-    btn.onclick=()=>checkAnswer(val, btn, q.ans, grid);
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = val;
+    btn.onclick = () => checkAnswer(val, btn, q.ans, grid);
     grid.appendChild(btn);
   });
 
-  // Hide next button
-  document.getElementById('btn-next').style.display='none';
+  document.getElementById('btn-next').style.display = 'none';
 }
 
-/* ════════════════════════════════════════════════════
-   CHECK ANSWER + 女声 + 自动下一题
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// CHECK ANSWER + 女声 + 自动下一题
+// ──────────────────────────────────────────────
 function checkAnswer(chosen, btn, correct, grid){
   const q = quiz.questions[quiz.current];
   const hint = document.getElementById('q-hint');
 
   if(chosen === correct){
-    // ✓ Correct
     q.correct = true;
     q.tries++;
     quiz.correctCount++;
@@ -922,20 +812,16 @@ function checkAnswer(chosen, btn, correct, grid){
     hint.textContent = randomPraise();
     hint.className = 'q-hint correct-hint';
 
-    // Dim all others & disable
     grid.querySelectorAll('.opt-btn').forEach(b => {
       if(b !== btn) b.classList.add('dimmed');
       b.disabled = true;
     });
 
-    // Update stats
     document.getElementById('stat-c').textContent = quiz.correctCount;
     document.getElementById('stat-s').textContent = quiz.streak;
 
-    // 女声说「答对啦」
     speakCorrect();
 
-    // 延迟 1.4 秒后自动进入下一题（或结果）
     setTimeout(() => {
       quiz.current++;
       if(quiz.current >= cfg.count){
@@ -944,19 +830,16 @@ function checkAnswer(chosen, btn, correct, grid){
         renderQuestion();
       }
     }, 1400);
-
   } else {
-    // ✗ Wrong — shake, but keep trying
     q.tries++;
     quiz.totalWrongPresses++;
     quiz.streak = 0;
 
     btn.classList.add('wrong');
-    btn.disabled = true;  // disable this wrong option
+    btn.disabled = true;
     hint.textContent = `✗ 不对，再想想！`;
     hint.className = 'q-hint wrong-hint';
 
-    // Remove shake after animation ends
     btn.addEventListener('animationend', () => btn.classList.remove('wrong'), {once:true});
 
     document.getElementById('stat-w').textContent = quiz.totalWrongPresses;
@@ -967,23 +850,20 @@ function checkAnswer(chosen, btn, correct, grid){
 const PRAISES = ['🎉 答对了！太棒了！','✨ 正确！真聪明！','⭐ 完美！继续加油！','🌟 太厉害了！','🎊 答对了，你真棒！','💫 完全正确！'];
 function randomPraise(){ return PRAISES[Math.floor(Math.random()*PRAISES.length)]; }
 
-/* ════════════════════════════════════════════════════
-   女声播报「答对啦」
-════════════════════════════════════════════════════ */
 function speakCorrect(){
   if('speechSynthesis' in window){
     const utterance = new SpeechSynthesisUtterance('答对啦');
     utterance.lang = 'zh-CN';
     utterance.volume = 0.9;
     utterance.rate = 1.05;
-    utterance.pitch = 1.2;           // 偏高音，接近女声
+    utterance.pitch = 1.2;
     speechSynthesis.speak(utterance);
   }
 }
 
-/* ════════════════════════════════════════════════════
-   NEXT QUESTION（手动按钮已基本不用，但保留）
-════════════════════════════════════════════════════ */
+// ──────────────────────────────────────────────
+// NEXT / RESULT / RETRY / HOME
+// ──────────────────────────────────────────────
 function nextQuestion(){
   quiz.current++;
   if(quiz.current >= cfg.count){
@@ -993,137 +873,122 @@ function nextQuestion(){
   }
 }
 
-/* ════════════════════════════════════════════════════
-   SHOW RESULT
-════════════════════════════════════════════════════ */
 function showResult(){
   show('screen-result');
 
-  const total    = cfg.count;
-  const correct  = quiz.correctCount;
-  const wrong    = quiz.totalWrongPresses;
-  const acc      = Math.round(correct/total*100);
-  const perfect  = correct===total && wrong===0;
-  const great    = acc >= 80;
-  const ok       = acc >= 60;
+  const total = cfg.count;
+  const correct = quiz.correctCount;
+  const wrong = quiz.totalWrongPresses;
+  const acc = Math.round(correct / total * 100);
 
-  // Big score
   document.getElementById('result-score').textContent = `${correct} / ${total}`;
 
-  // Emoji and title
   let emoji='🏆', title='太棒了！', sub='';
-  if(perfect)       { emoji='🏆'; title='满分！完美无缺！'; sub='全部答对，一次也没错，你真是数学天才！'; }
-  else if(acc>=90)  { emoji='🌟'; title='非常优秀！';       sub=`只错了几题，继续保持！正确率 ${acc}%`; }
-  else if(acc>=70)  { emoji='😊'; title='做得不错！';       sub=`答对了 ${correct} 题，继续练习会更好！`; }
-  else if(acc>=50)  { emoji='💪'; title='继续努力！';       sub=`答对了 ${correct} 题，多练习就会进步！`; }
-  else              { emoji='📚'; title='需要多练习！';     sub=`别灰心，继续练习！答对了 ${correct} 题`; }
+  if(correct === total && wrong === 0) {
+    emoji='🏆'; title='满分！完美无缺！'; sub='全部答对，一次也没错，你真是数学天才！';
+  } else if(acc >= 90) {
+    emoji='🌟'; title='非常优秀！'; sub=`只错了几题，继续保持！正确率 ${acc}%`;
+  } else if(acc >= 70) {
+    emoji='😊'; title='做得不错！'; sub=`答对了 ${correct} 题，继续练习会更好！`;
+  } else if(acc >= 50) {
+    emoji='💪'; title='继续努力！'; sub=`答对了 ${correct} 题，多练习就会进步！`;
+  } else {
+    emoji='📚'; title='需要多练习！'; sub=`别灰心，继续练习！答对了 ${correct} 题`;
+  }
 
-  document.getElementById('result-emoji').textContent=emoji;
-  document.getElementById('result-title').textContent=title;
-  document.getElementById('result-sub').textContent=sub;
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').textContent = sub;
 
-  // Stats
-  document.getElementById('rs-correct').textContent=correct;
-  document.getElementById('rs-wrong').textContent=wrong;
-  document.getElementById('rs-acc').textContent=acc+'%';
+  document.getElementById('rs-correct').textContent = correct;
+  document.getElementById('rs-wrong').textContent = wrong;
+  document.getElementById('rs-acc').textContent = acc + '%';
 
-  // Progress fill to 100%
-  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('progress-fill').style.width = '100%';
 
-  // Review list
-  const list=document.getElementById('review-list');
-  list.innerHTML='';
-  quiz.questions.forEach((q,i)=>{
-    const op=q.type==='mult'?'×':'÷';
-    const item=document.createElement('div');
-    item.className='review-item '+(q.correct?'ok':'ko');
-    item.innerHTML=`
-      <span class="review-icon">${q.correct?'✓':'✗'}</span>
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  quiz.questions.forEach(q => {
+    const op = q.type === 'mult' ? '×' : '÷';
+    const item = document.createElement('div');
+    item.className = 'review-item ' + (q.correct ? 'ok' : 'ko');
+    item.innerHTML = `
+      <span class="review-icon">${q.correct ? '✓' : '✗'}</span>
       <span class="review-eq">${q.a} ${op} ${q.b} = ${q.ans}</span>
       <span class="review-tries">${q.tries}次</span>`;
     list.appendChild(item);
   });
 
-  // Confetti if good score
-  if(acc >= 70) launchConfetti(perfect);
+  if(acc >= 70) launchConfetti(correct === total && wrong === 0);
 }
 
-/* ════════════════════════════════════════════════════
-   RETRY / HOME
-════════════════════════════════════════════════════ */
 function retryQuiz(){ startQuiz(); }
 function goHome(){ show('screen-setup'); }
 
-/* ════════════════════════════════════════════════════
-   SHOW/HIDE SCREENS
-════════════════════════════════════════════════════ */
 function show(id){
-  ['screen-setup','screen-quiz','screen-result'].forEach(s=>{
-    const el=document.getElementById(s);
-    el.style.display = s===id ? 'block' : 'none';
-    if(s===id){
-      el.style.animation='none';
+  ['screen-setup','screen-quiz','screen-result'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = s === id ? 'block' : 'none';
+    if(s === id){
+      el.style.animation = 'none';
       void el.offsetWidth;
-      el.style.animation='fadeUp .5s ease both';
+      el.style.animation = 'fadeUp .5s ease both';
     }
   });
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-/* ════════════════════════════════════════════════════
-   CONFETTI
-════════════════════════════════════════════════════ */
 function launchConfetti(perfect){
-  const cv=document.getElementById('confetti-canvas');
-  const ctx=cv.getContext('2d');
-  cv.width=innerWidth; cv.height=innerHeight;
+  const cv = document.getElementById('confetti-canvas');
+  const ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
 
   const count = perfect ? 120 : 60;
-  const particles=[];
-  const EMOJIS=['🎉','⭐','🌟','✨','🎊','💫','🏆','🎈'];
-  const COLORS=['#00e5f0','#a78bfa','#f5c842','#43e9b0','#ff7c6e','#60a5fa'];
+  const particles = [];
+  const EMOJIS = ['🎉','⭐','🌟','✨','🎊','💫','🏆','🎈'];
+  const COLORS = ['#00e5f0','#a78bfa','#f5c842','#43e9b0','#ff7c6e','#60a5fa'];
 
-  for(let i=0;i<count;i++){
-    const isEmoji=Math.random()<.4;
+  for(let i=0; i<count; i++){
+    const isEmoji = Math.random() < .4;
     particles.push({
       x: Math.random()*cv.width,
       y: -20-Math.random()*100,
-      vx:(Math.random()-.5)*5,
-      vy:2+Math.random()*4,
-      gravity:.12,
-      alpha:1,
+      vx: (Math.random()-.5)*5,
+      vy: 2+Math.random()*4,
+      gravity: .12,
+      alpha: 1,
       size: isEmoji ? 18+Math.random()*16 : 6+Math.random()*8,
-      color:COLORS[Math.floor(Math.random()*COLORS.length)],
-      emoji:EMOJIS[Math.floor(Math.random()*EMOJIS.length)],
+      color: COLORS[Math.floor(Math.random()*COLORS.length)],
+      emoji: EMOJIS[Math.floor(Math.random()*EMOJIS.length)],
       isEmoji,
-      rot:Math.random()*360,
-      rotV:(Math.random()-.5)*8,
-      delay:Math.random()*.6
+      rot: Math.random()*360,
+      rotV: (Math.random()-.5)*8,
+      delay: Math.random()*.6
     });
   }
 
-  const start=performance.now();
+  const start = performance.now();
   function frame(now){
     ctx.clearRect(0,0,cv.width,cv.height);
-    let any=false;
+    let any = false;
     for(const p of particles){
-      const age=(now-start)/1000;
-      if(age<p.delay){any=true;continue;}
-      p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity;
-      p.rot+=p.rotV; p.alpha-=.008;
-      if(p.alpha<=0||p.y>cv.height+30) continue;
-      any=true;
+      const age = (now-start)/1000;
+      if(age < p.delay){ any=true; continue; }
+      p.x += p.vx; p.y += p.vy; p.vy += p.gravity;
+      p.rot += p.rotV; p.alpha -= .008;
+      if(p.alpha <= 0 || p.y > cv.height+30) continue;
+      any = true;
       ctx.save();
-      ctx.globalAlpha=Math.max(0,p.alpha);
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
       if(p.isEmoji){
-        ctx.font=`${p.size}px serif`;
-        ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(p.emoji,0,0);
+        ctx.font = `${p.size}px serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(p.emoji, 0, 0);
       } else {
-        ctx.fillStyle=p.color;
-        ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
       }
       ctx.restore();
     }
@@ -1133,27 +998,24 @@ function launchConfetti(perfect){
   requestAnimationFrame(frame);
 }
 
-/* ════════════════════════════════════════════════════
-   KEYBOARD SUPPORT — press 1-4 to select option
-════════════════════════════════════════════════════ */
-document.addEventListener('keydown', e=>{
-  const screen=document.getElementById('screen-quiz');
-  if(screen.style.display==='none') return;
-  const n=parseInt(e.key);
-  if(n>=1&&n<=4){
-    const btns=document.querySelectorAll('#options-grid .opt-btn:not(:disabled):not(.dimmed):not(.correct)');
+// ──────────────────────────────────────────────
+// KEYBOARD SUPPORT
+// ──────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const screen = document.getElementById('screen-quiz');
+  if(screen.style.display === 'none') return;
+  const n = parseInt(e.key);
+  if(n >= 1 && n <= 4){
+    const btns = document.querySelectorAll('#options-grid .opt-btn:not(:disabled):not(.dimmed):not(.correct)');
     if(btns[n-1]) btns[n-1].click();
   }
-  if(e.key==='Enter'||e.key===' '){
-    const nb=document.getElementById('btn-next');
-    if(nb.style.display!=='none') nb.click();
+  if(e.key === 'Enter' || e.key === ' '){
+    const nb = document.getElementById('btn-next');
+    if(nb.style.display !== 'none') nb.click();
   }
 });
 
-/* ════════════════════════════════════════════════════
-   INIT
-════════════════════════════════════════════════════ */
-// Update minus button state on load
+// INIT
 document.getElementById('btn-minus').disabled = cfg.count <= 5;
 </script>
 </body>
