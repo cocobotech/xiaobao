@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phonics Fun! 🌟 Learn to Read</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--sun:#ffd93d;--coral:#ff6b6b;--mint:#6bcb77;--sidebar:196px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#0d0d2b;}
+
+/* ── LAYOUT ── */
+#app{display:flex;width:100vw;height:100vh;}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar);flex-shrink:0;height:100vh;
+  overflow-y:auto;overflow-x:hidden;
+  background:rgba(8,8,35,0.98);
+  border-right:2px solid rgba(255,255,255,0.07);
+  display:flex;flex-direction:column;z-index:200;
+  padding-top:52px;
+}
+#sidebar::-webkit-scrollbar{width:3px;}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);}
+.sb-sec{padding:10px 0 3px 12px;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.28);font-weight:800;margin-top:4px;}
+.sb-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 10px 7px 10px;cursor:pointer;border:none;background:none;
+  color:rgba(255,255,255,0.5);font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;
+  text-align:left;width:100%;transition:all 0.18s;line-height:1.35;
+  border-left:3px solid transparent;
+}
+.sb-btn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.88);}
+.sb-btn.active{background:rgba(255,217,61,0.1);color:#ffd93d;border-left-color:#ffd93d;}
+.sb-n{font-size:9px;color:rgba(255,255,255,0.22);flex-shrink:0;width:15px;text-align:right;font-family:'Fredoka One',cursive;}
+.sb-btn.active .sb-n{color:rgba(255,217,61,0.7);}
+
+/* ── MAIN ── */
+#main{flex:1;height:100vh;position:relative;overflow:hidden;}
+
+/* ── TOPBAR ── */
+#topbar{
+  position:absolute;top:0;left:0;right:0;z-index:100;height:52px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+  background:rgba(10,10,40,0.97);backdrop-filter:blur(10px);
+  border-bottom:1.5px solid rgba(255,255,255,0.07);
+}
+.tb-logo{font-family:'Fredoka One',cursive;font-size:19px;
+  background:linear-gradient(90deg,#ffd93d,#ff6b6b,#c77dff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tb-nav{display:flex;align-items:center;gap:9px;}
+.tb-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.05);cursor:pointer;color:white;font-size:15px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.tb-btn:hover{border-color:var(--sun);color:var(--sun);}
+.tb-btn:disabled{opacity:0.18;cursor:not-allowed;}
+.tb-ctr{font-family:'Fredoka One',cursive;font-size:13px;color:rgba(255,255,255,0.45);min-width:44px;text-align:center;}
+
+/* ── DECK ── */
+#deck{position:absolute;inset:0;padding-top:52px;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:scale(0.97) translateY(10px);}
+.slide.active{opacity:1;pointer-events:all;transform:scale(1) translateY(0);transition:opacity 0.35s ease,transform 0.35s ease;}
+.slide.exit{opacity:0;transform:scale(1.02) translateY(-8px);transition:opacity 0.22s ease,transform 0.22s ease;}
+.slide.enter-prep{opacity:0;transform:scale(0.97) translateY(10px);transition:none!important;}
+
+/* ── CARD ── */
+.card{margin:8px 14px 12px;flex:1;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 14px 45px rgba(0,0,0,0.55),0 0 0 1.5px rgba(255,255,255,0.07);}
+.sh{padding:13px 22px 9px;display:flex;align-items:center;gap:11px;flex-shrink:0;}
+.stag{font-family:'Fredoka One',cursive;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 11px;border-radius:20px;background:rgba(255,255,255,0.14);color:white;}
+.stit{font-family:'Fredoka One',cursive;font-size:clamp(18px,2.5vw,30px);color:white;}
+.sb{flex:1;overflow-y:auto;padding:6px 20px 16px;}
+.sb::-webkit-scrollbar{width:3px;}
+.sb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.16);border-radius:4px;}
+
+/* ── WORD GRID ── */
+.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:5px;}
+.wc{background:rgba(255,255,255,0.11);border:2px solid rgba(255,255,255,0.17);border-radius:12px;
+  padding:9px 7px;display:flex;flex-direction:column;align-items:center;cursor:pointer;
+  transition:all 0.2s;animation:pop 0.32s ease backwards;text-align:center;user-select:none;}
+.wc:hover{background:rgba(255,255,255,0.2);transform:translateY(-3px) scale(1.04);box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.wc:active{transform:scale(0.94);}
+.we{font-size:clamp(26px,3.3vw,38px);margin-bottom:3px;line-height:1.1;}
+.wt{font-family:'Fredoka One',cursive;font-size:clamp(15px,1.9vw,20px);color:white;}
+.wp{font-size:9.5px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:700;}
+.hl{color:var(--sun);text-shadow:0 0 10px rgba(255,217,61,0.5);}
+
+/* ── SECTION LABEL ── */
+.sl{font-family:'Fredoka One',cursive;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,0.42);margin:13px 0 5px;}
+.sl:first-child{margin-top:0;}
+
+/* ── SIGHT GRID ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;}
+.sp{background:rgba(255,255,255,0.09);border:1.5px solid rgba(255,255,255,0.17);border-radius:50px;
+  padding:6px 9px;font-family:'Fredoka One',cursive;font-size:clamp(13px,1.7vw,17px);color:white;
+  text-align:center;cursor:pointer;transition:all 0.17s;animation:pop 0.28s ease backwards;}
+.sp:hover{transform:scale(1.08);background:rgba(255,255,255,0.2);}
+
+/* ── BLEND GROUP ── */
+.bg2{margin-bottom:14px;}
+.bh{display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.bt{font-family:'Fredoka One',cursive;font-size:clamp(15px,2vw,21px);padding:4px 14px;border-radius:9px;
+  color:white;border:2px solid rgba(255,255,255,0.22);}
+.bd{font-size:12px;color:rgba(255,255,255,0.62);font-weight:700;}
+
+/* ── INFO BOX ── */
+.ib{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);border-radius:11px;
+  padding:9px 13px;margin-bottom:10px;font-size:13px;color:rgba(255,255,255,0.78);line-height:1.6;}
+
+/* ── HERO ── */
+.hw{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;padding:14px 26px;gap:14px;}
+.hb{font-size:clamp(34px,5.5vw,68px);line-height:1;font-family:'Fredoka One',cursive;color:white;}
+.hs{font-size:clamp(13px,1.9vw,18px);color:rgba(255,255,255,0.8);max-width:460px;line-height:1.6;}
+.hc{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;}
+.hch{padding:7px 15px;border-radius:13px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);
+  font-size:12px;font-weight:800;color:white;}
+
+/* ── QUIZ ── */
+.qz{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0;}
+.qw{font-family:'Fredoka One',cursive;font-size:clamp(34px,5.5vw,68px);color:white;}
+.qc{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:440px;}
+.qb{background:rgba(255,255,255,0.1);border:2.5px solid rgba(255,255,255,0.2);border-radius:14px;
+  padding:12px 14px;font-family:'Fredoka One',cursive;font-size:clamp(14px,1.9vw,19px);color:white;
+  cursor:pointer;transition:all 0.17s;text-align:center;}
+.qb:hover{background:rgba(255,255,255,0.18);border-color:var(--sun);}
+.qb.ok{background:rgba(107,203,119,0.28);border-color:#6bcb77;animation:pop 0.38s ease;}
+.qb.no{background:rgba(255,107,107,0.22);border-color:#ff6b6b;animation:shake 0.32s ease;}
+.qnx{background:linear-gradient(135deg,#ffd93d,#ff9a3c);border:none;border-radius:13px;
+  padding:9px 28px;font-family:'Fredoka One',cursive;font-size:17px;color:#1a1a4e;
+  cursor:pointer;transition:all 0.2s;box-shadow:0 3px 14px rgba(255,217,61,0.4);}
+.qnx:hover{transform:translateY(-2px) scale(1.04);}
+
+/* ── ANIMS ── */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes pop{from{transform:scale(0.72) translateY(7px);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}70%{transform:translateX(6px)}}
+.wc:nth-child(1){animation-delay:.04s}.wc:nth-child(2){animation-delay:.08s}.wc:nth-child(3){animation-delay:.12s}
+.wc:nth-child(4){animation-delay:.16s}.wc:nth-child(5){animation-delay:.2s}.wc:nth-child(6){animation-delay:.24s}
+.wc:nth-child(7){animation-delay:.28s}.wc:nth-child(8){animation-delay:.32s}.wc:nth-child(n+9){animation-delay:.35s}
+.sp:nth-child(1){animation-delay:.03s}.sp:nth-child(2){animation-delay:.06s}.sp:nth-child(3){animation-delay:.09s}
+.sp:nth-child(4){animation-delay:.12s}.sp:nth-child(n+5){animation-delay:.14s}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div id="topbar">
+      <div class="tb-logo">🌟 跟着小宝快快乐乐学习Phonics</div>
+      <div class="tb-nav">
+        <button class="tb-btn" id="bp">&#8592;</button>
+        <div class="tb-ctr" id="ctr">1/1</div>
+        <button class="tb-btn" id="bn">&#8594;</button>
+      </div>
+    </div>
+    <div id="deck"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════
+// w(emoji, word, highlight_indexes, phonics_hint)
+// Each emoji has been hand-verified to match the word
+function w(e,word,hl=[],ph=''){
+  let t='';
+  for(let i=0;i<word.length;i++)
+    t+=hl.includes(i)?`<span class="hl">${word[i]}</span>`:word[i];
+  return `<div class="wc" onclick="say('${word}')"><div class="we">${e}</div><div class="wt">${t}</div>${ph?`<div class="wp">${ph}</div>`:''}</div>`;
+}
+function sp(word){return `<div class="sp" onclick="say('${word}')">${word}</div>`;}
+function wg(items){return `<div class="wg">${items}</div>`;}
+function sl(t){return `<div class="sl">${t}</div>`;}
+function ib(h){return `<div class="ib">💡 ${h}</div>`;}
+function bg(a,b){return `background:linear-gradient(155deg,${a},${b})`;}
+
+const SS=[];
+function S(id,nav,style,html){SS.push({id,nav,style,html});}
+
+// ══════════════════════════════════════════════════
+// SLIDES — all emoji/word pairs verified
+// ══════════════════════════════════════════════════
+
+// ── 01 WELCOME
+S('welcome','🏠 Welcome',bg('#1a6b94','#0d3d6e'),`
+<div class="hw">
+  <div style="font-size:clamp(48px,7vw,78px);animation:bounce 2s ease-in-out infinite;">📚✨</div>
+  <div class="hb" style="background:linear-gradient(90deg,#ffd93d,#ff9a3c,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Let's Learn Phonics!</div>
+  <div class="hs">Step-by-step reading sounds, letters, and words for K–3 learners.<br>🔊 Tap any word card to hear it read aloud!</div>
+  <div class="hc">
+    <div class="hch">🔤 Letter Sounds</div><div class="hch">🎵 Short Vowels</div>
+    <div class="hch">🔗 Blends &amp; Digraphs</div><div class="hch">📏 Long Vowels</div>
+    <div class="hch">👑 Bossy R</div><div class="hch">👁 Sight Words</div><div class="hch">🏆 Quiz!</div>
+  </div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;">Use sidebar, ← → buttons, or keyboard arrows to navigate</div>
+</div>
+`);
+
+// ── 02 LETTERS A B C D (10 Words Each)
+S('l-abcd','🔤 A B C D',bg('#6b3fa0','#9b59b6'),`
+<div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: A · B · C · D</span></div>
+<div class="sb">
+${sl('🍎 A says /ă/')}
+${wg(w('🍎','apple',[0])+w('🐜','ant',[0])+w('🪓','ax',[0])+w('🦾','arm',[0])+w('🎨','art',[0])+w('🐒','ape',[0])+w('🛫','airplane',[0])+w('🥑','avocado',[0])+w('🃏','ace',[0])+w('🐊','alligator',[0]))}
+${sl('🐻 B says /b/')}
+${wg(w('🐻','bear',[0])+w('⚾','ball',[0])+w('🚌','bus',[0])+w('📚','book',[0])+w('🛏️','bed',[0])+w('🐦','bird',[0])+w('📦','box',[0])+w('🦇','bat',[0])+w('🔔','bell',[0])+w('🪲','bug',[0]))}
+${sl('🐱 C says /k/')}
+${wg(w('🐱','cat',[0])+w('🐄','cow',[0])+w('☕','cup',[0])+w('🚗','car',[0])+w('🧢','cap',[0])+w('🥫','can',[0])+w('🍰','cake',[0])+w('🌽','corn',[0])+w('🦀','crab',[0])+w('❄️','cold',[0]))}
+${sl('🐶 D says /d/')}
+${wg(w('🐶','dog',[0])+w('🦆','duck',[0])+w('🚪','door',[0])+w('🥁','drum',[0])+w('🦌','deer',[0])+w('🪆','doll',[0])+w('🍽️','dish',[0])+w('🐬','dolphin',[0])+w('🍩','donut',[0])+w('👨','dad',[0])+w('⛏️','dig',[0]))}
+</div>
+`);
+
+// ── 03 LETTERS E F G H (10 Words Each)
+S('l-efgh','🔤 E F G H',bg('#1a6b3a','#1e8449'),`
+<div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: E · F · G · H</span></div>
+<div class="sb">
+${sl('🥚 E says /ĕ/')}
+${wg(w('🥚','egg',[0])+w('🧝','elf',[0])+w('🫎','elk',[0])+w('👂','ear',[0])+w('👁️','eye',[0])+w('🔚','end',[0])+w('🧭','east',[0])+w('🍲','eat',[0])+w('🚪','exit',[0])+w('🐘','elephant',[0]))}
+${sl('🐟 F says /f/')}
+${wg(w('🐟','fish',[0])+w('🦊','fox',[0])+w('🐸','frog',[0])+w('🌀','fan',[0])+w('🍴','fork',[0])+w('🦶','foot',[0])+w('🔥','fire',[0])+w('🚩','flag',[0])+w('🚜','farm',[0])+w('🖐️','five',[0]))}
+${sl('🐐 G says /g/')}
+${wg(w('🐐','goat',[0])+w('🎁','gift',[0])+w('🍬','gum',[0])+w('⛽','gas',[0])+w('👧','girl',[0])+w('🚧','gate',[0])+w('🪙','gold',[0])+w('🎮','game',[0])+w('🌿','grass',[0])+w('🟢','green',[0]))}
+${sl('🎩 H says /h/')}
+${wg(w('🎩','hat',[0])+w('🐔','hen',[0])+w('🔥','hot',[0])+w('🫂','hug',[0])+w('🐇','hop',[0])+w('🖐️','hand',[0])+w('🏠','house',[0])+w('⛰️','hill',[0])+w('🐴','horse',[0])+w('👤','head',[0]))}
+</div>
+`);
+
+// ── 04 LETTERS I J K L (10 Words Each)
+S('l-ijkl','🔤 I J K L',bg('#c0392b','#e74c3c'),`
+<div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: I · J · K · L</span></div>
+<div class="sb">
+${sl('🦎 I says /ĭ/')}
+${wg(w('🛖','igloo',[0])+w('🖋️','ink',[0])+w('🤒','ill',[0])+w('📥','in',[0])+w('📍','is',[0])+w('👆','it',[0])+w('🏝️','island',[0])+w('🔩','iron',[0])+w('🧊','ice',[0])+w('🌿','ivy',[0]))}
+${sl('🫙 J says /j/')}
+${wg(w('🫙','jar',[0])+w('🍓','jam',[0])+w('✈️','jet',[0])+w('🏃','jog',[0])+w('💼','job',[0])+w('🦘','jump',[0])+w('🥛','jug',[0])+w('😊','joy',[0])+w('🗑️','junk',[0])+w('🚙','jeep',[0]))}
+${sl('🪁 K says /k/')}
+${wg(w('🪁','kite',[0])+w('👑','king',[0])+w('🔑','key',[0])+w('👦','kid',[0])+w('💋','kiss',[0])+w('⚽','kick',[0])+w('🍋','kiwi',[0])+w('🎹','keyboard',[0])+w('🦘','kangaroo',[0])+w('🐨','koala',[0]))}
+${sl('🦁 L says /l/')}
+${wg(w('🦁','lion',[0])+w('🍃','leaf',[0])+w('🪔','lamp',[0])+w('🦵','leg',[0])+w('🍋','lemon',[0])+w('👄','lip',[0])+w('🌊','lake',[0])+w('📉','low',[0])+w('🍭','lollipop',[0],'l')+w('🐞','ladybug',[0],'l')+w('🪜','ladder',[0])+w('❤️','love',[0]))}
+</div>
+`);
+
+// ── 05 LETTERS M N O P (10 Words Each)
+S('l-mnop','🔤 M N O P',bg('#d35400','#e67e22'),`
+<div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: M · N · O · P</span></div>
+<div class="sb">
+${sl('🐭 M says /m/')}
+${wg(w('🐭','mouse',[0])+w('🌙','moon',[0])+w('🗺️','map',[0])+w('👩','mom',[0])+w('💩','mud',[0])+w('🥛','milk',[0])+w('👨','man',[0])+w('😷','mask',[0])+w('🐒','monkey',[0],'m')+w('🍄','mushroom',[0],'m')+w('🎵','music',[0],'m')+w('🧲','magnet',[0],'m')+w('☕','mug',[0])+w('🥩','meat',[0]))}
+${sl('🪺 N says /n/')}
+${wg(w('🪺','nest',[0])+w('🕸️','net',[0])+w('👃','nose',[0])+w('🥜','nut',[0])+w('😴','nap',[0])+w('⏳','now',[0])+w('🌃','night',[0])+w('9️⃣','nine',[0])+w('🦒','neck',[0])+w('📍','near',[0]))}
+${sl('🐙 O says /ŏ/')}
+${wg(w('🐙','octopus',[0])+w('🦦','otter',[0])+w('🫒','olive',[0])+w('📴','off',[0])+w('🔛','on',[0])+w('👴','old',[0])+w('🐂','ox',[0])+w('🚪','out',[0])+w('🦉','owl',[0],'ow')+w('🛢️','oil',[0])+w('📖','open',[0]))}
+${sl('🐧 P says /p/')}
+${wg(w('🐷','pig',[0])+w('🖊️','pen',[0])+w('🥣','pot',[0])+w('🍳','pan',[0])+w('📌','pin',[0])+w('🐶','pet',[0])+w('🐶','pup',[0])+w('🏊','pool',[0])+w('🌳','park',[0])+w('🌸','pink',[0])+w('🐧','penguin',[0],'p')+w('🍕','pizza',[0],'p')+w('🍑','peach',[0],'p')+w('🎈','party',[0],'p')+w('🦜','parrot',[0],'p')+w('🥞','pancake',[0],'p')+w('🐼','panda',[0],'p'))}
+</div>
+`);
+
+// ── 06 LETTERS Q-Z (10 Words Each)
+S('l-qz','🔤 Q through Z',bg('#154360','#1f618d'),`
+<div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: Q · R · S · T · U · V · W · X · Y · Z</span></div>
+<div class="sb">
+${sl('👸 Q says /kw/')}
+${wg(w('👸','queen',[0])+w('❓','quiz',[0])+w('❓','question',[0],'kw')+w('🏃','quick',[0])+w('🚫','quit',[0])+w('🛌','quilt',[0])+w('🦆','quack',[0])+w('🤫','quiet',[0])+w('🗺️','quest',[0])+w('🥛','quart',[0])+w('🖋️','quill',[0]))}
+${sl('🐇 R says /r/')}
+${wg(w('🐀','rat',[0])+w('🔴','red',[0])+w('🏃','run',[0])+w('🐇','rabbit',[0],'r')+w('🌈','rainbow',[0],'r')+w('🤖','robot',[0],'r')+w('🧶','rug',[0])+w('🌹','rose',[0])+w('🌧️','rain',[0])+w('💍','ring',[0])+w('🛣️','road',[0])+w('🪨','rock',[0])+w('🪢','rope',[0]))}
+${sl('☀️ S says /s/')}
+${wg(w('☀️','sun',[0])+w('⭐','star',[0])+w('🪑','sit',[0])+w('🐍','snake',[0],'s')+w('😢','sad',[0])+w('6️⃣','six',[0])+w('☁️','sky',[0])+w('🧼','soap',[0])+w('🎵','song',[0])+w('🧦','sock',[0])+w('🚢','ship',[0]))}
+${sl('🐅 T says /t/')}
+${wg(w('🐅','tiger',[0])+w('🔟','ten',[0])+w('🔝','top',[0])+w('🧸','toy',[0])+w('🛁','tub',[0])+w('📏','tall',[0])+w('🐅','tiger',[0],'t')+w('🐢','turtle',[0],'t')+w('🌮','taco',[0],'t')+w('🦷','tooth',[0],'t')+w('🍅','tomato',[0],'t')+w('⛺','tent',[0])+w('🌳','tree',[0])+w('🚰','tap',[0])+w('🏘️','town',[0]))}
+${sl('☂️ U says /ŭ/')}
+${wg(w('⬆️','up',[0])+w('👥','us',[0])+w('👇','under',[0])+w('🔢','unit',[0])+w('🖱️','use',[0])+w('👹','ugly',[0])+w('↩️','undo',[0])+w('☂️','umbrella',[0],'ŭ')+w('🦄','unicorn',[0],'ū')+w('🔝','upon',[0])+w('🏙️','urban',[0])+w('😡','upset',[0]))}
+${sl('🚐 V says /v/')}
+${wg(w('🚐','van',[0])+w('🦺','vest',[0])+w('🏺','vase',[0])+w('🩺','vet',[0])+w('🌿','vine',[0])+w('🖼️','view',[0])+w('🎻','violin',[0],'v')+w('🌋','volcano',[0],'v')+w('✅','very',[0])+w('🗳️','vote',[0])+w('🏜️','vast',[0])+w('🏥','visit',[0]))}
+${sl('🕸️ W says /w/')}
+${wg(w('🕸️','web',[0])+w('🏆','win',[0])+w('💦','wet',[0])+w('🐕','wag',[0])+w('💇','wig',[0])+w('🪵','wood',[0])+w('🐺','wolf',[0],'w')+w('🐋','whale',[0],'w')+w('🌬️','wind',[0])+w('🧱','wall',[0])+w('🌊','wave',[0])+w('🙏','wish',[0]))}
+${sl('✖️ X (mostly end sounds)')}
+${wg(w('📦','box',[2])+w('🦊','fox',[2])+w('6️⃣','six',[2])+w('🪓','ax',[1])+w('🚕','taxi',[2])+w('🚪','exit',[1])+w('🩻','xray',[0])+w('🥣','mix',[2])+w('🛠️','fix',[2])+w('🕯️','wax',[2]))}
+${sl('🧶 Y says /y/')}
+${wg(w('🟡','yellow',[0])+w('🧶','yarn',[0])+w('✅','yes',[0])+w('🫵','you',[0])+w('🐃','yak',[0])+w('📢','yell',[0])+w('🏡','yard',[0])+w('🥚','yolk',[0])+w('📅','year',[0])+w('🥱','yawn',[0]))}
+${sl('🦓 Z says /z/')}
+${wg(w('🦓','zebra',[0])+w('0️⃣','zero',[0])+w('🦁','zoo',[0])+w('🤐','zip',[0])+w('〽️','zag',[0])+w('⚡','zap',[0])+w('区域','zone',[0])+w('🚀','zoom',[0])+w('🍋','zest',[0])+w('🧱','zinc',[0]))}
+</div>
+`);
+
+// ── 07 SHORT A
+S('sa','🎵 Short A',bg('#7d1f2e','#a93226'),`
+<div class="sh"><span class="stag">Level 2 · Vowels</span><span class="stit">Short A /ă/ — mouth open wide!</span></div>
+<div class="sb">
+${ib('<b>Short A</b> says /ă/. Open your mouth wide — like saying "ahh" at the dentist! Examples: <b>cat</b> 🐱, <b>hat</b> 🎩, <b>man</b> 👨')}
+${sl('-at family')}
+${wg(
+w('🐱','cat',[1],'c-ă-t')+
+w('🏏 🦇','bat',[1],'b-ă-t')+
+w('🎩','hat',[1],'h-ă-t')+
+w('🐀','rat',[1],'r-ă-t')+
+w('🧘','mat',[1],'m-ă-t')+
+w('🛏️','pat',[1],'p-ă-t')+
+w('🧍','sat',[1],'s-ă-t')+
+w('🐷','fat',[1],'f-ă-t')
+
+
+)}
+
+${sl('-an family')}
+${wg(
+w('👨','man',[1],'m-ă-n')+
+w('🍳','pan',[1],'p-ă-n')+
+w('🚐','van',[1],'v-ă-n')+
+w('🥫','can',[1],'k-ă-n')+
+w('🏃','ran',[1],'r-ă-n')+
+w('🌞','tan',[1],'t-ă-n')+
+w('🪭','fan',[1],'f-ă-n')+
+w('🚫','ban',[1],'b-ă-n')
+)}
+
+${sl('-ap & -ag family')}
+
+${wg(
+w('🗺️','map',[1],'m-ă-p')+
+w('🧢','cap',[1],'k-ă-p')+
+w('😴','nap',[1],'n-ă-p')+
+w('🚰','tap',[1],'t-ă-p')+
+w('👜','bag',[1],'b-ă-g')+
+w('🏷️','tag',[1],'t-ă-g')+
+w('🐕','wag',[1],'w-ă-g') + 
+w('📉','sag',[1],'s-ă-g')
+)}
+
+${sl('-am & -ad & -ab family')}
+
+${wg(
+w('🍓','jam',[1],'j-ă-m')+
+w('🍖','ham',[1],'h-ă-m') + 
+w('😢','sad',[1],'s-ă-d')+
+w('👨','dad',[1],'d-ă-d')+
+w('😡','mad',[1],'m-ă-d')+
+w('👎','bad',[1],'b-ă-d')+
+w('🚕','cab',[1],'k-ă-b')+
+w('🧪','lab',[1],'l-ă-b') 
+)}
+
+</div>
+`);
+
+// ── 08 SHORT E
+S('se','🎵 Short E',bg('#1a5c2a','#239b56'),`
+<div class="sh"><span class="stag">Level 2 · Vowels</span><span class="stit">Short E /ĕ/ — say "eh"!</span></div>
+<div class="sb">
+${ib('<b>Short E</b> says /ĕ/. Lips slightly open, tongue relaxed. Examples: <b>bed</b> 🛏️, <b>hen</b> 🐔, <b>pet</b> 🐾')}
+${sl('-ed family')}
+${wg(
+  w('🛏️','bed',   [1],'b-ĕ-d') +
+  w('🔴','red',   [1],'r-ĕ-d') +
+  w('🧸','Ted',   [1],'T-ĕ-d') +
+  w('🛷','sled',  [1],'sl-ĕ-d')
+)}
+
+
+${sl('-en family')}
+
+${wg(
+  w('🐔','hen',  [1],'h-ĕ-n') +
+  w('✏️','pen',  [1],'p-ĕ-n') +
+  w('👨‍👦','men',  [1],'m-ĕ-n') +
+  w('🔟','ten',  [1],'t-ĕ-n') 
+)}
+
+${sl('-et family')}
+${wg(
+  w('🐶','pet',[1],'p-ĕ-t') + 
+  w('🕸️','net',[1],'n-ĕ-t') + 
+  w('💦','wet',[1],'w-ĕ-t') + 
+  w('✈️','jet',[1],'j-ĕ-t') + 
+  w('🩺','vet',[1],'v-ĕ-t') + 
+  w('🤝','met',[1],'m-ĕ-t') + 
+  w('✋','get',[1],'g-ĕ-t')
+)}
+
+${sl('-eg & -ell family')}
+
+${wg(
+  w('🦵','leg',[1],'l-ĕ-g') + 
+  w('🙏','beg',[1],'b-ĕ-g') + 
+  w('🔔','bell',[1],'b-ĕ-ll') + 
+  w('🐚','shell',[2],'sh-ĕ-ll') + 
+  w('📢','yell',[1],'y-ĕ-ll') + 
+  w('🗣️','tell',[1],'t-ĕ-ll') + 
+  w('⛲','well',[1],'w-ĕ-ll') + 
+  w('🍂','fell',[1],'f-ĕ-ll')+
+  w('🔤','spell',[2,3],'sp-ĕ-ll')
+)}
+
+</div>
+`);
+
+// ── 09 SHORT I
+S('si','🎵 Short I',bg('#4a235a','#7d3c98'),`
+<div class="sh"><span class="stag">Level 2 · Vowels</span><span class="stit">Short I /ĭ/ — smile and say "ih"!</span></div>
+<div class="sb">
+${ib('<b>Short I</b> says /ĭ/. Smile slightly and say "ih". Examples: <b>pig</b> 🐷, <b>sit</b> 🪑, <b>fish</b> 🐟')}
+${sl('-ig & -id family')}
+${wg(
+  w('🐷','pig',[1],'p-ĭ-g') + 
+  w('🐘','big',[1],'b-ĭ-g') + 
+  w('⛏️','dig',[1],'d-ĭ-g') + 
+  w('💇','wig',[1],'w-ĭ-g') + 
+ 
+  w('👶','kid',[1],'k-ĭ-d') + 
+  w('🙈','hid',[1],'h-ĭ-d') + 
+  w('🍈','fig',[1],'f-ĭ-g')
+)}
+
+${sl('-in & -ip family')}
+${wg(
+  w('📌','pin',[1],'p-ĭ-n') + 
+  w('🦈','fin',[1],'f-ĭ-n') + 
+  w('🗑️','bin',[1],'b-ĭ-n') + 
+  w('😊','chin',[2],'ch-ĭ-n') + 
+  w('🥇','win',[1],'w-ĭ-n') + 
+  w('👄','lip',[1],'l-ĭ-p') + 
+  w('🤐','zip',[1],'z-ĭ-p') + 
+  w('🚢','ship',[2],'sh-ĭ-p') + 
+  w('💧','drip',[2],'dr-ĭ-p') 
+)}
+
+${sl('-it & -ix family')}
+${wg(
+  w('⚾','hit',[1],'h-ĭ-t')+
+  w('🪑','sit',[1],'s-ĭ-t')+
+  w('🧰','kit',[1],'k-ĭ-t')+
+  w('🦟','bit',[1],'b-ĭ-t')+
+
+  w('6','six',[1],'s-ĭ-x')+
+  w('🥣','mix',[1],'m-ĭ-x')+
+  w('🛠️','fix',[1],'f-ĭ-x')
+)}
+
+${sl('-ill & -ick family')}
+${wg(
+  w('⛰️','hill',[1],'h-ĭ-ll') + 
+  w('🥛','fill',[1],'f-ĭ-ll') + 
+  w('💊','pill',[1],'p-ĭ-ll') + 
+  w('🛠️','drill',[2],'dr-ĭ-ll') + 
+  w('🐥','chick',[2],'ch-ĭ-ck') + 
+  w('⚽','kick',[1],'k-ĭ-ck') + 
+  w('🧱','brick',[2],'br-ĭ-ck') + 
+  w('🤒','sick',[1],'s-ĭ-ck') + 
+  w('🏒','stick',[2],'st-ĭ-ck')
+)}
+
+</div>
+`);
+
+// ── 10 SHORT O
+S('so','🎵 Short O',bg('#1a5276','#2471a3'),`
+<div class="sh"><span class="stag">Level 2 · Vowels</span><span class="stit">Short O /ŏ/ — drop your jaw!</span></div>
+<div class="sb">
+${ib('<b>Short O</b> says /ŏ/. Drop your jaw and round your lips a little. Examples: <b>dog</b> 🐶, <b>hot</b> 🔥, <b>frog</b> 🐸')}
+${sl('-ot & -op family')}
+${wg(
+  w('🍲','pot',[1],'p-ŏ-t') + 
+  w('🔥','hot',[1],'h-ŏ-t') + 
+  w('⚫','dot',[1],'d-ŏ-t') + 
+
+  w('🧹','mop',[1],'m-ŏ-p') + 
+  w('🦘','hop',[1],'h-ŏ-p') + 
+
+    w('🎊','pop',[1],'p-ŏ-p')+
+  w('🛑','stop',[2],'st-ŏ-p') + 
+   w('🌱','crop',[2],'cr-ŏ-p')+
+  w('💧','drop',[2],'dr-ŏ-p')+
+   w('🛶','top',[1],'t-ŏ-p')
+)}
+
+${sl('-og & -ob family')}
+
+${wg(
+  w('🐸','frog',[2],'fr-ŏ-g')+
+  w('🌫️','fog',[1],'f-ŏ-g')+
+  w('🪵','log',[1],'l-ŏ-g')+
+  w('🐶','dog',[1],'d-ŏ-g')+
+  w('💼','job',[1],'j-ŏ-b')+
+  w('🌽','cob',[1],'k-ŏ-b')+
+
+    w('😭','sob',[1],'s-ŏ-b')
+)}
+${sl('-ock & -ox family')}
+
+${wg(
+  w('⏰','clock',[2,3],'cl-ŏ-ck')+
+  w('🔒','lock',[1,2],'l-ŏ-ck')+
+  w('🧦','sock',[1,2],'s-ŏ-ck')+
+  w('🪨','rock',[1,2],'r-ŏ-ck')+
+
+  w('📦','box',[1],'b-ŏ-x')+
+  w('🦊','fox',[1],'f-ŏ-x')+
+  w('🐂','ox',[0],'ŏ-x')
+)}
+</div>
+`);
+
+// ── 11 SHORT U
+S('su','🎵 Short U',bg('#6e2f1a','#a04000'),`
+<div class="sh"><span class="stag">Level 2 · Vowels</span><span class="stit">Short U /ŭ/ — relax and say "uh"!</span></div>
+<div class="sb">
+${ib('<b>Short U</b> says /ŭ/. Relax your mouth and say "uh". Examples: <b>bug</b> 🐛, <b>sun</b> ☀️, <b>cup</b> ☕')}
+${sl('-ug family')}
+
+${wg(
+  w('🐛','bug',[1],'b-ŭ-g') + 
+  w('☕','mug',[1],'m-ŭ-g') + 
+  w('🫔','rug',[1],'r-ŭ-g') + 
+  w('🫖','jug',[1],'j-ŭ-g') + 
+  w('🫂','hug',[1],'h-ŭ-g') + 
+  w('🔌','plug',[2],'pl-ŭ-g') + 
+  w('🐌','slug',[2],'sl-ŭ-g') 
+)}
+
+
+${wg(w('🐛','bug',[1],'b-ŭ-g')+w('☕','mug',[1],'m-ŭ-g')+w('🪣','jug',[1],'j-ŭ-g')+w('🤗','hug',[1],'h-ŭ-g')+w('🔌','plug',[1,2],'pl-ŭ-g')+w('🐌','slug',[1,2],'sl-ŭ-g')+w('🐛','tug',[1],'t-ŭ-g')+w('🪲','dug',[1],'d-ŭ-g'))}
+${sl('-un & -ut family')}
+${wg(
+  w('☀️','sun',[1],'s-ŭ-n') + 
+  w('🏃','run',[1],'r-ŭ-n') + 
+  w('🍞','bun',[1],'b-ŭ-n') + 
+    w('🥳','fun',[1],'f-ŭ-n')+
+  w('🛖','hut',[1],'h-ŭ-t') + 
+  w('🌰','nut',[1],'n-ŭ-t') + 
+  w('✂️','cut',[1],'k-ŭ-t') 
+)}
+
+${sl('-ub & -up family')}
+${wg(
+  w('🛁','tub',[1],'t-ŭ-b') + 
+  w('🦁','cub',[1],'k-ŭ-b') + 
+  w('🧼','rub',[1],'r-ŭ-b') + 
+
+  w('☕','cup',[1],'k-ŭ-p') + 
+  w('🐶','pup',[1],'p-ŭ-p') + 
+  w('⬆️','up',[0],'ŭ-p')
+)}
+${wg(w('🛁','tub',[1],'t-ŭ-b')+w('🦁','cub',[1],'k-ŭ-b')+w('🫧','rub',[1],'r-ŭ-b')+w('🚌','sub',[1],'s-ŭ-b')+w('☕','cup',[1],'k-ŭ-p')+w('🐶','pup',[1],'p-ŭ-p'))}
+${sl('-um & -us family')}
+${wg(
+  w('🍬','gum',[1],'g-ŭ-m') + 
+  w('😋','yum',[1],'y-ŭ-m') + 
+  w('🥁','drum',[2],'dr-ŭ-m') + 
+  w('🟣','plum',[2],'pl-ŭ-m') + 
+  w('➕','sum',[1],'s-ŭ-m') + 
+  w('🐝','hum',[1],'h-ŭ-m') + 
+    w('🤬','fuss',[1],'f-ŭ-ss')+
+  w('🚌','bus',[1],'b-ŭ-s')
+)}</div>
+`);
+
+// ── 12 CONSONANT BLENDS
+S('blends','🔗 Blends',bg('#1e3a5f','#2e6da4'),`
+<div class="sh"><span class="stag">Level 3</span><span class="stit">Consonant Blends — two sounds together!</span></div>
+<div class="sb">
+${ib('<b>Blends</b> = two consonants side by side. You hear <em>both</em> sounds! <b>bl</b>ue, <b>cr</b>ab, <b>st</b>ar, <b>fr</b>og')}
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#e74c3c;">bl-</div><div class="bd">bl as in <b>blue</b></div></div>
+  ${wg(w('💙','blue',[0,1],'bl-ū')+w('🖤','black',[0,1],'bl-ăck')+w('🔳','block',[0,1],'bl-ŏck')+w('💨','blow',[0,1],'bl-ō')+w('🩸','bleed',[0,1],'bl-ēd')+w('🫐','blend',[0,1],'bl-ĕnd'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#8e44ad;">cl- fl- pl- sl-</div><div class="bd">L-blends</div></div>
+  ${wg(w('👏','clap',[0,1],'cl-ăp')+w('🧼','clean',[0,1],'cl-ēn')+w('🚩','flag',[0,1],'fl-ăg')+w('🪰','fly',[0,1],'fl-ī')+w('🌻','plant',[0,1],'pl-ănt')+w('🍽️','plate',[0,1],'pl-āt')+w('🛷','sled',[0,1],'sl-ĕd')+w('🐌','slug',[0,1],'sl-ŭg'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#d35400;">cr- dr- fr- gr- pr- tr-</div><div class="bd">R-blends</div></div>
+  ${wg(w('🦀','crab',[0,1],'cr-ăb')+w('🥁','drum',[0,1],'dr-ŭm')+w('🐸','frog',[0,1],'fr-ŏg')+w('🍇','grapes',[0,1],'gr-')+w('🌿','grass',[0,1],'gr-ăs')+w('🎁','prize',[0,1],'pr-īz')+w('🌲','tree',[0,1],'tr-ē')+w('🚂','train',[0,1],'tr-ān'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#27ae60;">st- sp- sn- sw- sk-</div><div class="bd">S-blends</div></div>
+  ${wg(w('⭐','star',[0,1],'st-ăr')+w('🛑','stop',[0,1],'st-ŏp')+w('🥄','spoon',[0,1],'sp-ūn')+w('🕷️','spider',[0,1],'sp-ī')+w('❄️','snow',[0,1],'sn-ō')+w('🐌','snail',[0,1],'sn-āl')+w('🦢','swan',[0,1],'sw-ŏn')+w('🛹','skate',[0,1],'sk-āt'))}
+</div>
+</div>
+`);
+
+// ── 13 DIGRAPHS
+S('digraphs','👥 Digraphs',bg('#145a32','#1e8449'),`
+<div class="sh"><span class="stag">Level 3</span><span class="stit">Digraphs — two letters, one new sound!</span></div>
+<div class="sb">
+${ib('<b>Digraphs</b> = two letters that make ONE completely new sound. Neither letter sounds like itself!')}
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#1e8449;">sh- /sh/</div><div class="bd">Shhhh! 🤫</div></div>
+  ${wg(w('🐑','sheep',[0,1],'sh-ēp')+w('👟','shoe',[0,1],'sh-ū')+w('🦈','shark',[0,1],'sh-ärk')+w('🚢','ship',[0,1],'sh-ĭp')+w('🛖','shed',[0,1],'sh-ĕd')+w('🐚','shell',[0,1],'sh-ĕl')+w('🛍️','shop',[0,1],'sh-ŏp')+w('📐','short',[0,1],'sh-ôrt'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#2980b9;">ch- /ch/</div><div class="bd">Choo-choo! 🚂</div></div>
+  ${wg(w('🐔','chick',[0,1],'ch-ĭk')+w('🧀','cheese',[0,1],'ch-ēz')+w('🍒','cherry',[0,1],'ch-ĕr')+w('🪑','chair',[0,1],'ch-âr')+w('😊','chin',[0,1],'ch-ĭn')+w('🪓','chop',[0,1],'ch-ŏp')+w('📦','chest',[0,1],'ch-ĕst')+w('🌿','chip',[0,1],'ch-ĭp'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#7d3c98;">th- /θ/ or /ð/</div><div class="bd">Tongue between teeth! 😛</div></div>
+  ${wg(w('💭','think',[0,1],'th-ĭnk')+w('👇','this',[0,1],'th-ĭs')+w('🧵','thin',[0,1],'th-ĭn')+w('🌡️','thick',[0,1],'th-ĭk')+w('🫵','them',[0,1],'th-ĕm')+w('👈','that',[0,1],'th-ăt')+w('3️⃣','three',[0,1],'thr-ē')+w('🪨','then',[0,1],'th-ĕn'))}
+</div>
+<div class="bg2">
+  <div class="bh"><div class="bt" style="background:#c0392b;">wh- /hw/</div><div class="bd">Blow out! 💨</div></div>
+  ${wg(w('🐳','whale',[0,1],'wh-āl')+w('🌾','wheat',[0,1],'wh-ēt')+w('🎡','wheel',[0,1],'wh-ēl')+w('❓','when',[0,1],'wh-ĕn')+w('❓','where',[0,1],'wh-âr')+w('❓','which',[0,1],'wh-ĭch')+w('❓','why',[0,1],'wh-ī'))}
+</div>
+</div>
+`);
+
+// ── 14 LONG A
+S('la','📏 Long A',bg('#6b1f1f','#a93226'),`
+<div class="sh"><span class="stag">Level 4 · Long Vowels</span><span class="stit">Long A /ā/ — the letter says its name!</span></div>
+<div class="sb">
+${ib('<b>Long A</b> says /ā/ — like the letter A itself! Patterns: <b>a_e</b> (magic E), <b>ai</b>, <b>ay</b>')}
+${sl('a_e — Magic E (silent E makes vowel long)')}
+${wg(w('🎂','cake',[1],'c-ā-ke')+w('🎮','game',[1],'g-ā-me')+w('🌊','wave',[1],'w-ā-ve')+w('🏷️','name',[1],'n-ā-me')+w('🛤️','lane',[1],'l-ā-ne')+w('🕯️','flame',[2],'fl-ā-me')+w('📅','date',[1],'d-ā-te')+w('🐍','snake',[2],'sn-ā-ke'))}
+${sl('ai — vowel team (both letters, one sound)')}
+${wg(w('🌧️','rain',[1,2],'r-ā-n')+w('🚂','train',[2,3],'tr-ā-n')+w('🎨','paint',[1,2],'p-ā-nt')+w('✉️','mail',[1,2],'m-āl')+w('🐌','snail',[2,3],'sn-āl')+w('🧲','chain',[2,3],'ch-ān')+w('🪣','pail',[1,2],'p-āl')+w('🏃','trail',[2,3],'tr-āl'))}
+${sl('ay — at end of word')}
+${wg(w('☀️','day',[1,2],'d-ā')+w('🎠','play',[2,3],'pl-ā')+w('🙏','pray',[2,3],'pr-ā')+w('🌊','clay',[2,3],'kl-ā')+w('🧺','tray',[1,2],'tr-ā')+w('🐴','hay',[1,2],'h-ā')+w('💰','pay',[1,2],'p-ā')+w('🗓️','stay',[2,3],'st-ā'))}
+</div>
+`);
+
+// ── 15 LONG E
+S('le','📏 Long E',bg('#1a5276','#21618c'),`
+<div class="sh"><span class="stag">Level 4 · Long Vowels</span><span class="stit">Long E /ē/ — the letter says its name!</span></div>
+<div class="sb">
+${ib('<b>Long E</b> says /ē/. Patterns: <b>ee</b>, <b>ea</b>, and <b>y</b> at end of word')}
+${sl('ee — vowel team')}
+${wg(w('🐝','bee',[0,1],'b-ē')+w('🌳','tree',[1,2],'tr-ē')+w('👣','feet',[1,2],'f-ēt')+w('🦷','teeth',[1,2],'t-ēth')+w('🌾','seed',[1,2],'s-ēd')+w('🐑','sheep',[1,2],'sh-ēp')+w('🎉','cheer',[1,2],'ch-ēr')+w('😴','sleep',[2,3],'sl-ēp'))}
+${sl('ea — vowel team')}
+${wg(w('🌊','sea',[1,2],'s-ē')+w('🫘','bean',[1,2],'b-ēn')+w('🥩','meat',[1,2],'m-ēt')+w('📖','read',[1,2],'r-ēd')+w('🌿','leaf',[1,2],'l-ēf')+w('🦁','beach',[1,2],'b-ēch')+w('🍑','peach',[1,2],'p-ēch')+w('✌️','peace',[1,2],'p-ēs'))}
+${sl('y at end of word = /ē/')}
+${wg(w('😊','happy',[4,5],'h-ăp-ē')+w('🐰','bunny',[4,5],'b-ŭn-ē')+w('🍬','candy',[4,5],'k-ăn-d-ē')+w('👶','baby',[3,4],'b-ā-b-ē')+w('🐻','funny',[4,5],'f-ŭn-ē')+w('🌮','tasty',[4,5],'t-āst-ē')+w('🌧️','cloudy',[5,6],'kl-ow-d-ē')+w('🌼','daisy',[4,5],'d-ā-z-ē'))}
+</div>
+`);
+
+// ── 16 LONG I O U
+S('liou','📏 Long I O U',bg('#4a235a','#7d3c98'),`
+<div class="sh"><span class="stag">Level 4 · Long Vowels</span><span class="stit">Long I /ī/ · O /ō/ · U /ū/</span></div>
+<div class="sb">
+${ib('<b>Long I</b>: i_e, igh, y &nbsp;·&nbsp; <b>Long O</b>: o_e, oa, ow &nbsp;·&nbsp; <b>Long U</b>: u_e, oo')}
+${sl('Long I — i_e / igh / y')}
+${wg(w('🪁','kite',[1],'k-ī-te')+w('🚲','bike',[1],'b-ī-ke')+w('😊','smile',[2],'sm-ī-le')+w('💡','light',[1,2,3],'l-īt')+w('🌃','night',[1,2,3],'n-īt')+w('✈️','flight',[2,3,4],'fl-īt')+w('🪰','fly',[2],'fl-ī')+w('🌂','dry',[2],'dr-ī'))}
+${sl('Long O — o_e / oa / ow')}
+${wg(w('🏠','home',[1],'h-ō-me')+w('🦴','bone',[1],'b-ō-ne')+w('🌹','rose',[1],'r-ō-ze')+w('🚣','boat',[1,2],'b-ōt')+w('🧥','coat',[1,2],'k-ōt')+w('🛤️','road',[1,2],'r-ōd')+w('❄️','snow',[2,3],'sn-ō')+w('🌱','grow',[2,3],'gr-ō'))}
+${sl('Long U — u_e / oo')}
+${wg(w('🎵','tune',[1],'t-ū-ne')+w('🧊','cube',[1],'k-ū-be')+w('🌙','moon',[1,2],'m-ūn')+w('🥄','spoon',[2,3],'sp-ūn')+w('🥛','cool',[1,2],'k-ūl')+w('🍖','food',[1,2],'f-ūd')+w('🌊','blew',[2,3],'bl-ū')+w('🪢','glue',[2,3],'gl-ū'))}
+</div>
+`);
+
+// ── 17 BOSSY R
+S('bossy-r','👑 Bossy R',bg('#1e6823','#239b56'),`
+<div class="sh"><span class="stag">Level 4</span><span class="stit">Bossy R — changes the vowel sound! 👑</span></div>
+<div class="sb">
+${ib('When <b>R</b> comes after a vowel, it changes the vowel\'s sound! R is "bossy" — it takes over!')}
+${sl('ar — /är/ as in car 🚗')}
+${wg(w('🚗','car',[1,2],'k-är')+w('⭐','star',[2,3],'st-är')+w('🌾','farm',[1,2],'f-är-m')+w('🫙','jar',[1,2],'j-är')+w('🎯','dart',[1,2],'d-ärt')+w('🦈','shark',[2,3],'sh-ärk')+w('💪','arm',[1,2],'ärm')+w('🎨','art',[1,2],'ärt'))}
+${sl('er / ir / ur — all say /ûr/ (same sound!)')}
+${wg(w('🐦','bird',[1,2],'b-ûrd')+w('👧','girl',[1,2],'g-ûrl')+w('🌿','fern',[1,2],'f-ûrn')+w('🐢','turtle',[1,2],'t-ûr')+w('🌀','turn',[1,2],'t-ûrn')+w('🔥','burn',[1,2],'b-ûrn')+w('👩','her',[1,2],'h-ûr')+w('🌍','earth',[0,1],'ûr-th'))}
+${sl('or — /ôr/ as in corn 🌽')}
+${wg(w('🌽','corn',[1,2],'k-ôrn')+w('🐴','horse',[1,2],'h-ôrs')+w('🏰','fort',[1,2],'f-ôrt')+w('🌿','torn',[1,2],'t-ôrn')+w('🌳','forest',[1,2],'f-ôr')+w('🏪','store',[2,3],'st-ôr')+w('⚓','more',[1,2],'m-ôr')+w('🏋️','sport',[2,3],'sp-ôrt'))}
+</div>
+`);
+
+// ── 18 VOWEL TEAMS
+S('vowel-t','👫 Vowel Teams',bg('#1a3a5c','#2471a3'),`
+<div class="sh"><span class="stag">Level 4+</span><span class="stit">Vowel Teams &amp; Diphthongs 👫</span></div>
+<div class="sb">
+${ib('<b>Vowel teams</b>: two vowels together — usually first one "talks"! <b>Diphthongs</b>: vowels that glide (oi, oy, ou, ow)')}
+${sl('oi / oy — /oi/ (like "oink")')}
+${wg(w('🪙','coin',[0,1],'k-oi-n')+w('🗣️','voice',[1,2],'v-oi-ce')+w('💧','boil',[1,2],'b-oi-l')+w('🧸','toy',[1,2],'t-oi')+w('😊','joy',[1,2],'j-oi')+w('👦','boy',[1,2],'b-oi')+w('🍳','foil',[1,2],'f-oi-l')+w('🪙','soil',[1,2],'s-oi-l'))}
+${sl('ou / ow — /ow/ (like "ouch")')}
+${wg(w('🏠','house',[1,2],'h-ow-s')+w('🖱️','mouse',[1,2],'m-ow-s')+w('☁️','cloud',[2,3],'kl-ow-d')+w('📢','loud',[1,2],'l-ow-d')+w('🐮','cow',[1,2],'k-ow')+w('🦉','owl',[0,1],'ow-l')+w('🌸','flower',[2,3],'fl-ow-er')+w('👑','crown',[2,3],'kr-ow-n'))}
+${sl('aw / au — /aw/ (like "awful")')}
+${wg(w('🐾','paw',[1,2],'p-aw')+w('😬','jaw',[1,2],'j-aw')+w('🌅','dawn',[1,2],'d-aw-n')+w('✏️','draw',[2,3],'dr-aw')+w('🦅','claw',[2,3],'kl-aw')+w('🍂','autumn',[0,1],'aw-tŭm'))}
+${sl('oo — two sounds! (moon vs book)')}
+${wg(w('🌙','moon',[1,2],'m-ōōn')+w('🥄','spoon',[2,3],'sp-ōōn')+w('📚','book',[1,2],'b-oo-k')+w('👨‍🍳','cook',[1,2],'k-oo-k')+w('🪵','wood',[1,2],'w-oo-d')+w('👁️','look',[1,2],'l-oo-k')+w('🦶','foot',[1,2],'f-oo-t')+w('🌿','zoom',[1,2],'z-ōōm'))}
+</div>
+`);
+
+// ── 19 WORD FAMILIES
+S('wfam','🧩 Word Families',bg('#7d1f2e','#c0392b'),`
+<div class="sh"><span class="stag">Level 3</span><span class="stit">Word Families — same ending, many words!</span></div>
+<div class="sb">
+${ib('Learn one pattern → read many words! The shared ending is called the <b>rime</b>.')}
+${[
+  ['-at','cat bat hat rat mat sat flat that','#e74c3c'],
+  ['-an','man pan van can ran tan fan plan','#e67e22'],
+  ['-all','ball call fall hall tall wall small stall','#f39c12'],
+  ['-ight','light night right tight fight sight bright flight','#27ae60'],
+  ['-ake','cake lake make take bake fake rake wake','#2980b9'],
+  ['-ame','game came name fame tame blame flame shame','#8e44ad'],
+  ['-ide','ride hide side wide bride glide slide pride','#c0392b'],
+  ['-unk','bunk dunk funk junk sunk chunk skunk trunk','#16a085'],
+].map(([fam,words,color])=>`
+  <div style="margin-bottom:9px;">
+    <div style="display:inline-block;background:${color};padding:3px 12px;border-radius:8px;font-family:'Fredoka One',cursive;font-size:13px;color:white;margin-bottom:5px;">${fam}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+      ${words.split(' ').map(ww=>`<div class="sp" style="font-size:13px;min-width:58px;" onclick="say('${ww}')">${ww}</div>`).join('')}
+    </div>
+  </div>
+`).join('')}
+</div>
+`);
+
+// ── 20 ENDINGS
+S('endings','✋ Endings',bg('#1c2833','#2c3e50'),`
+<div class="sh"><span class="stag">Level 3</span><span class="stit">Common Endings: -ck · -ng · -nk · -ss · -ll</span></div>
+<div class="sb">
+${ib('These endings appear very often in short-vowel words. Master them and read many more words!')}
+${sl('-ck (after short vowels a, e, i, o, u)')}
+${wg(w('🦆','duck',[2,3],'d-ŭ-ck')+w('🚛','truck',[3,4],'tr-ŭ-ck')+w('⏰','clock',[3,4],'kl-ŏ-ck')+w('🔒','lock',[2,3],'l-ŏ-ck')+w('🧦','sock',[2,3],'s-ŏ-ck')+w('🪨','rock',[2,3],'r-ŏ-ck')+w('🐥','chick',[3,4],'ch-ĭ-ck')+w('🧱','brick',[3,4],'br-ĭ-ck'))}
+${sl('-ng (nasal — back of throat)')}
+${wg(w('💍','ring',[2,3],'r-ĭ-ng')+w('👑','king',[2,3],'k-ĭ-ng')+w('🎤','sing',[2,3],'s-ĭ-ng')+w('🔔','ding',[2,3],'d-ĭ-ng')+w('🦋','wing',[2,3],'w-ĭ-ng')+w('🎵','song',[2,3],'s-ŏ-ng')+w('🏋️','long',[2,3],'l-ŏ-ng')+w('💪','strong',[4,5],'str-ŏ-ng'))}
+${sl('-nk')}
+${wg(w('🏦','bank',[2,3],'b-ă-nk')+w('🛢️','tank',[2,3],'t-ă-nk')+w('🙏','thank',[3,4],'th-ă-nk')+w('🪣','sink',[2,3],'s-ĭ-nk')+w('🔗','link',[2,3],'l-ĭ-nk')+w('💭','think',[3,4],'th-ĭ-nk')+w('🦨','skunk',[3,4],'sk-ŭ-nk')+w('🛏️','bunk',[2,3],'b-ŭ-nk'))}
+${sl('-ss & -ll endings')}
+${wg(w('💼','class',[3,4],'kl-ă-ss')+w('🌿','grass',[3,4],'gr-ă-ss')+w('😤','fuss',[2,3],'f-ŭ-ss')+w('💨','puff',[2,3],'p-ŭ-ff')+w('⛰️','hill',[2,3],'h-ĭ-ll')+w('⚽','ball',[2,3],'b-aw-ll')+w('📞','call',[2,3],'k-aw-ll')+w('🏙️','tall',[2,3],'t-aw-ll'))}
+</div>
+`);
+
+// ── 21 SILENT LETTERS
+S('silent','🤫 Silent Letters',bg('#2c3e50','#34495e'),`
+<div class="sh"><span class="stag">Level 4</span><span class="stit">Sneaky Silent Letters 🤫</span></div>
+<div class="sb">
+${ib('Some letters hide — we <b>write</b> them but do <b>not say</b> them. Very tricky!')}
+${[
+  ['Silent K before N 🔕','knife 🔪 · knit 🧶 · knock 🚪 · knee 🦵 · knot 🪢 · know 🧠 · knob 🪟'],
+  ['Silent W before R 🔕','write ✍️ · wrong ❌ · wrist ⌚ · wrap 🎁 · wreck 🚧 · wrench 🔧'],
+  ['Silent B after M 🔕','bomb 💣 · lamb 🐑 · thumb 👍 · crumb 🍞 · comb 🪮 · climb 🧗'],
+  ['Silent GH in -ight / -igh 🔕','light 💡 · night 🌃 · right ➡️ · bright ☀️ · flight ✈️ · sigh 😮‍💨'],
+  ['Magic Silent E 🪄','cake 🎂 · kite 🪁 · home 🏠 · tune 🎵 · wave 🌊 — E makes the vowel say its name!'],
+  ['Silent L 🔕','calm 🧘 · palm 🌴 · half ½ · chalk 🖍️ · walk 🚶 · talk 💬 · yolk 🥚'],
+].map(([t,words])=>`
+  <div style="margin-bottom:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 13px;">
+    <div style="font-family:'Fredoka One',cursive;font-size:13px;color:#ffd93d;margin-bottom:4px;">${t}</div>
+    <div style="font-size:13.5px;color:rgba(255,255,255,0.8);line-height:1.9;">${words}</div>
+  </div>
+`).join('')}
+</div>
+`);
+
+// ── 22 COMPOUND WORDS
+S('compound','🧩 Compound',bg('#1a3a2a','#1e8449'),`
+<div class="sh"><span class="stag">Level 4</span><span class="stit">Compound Words — two words in one!</span></div>
+<div class="sb">
+${ib('<b>Compound words</b> = two real words joined together. <b>sun</b> + <b>shine</b> = <b>sunshine</b> ☀️')}
+${wg([
+  ['☀️','sun','shine','sunshine'],['🌈','rain','bow','rainbow'],
+  ['⚾','base','ball','baseball'],['🎂','birth','day','birthday'],
+  ['📚','book','case','bookcase'],['🦋','butter','fly','butterfly'],
+  ['🧁','cup','cake','cupcake'],['🔦','flash','light','flashlight'],
+  ['👣','foot','print','footprint'],['🌻','sun','flower','sunflower'],
+  ['❄️','snow','flake','snowflake'],['🏠','farm','house','farmhouse'],
+  ['🎒','back','pack','backpack'],['🛤️','rail','road','railroad'],
+  ['🌅','day','light','daylight'],['🌺','butter','cup','buttercup'],
+  ['🐠','gold','fish','goldfish'],['🍯','honey','bee','honeybee'],
+].map(([e,w1,w2,full])=>`
+  <div class="wc" onclick="say('${full}')">
+    <div class="we">${e}</div>
+    <div class="wt">${full}</div>
+    <div class="wp">${w1} + ${w2}</div>
+  </div>
+`).join(''))}
+</div>
+`);
+
+// ── 23 SIGHT WORDS K-1
+S('sw1','👁 Sight Words K–1',bg('#154360','#1f618d'),`
+<div class="sh"><span class="stag">Sight Words</span><span class="stit">Kindergarten &amp; Grade 1 Sight Words 👁</span></div>
+<div class="sb">
+${ib('👁 <b>Sight words</b> don\'t always follow phonics rules — just memorize them! Tap to hear each one.')}
+${sl('Kindergarten — Dolch List')}
+<div class="sg">
+${['a','and','away','big','blue','can','come','down','find','for','funny','go','help','here','I','in','is','it','jump','little','look','make','me','my','not','one','play','red','run','said','see','the','three','to','two','up','we','where','yellow','you','all','am','are','at','be','but','came','did','do','eat','four','get','good','have','he','like','must','new','no','now','on','our','out','please','pretty','ran','ride','saw','say','she','so','soon','that','there','they','this','too','under','want','was','well','went','what','white','who','will','with','yes'].map(sp).join('')}
+</div>
+${sl('Grade 1 — Dolch List')}
+<div class="sg">
+${['after','again','an','any','as','ask','by','could','every','fly','from','give','going','had','has','her','him','his','how','just','know','let','live','may','of','old','once','open','over','put','round','some','stop','take','thank','them','think','walk','were','when','always','around','because','been','before','best','both','buy','call','cold','does','fast','first','five','found','gave','goes','green','its','many','off','or','pull','read','right','sing','sit','sleep','tell','those','upon','us','use','very','which','why','wish','work','would','write','your'].map(sp).join('')}
+</div>
+</div>
+`);
+
+// ── 24 SIGHT WORDS 2-3
+S('sw2','👁 Sight Words 2–3',bg('#0e4d4d','#117a65'),`
+<div class="sh"><span class="stag">Sight Words</span><span class="stit">Grade 2 &amp; Grade 3 Sight Words 👁</span></div>
+<div class="sb">
+${sl('Grade 2 Nouns — Dolch')}
+<div class="sg">
+${['apple','baby','back','ball','bear','bed','bird','birthday','boat','box','boy','bread','brother','cake','car','cat','chair','chicken','children','coat','corn','cow','day','dog','doll','door','dress','duck','egg','eye','farm','father','feet','fire','fish','floor','flower','game','garden','girl','grass','ground','hand','head','hill','home','horse','house','leg','letter','man','men','milk','money','morning','mother','name','nest','night','paper','party','picture','pig','rabbit','rain','ring','robin','school','seed','sheep','shoe','sister','snow','song','street','table','time','tree','watch','water','way','window','wood'].map(sp).join('')}
+</div>
+${sl('Grade 3 — Dolch List')}
+<div class="sg">
+${['about','better','bring','carry','clean','cut','done','draw','drink','eight','fall','far','full','got','grow','hold','hot','hurt','if','keep','kind','laugh','light','long','much','myself','never','only','own','pick','seven','shall','show','six','small','start','ten','today','together','try','warm'].map(sp).join('')}
+</div>
+</div>
+`);
+
+// ── 25 QUIZ
+S('quiz','🏆 Quiz Time!',bg('#1a1a2e','#16213e'),`
+<div class="sh">
+  <span class="stag" style="background:linear-gradient(90deg,#ffd93d,#ff9a3c);color:#1a1a4e;">🏆 Quiz</span>
+  <span class="stit">Test Your Phonics!</span>
+  <div style="margin-left:auto;font-family:'Fredoka One',cursive;font-size:16px;color:var(--sun);" id="qsc">⭐ 0 / 0</div>
+</div>
+<div class="sb"><div class="qz" id="qz"></div></div>
+`);
+
+// ── 26 FINISH
+S('finish','🎉 All Done!',bg('#1a4a1a','#196f3d'),`
+<div class="hw">
+  <div style="font-size:68px;animation:bounce 1.5s ease-in-out infinite;">🎊🌟🎉</div>
+  <div class="hb" style="background:linear-gradient(90deg,#ffd93d,#6bcb77,#4ecdc4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Amazing Reader!</div>
+  <div class="hs">You have completed all the phonics lessons! Keep reading every day — you are a STAR! ⭐📚</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:500px;margin-top:8px;">
+    ${[['🔤','Letters A–Z'],['🎵','Short Vowels'],['🔗','Blends'],['👥','Digraphs'],['📏','Long Vowels'],['👑','Bossy R'],['👫','Vowel Teams'],['👁','Sight Words'],['🏆','Quiz Done!']].map(([e,t])=>`
+      <div style="background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.18);border-radius:11px;padding:11px 7px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:3px;">${e}</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:12px;color:white;">${t}</div>
+      </div>`).join('')}
+  </div>
+</div>
+`);
+
+// ══════════════════════════════════════════════════
+// QUIZ DATA
+// ══════════════════════════════════════════════════
+const QD=[
+  {q:'cat',em:'🐱',ans:'Short A /ă/',opts:['Short A /ă/','Long A /ā/','Short E /ĕ/','Short O /ŏ/']},
+  {q:'bee',em:'🐝',ans:'Long E /ē/ — ee',opts:['Short E /ĕ/','Long E /ē/ — ee','Long A /ā/','Long I /ī/']},
+  {q:'kite',em:'🪁',ans:'Long I — magic E',opts:['Short I /ĭ/','Long I — magic E','Long E /ē/','Long O /ō/']},
+  {q:'ship',em:'🚢',ans:'sh- digraph',opts:['sh- digraph','ch- digraph','sl- blend','Short S']},
+  {q:'frog',em:'🐸',ans:'fr- blend',opts:['fr- blend','fl- blend','Short F','tr- blend']},
+  {q:'night',em:'🌃',ans:'Silent GH (-ight)',opts:['Silent GH (-ight)','Long I only','Short I','ng ending']},
+  {q:'coin',em:'🪙',ans:'oi diphthong',opts:['Long O /ō/','oi diphthong','Short O /ŏ/','ow diphthong']},
+  {q:'bird',em:'🐦',ans:'ir — Bossy R',opts:['Short I /ĭ/','ir — Bossy R','Long I /ī/','er — Bossy R']},
+  {q:'duck',em:'🦆',ans:'-ck ending',opts:['-ck ending','-ng ending','-nk ending','-ss ending']},
+  {q:'rain',em:'🌧️',ans:'ai — Long A team',opts:['Short A /ă/','ai — Long A team','Long E /ē/','ay ending']},
+  {q:'star',em:'⭐',ans:'st- blend + ar',opts:['Short A','st- blend + ar','ar only','str- blend']},
+  {q:'think',em:'💭',ans:'th- digraph',opts:['th- digraph','sh- digraph','tr- blend','wh- digraph']},
+];
+let qi=0,qs=0,qt=0,qa=false;
+function bq(){
+  const z=document.getElementById('qz'); if(!z)return;
+  if(qi>=QD.length){
+    z.innerHTML=`<div style="text-align:center;padding:14px;">
+      <div style="font-size:52px;margin-bottom:10px;">🎊</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:26px;color:white;">Quiz Complete!</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;color:var(--sun);margin:10px 0;">Score: ${qs} / ${QD.length}</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:14px;">${qs===QD.length?'🌟 Perfect! Phonics Star!':qs>=QD.length*.75?'🎉 Great job!':'📚 Keep practicing!'}</div>
+      <button class="qnx" onclick="qi=0;qs=0;qt=0;bq();">🔄 Try Again!</button>
+    </div>`; return;
+  }
+  qa=false;
+  const d=QD[qi];
+  const sh=[...d.opts].sort(()=>Math.random()-.5);
+  z.innerHTML=`
+    <div style="font-size:12px;color:rgba(255,255,255,0.48);font-family:'Fredoka One',cursive;letter-spacing:1px;">What phonics rule does this word use?</div>
+    <div style="font-size:44px;">${d.em}</div>
+    <div class="qw">${d.q}</div>
+    <div class="qc">${sh.map(o=>`<button class="qb" onclick="aq(this,'${o.replace(/'/g,"\\'")}','${d.ans.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>
+    <div id="qfb" style="font-family:'Fredoka One',cursive;font-size:15px;min-height:24px;"></div>
+    <button class="qnx" id="qnb" style="display:none;" onclick="qi++;bq();">Next ➡️</button>
+    <div style="font-family:'Fredoka One',cursive;font-size:15px;color:var(--sun);">⭐ ${qs} / ${qt}</div>`;
+}
+function aq(btn,c,ans){
+  if(qa)return; qa=true; qt++;
+  const fb=document.getElementById('qfb');
+  if(c===ans){btn.classList.add('ok');fb.textContent='🎉 Correct!';fb.style.color='#6bcb77';qs++;}
+  else{btn.classList.add('no');fb.textContent='❌ Answer: '+ans;fb.style.color='#ff6b6b';
+    document.querySelectorAll('.qb').forEach(b=>{if(b.textContent.trim()===ans)b.classList.add('ok');});}
+  const nb=document.getElementById('qnb');if(nb)nb.style.display='inline-block';
+  const sc=document.getElementById('qsc');if(sc)sc.textContent=`⭐ ${qs} / ${qt}`;
+}
+
+// ══════════════════════════════════════════════════
+// SPEECH
+// ══════════════════════════════════════════════════
+function say(word){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(word);
+    u.lang='en-US';u.rate=0.8;u.pitch=1.15;
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// RENDER & NAV
+// ══════════════════════════════════════════════════
+const deck=document.getElementById('deck');
+const sbar=document.getElementById('sidebar');
+const TOTAL=SS.length;
+let cur=0,busy=false;
+
+const SECS=[
+  {label:'🚀 START',idx:0},
+  {label:'🔤 LETTERS A–Z',idx:1},
+  {label:'🎵 SHORT VOWELS',idx:6},
+  {label:'🔗 BLENDS & DIGRAPHS',idx:11},
+  {label:'📏 LONG VOWELS',idx:13},
+  {label:'👑 ADVANCED PATTERNS',idx:16},
+  {label:'🧩 WORD SKILLS',idx:18},
+  {label:'👁 SIGHT WORDS',idx:22},
+  {label:'🏆 QUIZ & FINISH',idx:24},
+];
+
+SS.forEach((s,i)=>{
+  // sidebar section header
+  const sec=SECS.find(x=>x.idx===i);
+  if(sec){const d=document.createElement('div');d.className='sb-sec';d.textContent=sec.label;sbar.appendChild(d);}
+  // sidebar button
+  const btn=document.createElement('button');
+  btn.className='sb-btn'+(i===0?' active':'');
+  btn.dataset.i=i;
+  btn.innerHTML=`<span class="sb-n">${i+1}</span>${s.nav}`;
+  btn.onclick=()=>goTo(i);
+  sbar.appendChild(btn);
+  // slide
+  const el=document.createElement('div');
+  el.className='slide'+(i===0?' active':'');
+  const card=document.createElement('div');
+  card.className='card';card.style.cssText=s.style;
+  card.innerHTML=s.html;
+  el.appendChild(card);deck.appendChild(el);
+});
+
+const ctr=document.getElementById('ctr');ctr.textContent=`1/${TOTAL}`;
+document.getElementById('bp').disabled=true;
+
+function goTo(idx){
+  if(idx<0||idx>=TOTAL||busy||idx===cur)return;
+  busy=true;
+  const slides=deck.querySelectorAll('.slide');
+  const btns=sbar.querySelectorAll('.sb-btn');
+  const prev=cur;cur=idx;
+  slides[prev].classList.remove('active');slides[prev].classList.add('exit');
+  slides[cur].classList.add('enter-prep');slides[cur].offsetWidth;
+  slides[cur].classList.remove('enter-prep');slides[cur].classList.add('active');
+  btns.forEach((b,i)=>b.classList.toggle('active',i===cur));
+  btns[cur].scrollIntoView({block:'nearest',behavior:'smooth'});
+  ctr.textContent=`${cur+1}/${TOTAL}`;
+  document.getElementById('bp').disabled=cur===0;
+  document.getElementById('bn').disabled=cur===TOTAL-1;
+  setTimeout(()=>{slides[prev].classList.remove('exit');busy=false;},350);
+  if(SS[cur].id==='quiz')setTimeout(bq,150);
+}
+document.getElementById('bp').onclick=()=>goTo(cur-1);
+document.getElementById('bn').onclick=()=>goTo(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);
+});
+</script>
+</body>
+</html>
