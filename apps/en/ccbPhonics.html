@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>COCOBO EN · Phonics Fun! 🌟</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Righteous&display=swap" rel="stylesheet">
 <style>
@@ -315,7 +317,184 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 #deck{margin-bottom:0;}
 .card{margin-bottom:0;}
 
-/* ── ANIMS ── */
+
+/* ══════════════════════════════════════════════════
+   📱 iPhone LANDSCAPE — Mobile Responsive
+   Covers: SE (667px), Standard (844px), Pro Max (932px)
+   max-height:500px catches landscape on phones
+══════════════════════════════════════════════════ */
+
+/* Safe area variables for notch / Dynamic Island */
+:root{
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+  /* ── Root adjustments ── */
+  :root{
+    --sidebar: 0px;   /* sidebar hidden by default, toggled via overlay */
+    --footer-h: 28px;
+    --topbar-h: 40px;
+  }
+
+  html,body{ overflow:hidden; }
+
+  /* ── Sidebar becomes a slide-over drawer ── */
+  #sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:500;
+    width:180px;
+    transform:translateX(-100%);
+    transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    padding-top:0;
+    padding-bottom: calc(var(--footer-h) + var(--safe-b));
+    padding-left: var(--safe-l);
+    box-shadow:4px 0 24px rgba(0,0,0,0.5);
+  }
+  #sidebar.open{ transform:translateX(0); }
+
+  /* Sidebar logo smaller */
+  .sb-logo-wrap{ padding:10px 10px 9px; }
+  .sb-logo-icon{ width:28px;height:28px;font-size:15px; }
+  .sb-logo-name{ font-size:11px; }
+  .sb-logo-sub{ font-size:6.5px; }
+
+  /* Sidebar nav items compact */
+  .sb-btn{ padding:5px 8px; font-size:10.5px; }
+  .sb-sec{ padding:7px 0 2px 10px; font-size:7.5px; }
+
+  /* Sidebar backdrop */
+  #sb-backdrop{
+    display:none;position:fixed;inset:0;z-index:490;
+    background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);
+  }
+  #sb-backdrop.show{ display:block; }
+
+  /* ── Main takes full width ── */
+  #main{
+    width:100vw;
+    padding-left: var(--safe-l);
+    padding-right: var(--safe-r);
+  }
+
+  /* ── Topbar compact ── */
+  #topbar{
+    height:40px;padding:0 8px 0 calc(8px + var(--safe-l));
+  }
+
+  /* Hamburger menu button (shown in landscape) */
+  #sb-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:8px;cursor:pointer;border:none;
+    background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);
+    font-size:16px;flex-shrink:0;margin-right:6px;
+    transition:all 0.18s;
+  }
+  #sb-toggle:hover{ background:rgba(255,255,255,0.16);color:white; }
+
+  .tb-logo{ font-size:12px;max-width:160px; }
+
+  /* View toggle compact */
+  .vt-btn{ padding:4px 7px;font-size:9px; }
+  .vt-sep{ height:18px; }
+
+  /* Slide nav compact */
+  .tb-btn{ width:28px;height:28px;font-size:13px; }
+  .tb-ctr{ font-size:11px;min-width:34px; }
+  .tb-right{ gap:5px; }
+  .tb-nav{ gap:5px; }
+
+  /* ── Deck ── */
+  #deck{ }
+
+  /* ── Cards compact ── */
+  .card{ margin:5px 8px 5px;border-radius:14px; }
+  .sh{ padding:7px 14px 5px; }
+  .stag{ font-size:8px;padding:2px 8px; }
+  .stit{ font-size:clamp(13px,2vw,18px); }
+  .sb{ padding:4px 12px 8px; }
+
+  /* Word grid — more columns, smaller cards */
+  .wg{ grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:5px;margin-top:3px; }
+  .wc{ padding:6px 5px;border-radius:9px; }
+  .we{ font-size:clamp(18px,3vw,26px);margin-bottom:2px; }
+  .wt{ font-size:clamp(11px,1.6vw,15px); }
+  .wp{ font-size:8px;margin-top:1px; }
+
+  /* Section labels */
+  .sl{ font-size:9px;margin:7px 0 3px; }
+
+  /* Info box */
+  .ib{ padding:6px 10px;font-size:11px;margin-bottom:7px; }
+
+  /* Sight word grid */
+  .sg{ grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px; }
+  .sp{ padding:4px 6px;font-size:clamp(10px,1.5vw,13px);border-radius:30px; }
+
+  /* Blend groups */
+  .bt{ font-size:clamp(11px,1.8vw,16px);padding:3px 10px; }
+  .bd{ font-size:10px; }
+  .bg2{ margin-bottom:9px; }
+  .bh{ margin-bottom:4px; }
+
+  /* Hero slide */
+  .hw{ padding:8px 16px;gap:8px; }
+  .hb{ font-size:clamp(22px,4vw,38px); }
+  .hs{ font-size:clamp(10px,1.6vw,13px);max-width:360px; }
+  .hch{ padding:4px 10px;font-size:10px;border-radius:9px; }
+  .hc{ gap:5px; }
+
+  /* Quiz */
+  .qw{ font-size:clamp(24px,4vw,40px); }
+  .qb{ padding:8px 10px;font-size:clamp(11px,1.6vw,14px);border-radius:10px; }
+  .qc{ gap:7px;max-width:360px; }
+  .qnx{ padding:7px 20px;font-size:14px; }
+  .qz{ gap:9px; }
+
+  /* Footer */
+  #footer{
+    height: calc(var(--footer-h) + var(--safe-b));
+    padding-bottom: var(--safe-b);
+    padding-left: var(--safe-l);
+    padding-right: var(--safe-r);
+  }
+  .footer-text{ font-size:8px;letter-spacing:1.2px; }
+
+  /* ── 2×2 Focus view in landscape ── */
+  .fo-header{ padding:6px 12px 5px; }
+  .fo-title{ font-size:clamp(12px,1.8vw,16px); }
+  .fo-pager{ font-size:11px; }
+  .fo-grid{ gap:7px;padding:7px 10px; }
+  .fc{ padding:7px 6px;border-radius:12px; }
+  .fc .fc-em{ font-size:clamp(32px,5.5vw,52px);margin-bottom:4px; }
+  .fc .fc-word{ font-size:clamp(16px,2.8vw,26px);margin-bottom:3px; }
+  .fc .fc-ph{ font-size:10px; }
+  .fo-nav{ padding:7px 12px;gap:12px; }
+  .fo-arrow{ width:38px;height:38px; }
+  .fo-arrow svg{ width:16px;height:16px; }
+  .fo-dots{ gap:5px; }
+  .fo-dot{ width:6px;height:6px; }
+  .fo-dot.active{ width:14px; }
+}
+
+/* iPhone SE landscape (667px wide) — even tighter */
+@media (max-height: 375px) and (orientation: landscape) {
+  .wg{ grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:4px; }
+  .we{ font-size:clamp(16px,2.8vw,22px); }
+  .wt{ font-size:clamp(10px,1.5vw,13px); }
+  .hb{ font-size:clamp(18px,3.5vw,30px); }
+  .fc .fc-em{ font-size:clamp(26px,4.5vw,40px); }
+  .fc .fc-word{ font-size:clamp(14px,2.4vw,22px); }
+  .fo-grid{ padding:5px 8px;gap:5px; }
+  .fo-arrow{ width:32px;height:32px; }
+  .card{ margin:4px 6px; }
+  .tb-logo{ max-width:130px;font-size:11px; }
+}
+
+
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes pop{from{transform:scale(0.72) translateY(7px);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}70%{transform:translateX(6px)}}
@@ -331,7 +510,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   <div id="sidebar"></div>
   <div id="main">
     <div id="topbar">
-      <div class="tb-logo" style="flex:1;">🌟和小宝快快乐乐学习Phonics</div>
+      <!-- Hamburger (landscape mobile only) -->
+      <button id="sb-toggle" style="display:none;" onclick="toggleSidebar()" title="Menu">☰</button>
+      <div class="tb-logo" style="flex:1;">🌟 跟着小宝快快乐乐学习Phonics</div>
 
       <div class="tb-right">
         <!-- View Toggle -->
@@ -368,6 +549,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 <div id="footer">
   <div class="footer-text">© 2026 <span>COCOBO.TECH</span> &nbsp;·&nbsp; 语言文学部 &nbsp;·&nbsp; All Rights Reserved</div>
 </div>
+
+<!-- Sidebar backdrop for mobile landscape -->
+<div id="sb-backdrop" onclick="toggleSidebar()"></div>
 
 <script>
 // ══════════════════════════════════════════════════
@@ -1100,7 +1284,10 @@ SS.forEach((s,i)=>{
   btn.className='sb-btn'+(i===0?' active':'');
   btn.dataset.i=i;
   btn.innerHTML=`<span class="sb-n">${i+1}</span>${s.nav}`;
-  btn.onclick=()=>goTo(i);
+  btn.onclick=()=>{
+    goTo(i);
+    if(isLandscapeMobile()){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-backdrop').classList.remove('show'); }
+  };
   sbar.appendChild(btn);
   const el=document.createElement('div');
   el.className='slide'+(i===0?' active':'');
@@ -1147,6 +1334,60 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur+1);
   if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);
 });
+
+// ══════════════════════════════════════════════════ — Sidebar drawer + hamburger
+// ══════════════════════════════════════════════════
+function isLandscapeMobile() {
+  return window.innerHeight <= 500 && window.matchMedia('(orientation: landscape)').matches;
+}
+
+function updateLayoutMode() {
+  const toggle = document.getElementById('sb-toggle');
+  const lm = isLandscapeMobile();
+  if (toggle) toggle.style.display = lm ? 'flex' : 'none';
+  // If switching away from landscape, ensure sidebar is visible & not transformed
+  const sidebar = document.getElementById('sidebar');
+  if (!lm) {
+    sidebar.classList.remove('open');
+    document.getElementById('sb-backdrop').classList.remove('show');
+    sidebar.style.position = '';
+    sidebar.style.transform = '';
+  }
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sb-backdrop');
+  const isOpen = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  backdrop.classList.toggle('show', !isOpen);
+}
+
+// Auto-close sidebar when navigating in landscape
+const _origGoTo = goTo;
+// Patch goTo to also close sidebar on mobile
+document.getElementById('bp').addEventListener('click', () => { if(isLandscapeMobile()) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-backdrop').classList.remove('show'); }});
+document.getElementById('bn').addEventListener('click', () => { if(isLandscapeMobile()) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-backdrop').classList.remove('show'); }});
+
+// Touch swipe-right to open, swipe-left to close sidebar
+let _tx0 = 0, _ty0 = 0;
+document.addEventListener('touchstart', e => { _tx0 = e.touches[0].clientX; _ty0 = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (!isLandscapeMobile()) return;
+  const dx = e.changedTouches[0].clientX - _tx0;
+  const dy = e.changedTouches[0].clientY - _ty0;
+  if (Math.abs(dx) < Math.abs(dy) * 1.5) return; // mostly vertical, ignore
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sb-backdrop');
+  if (dx > 50 && _tx0 < 30) { sidebar.classList.add('open'); backdrop.classList.add('show'); }  // swipe right from edge
+  if (dx < -50 && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); backdrop.classList.remove('show'); } // swipe left to close
+}, {passive:true});
+
+// Init & re-check on resize / orientation change
+window.addEventListener('resize', updateLayoutMode);
+window.addEventListener('orientationchange', () => setTimeout(updateLayoutMode, 200));
+updateLayoutMode();
+
 </script>
 </body>
 </html>
