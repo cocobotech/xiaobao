@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phonics Fun! 🌟 Learn to Read</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>COCOBO EN · Phonics Fun! 🌟</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Righteous&display=swap" rel="stylesheet">
 <style>
-:root{--sun:#ffd93d;--coral:#ff6b6b;--mint:#6bcb77;--sidebar:196px;}
+:root{--sun:#ffd93d;--coral:#ff6b6b;--mint:#6bcb77;--sidebar:196px;--footer-h:36px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#0d0d2b;}
 
 /* ── LAYOUT ── */
 #app{display:flex;width:100vw;height:100vh;}
+
 
 /* ── SIDEBAR ── */
 #sidebar{
@@ -20,7 +21,37 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   background:rgba(8,8,35,0.98);
   border-right:2px solid rgba(255,255,255,0.07);
   display:flex;flex-direction:column;z-index:200;
-  padding-top:52px;
+  padding-top:0;
+  padding-bottom:var(--footer-h);
+}
+/* Sidebar logo block */
+.sb-logo-wrap{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:9px;
+  padding:14px 12px 12px;
+  border-bottom:1.5px solid rgba(255,255,255,0.07);
+  background:rgba(255,255,255,0.02);
+}
+.sb-logo-icon{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#ffd93d 0%,#ff9a3c 50%,#ff6b6b 100%);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 2px 10px rgba(255,217,61,0.45);
+  position:relative;overflow:hidden;
+}
+.sb-logo-icon::after{
+  content:'';position:absolute;inset:0;border-radius:10px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.28),transparent);
+}
+.sb-logo-text{display:flex;flex-direction:column;line-height:1.1;}
+.sb-logo-name{
+  font-family:'Righteous',cursive;font-size:13px;letter-spacing:0.8px;
+  background:linear-gradient(90deg,#ffd93d,#ff9a3c);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sb-logo-sub{
+  font-size:7.5px;letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(255,255,255,0.32);font-weight:800;margin-top:2px;
 }
 #sidebar::-webkit-scrollbar{width:3px;}
 #sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);}
@@ -38,18 +69,20 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .sb-btn.active .sb-n{color:rgba(255,217,61,0.7);}
 
 /* ── MAIN ── */
-#main{flex:1;height:100vh;position:relative;overflow:hidden;}
+#main{flex:1;height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;}
 
 /* ── TOPBAR ── */
 #topbar{
-  position:absolute;top:0;left:0;right:0;z-index:100;height:52px;
+  flex-shrink:0;height:52px;z-index:100;
   display:flex;align-items:center;justify-content:space-between;padding:0 14px;
   background:rgba(10,10,40,0.97);backdrop-filter:blur(10px);
   border-bottom:1.5px solid rgba(255,255,255,0.07);
 }
-.tb-logo{font-family:'Fredoka One',cursive;font-size:19px;
+.tb-logo{font-family:'Fredoka One',cursive;font-size:15px;
   background:linear-gradient(90deg,#ffd93d,#ff6b6b,#c77dff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
+.tb-right{display:flex;align-items:center;gap:8px;}
 .tb-nav{display:flex;align-items:center;gap:9px;}
 .tb-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.18);
   background:rgba(255,255,255,0.05);cursor:pointer;color:white;font-size:15px;
@@ -58,15 +91,31 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .tb-btn:disabled{opacity:0.18;cursor:not-allowed;}
 .tb-ctr{font-family:'Fredoka One',cursive;font-size:13px;color:rgba(255,255,255,0.45);min-width:44px;text-align:center;}
 
+/* ── VIEW TOGGLE ── */
+.view-toggle{
+  display:flex;align-items:center;gap:0;
+  background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.14);border-radius:9px;
+  overflow:hidden;flex-shrink:0;
+}
+.vt-btn{
+  padding:5px 9px;cursor:pointer;border:none;background:transparent;
+  color:rgba(255,255,255,0.38);font-size:13px;transition:all 0.2s;
+  display:flex;align-items:center;gap:4px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;
+  letter-spacing:0.5px;
+}
+.vt-btn:hover{color:rgba(255,255,255,0.75);}
+.vt-btn.active{background:rgba(255,217,61,0.18);color:#ffd93d;}
+.vt-sep{width:1px;background:rgba(255,255,255,0.1);height:22px;}
+
 /* ── DECK ── */
-#deck{position:absolute;inset:0;padding-top:52px;}
+#deck{flex:1;position:relative;overflow:hidden;}
 .slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:scale(0.97) translateY(10px);}
 .slide.active{opacity:1;pointer-events:all;transform:scale(1) translateY(0);transition:opacity 0.35s ease,transform 0.35s ease;}
 .slide.exit{opacity:0;transform:scale(1.02) translateY(-8px);transition:opacity 0.22s ease,transform 0.22s ease;}
 .slide.enter-prep{opacity:0;transform:scale(0.97) translateY(10px);transition:none!important;}
 
 /* ── CARD ── */
-.card{margin:8px 14px 12px;flex:1;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+.card{margin:8px 14px 8px;flex:1;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
   box-shadow:0 14px 45px rgba(0,0,0,0.55),0 0 0 1.5px rgba(255,255,255,0.07);}
 .sh{padding:13px 22px 9px;display:flex;align-items:center;gap:11px;flex-shrink:0;}
 .stag{font-family:'Fredoka One',cursive;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
@@ -76,7 +125,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .sb::-webkit-scrollbar{width:3px;}
 .sb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.16);border-radius:4px;}
 
-/* ── WORD GRID ── */
+/* ── WORD GRID (grid view) ── */
 .wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:5px;}
 .wc{background:rgba(255,255,255,0.11);border:2px solid rgba(255,255,255,0.17);border-radius:12px;
   padding:9px 7px;display:flex;flex-direction:column;align-items:center;cursor:pointer;
@@ -135,6 +184,137 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   cursor:pointer;transition:all 0.2s;box-shadow:0 3px 14px rgba(255,217,61,0.4);}
 .qnx:hover{transform:translateY(-2px) scale(1.04);}
 
+/* ══════════════════════════════
+   2×2 FOCUS VIEW
+══════════════════════════════ */
+/* When focus mode is active, hide normal scroll content and show focus overlay */
+.slide.focus-mode .card > .sb { display:none !important; }
+.slide.focus-mode .card > .sh { display:none !important; }
+
+/* Focus overlay fills the card area */
+.focus-overlay{
+  display:none;
+  position:absolute;inset:0;
+  flex-direction:column;
+  border-radius:20px;overflow:hidden;
+}
+.slide.focus-mode .focus-overlay{display:flex;}
+
+/* Focus header bar */
+.fo-header{
+  flex-shrink:0;padding:10px 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.fo-title{font-family:'Fredoka One',cursive;font-size:clamp(14px,1.8vw,20px);color:white;}
+.fo-pager{font-family:'Fredoka One',cursive;font-size:13px;color:rgba(255,255,255,0.55);}
+
+/* 2x2 grid area */
+.fo-grid{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:10px;padding:10px 14px;
+}
+
+/* Individual focus card */
+.fc{
+  background:rgba(255,255,255,0.09);border:2px solid rgba(255,255,255,0.18);
+  border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.22s;text-align:center;padding:10px 8px;
+  animation:fcPop 0.4s ease backwards;
+  position:relative;overflow:hidden;
+}
+.fc::before{
+  content:'';position:absolute;inset:0;border-radius:16px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.06),transparent);
+  pointer-events:none;
+}
+.fc:hover{
+  background:rgba(255,255,255,0.18);
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4),0 0 0 2px rgba(255,217,61,0.4);
+  border-color:rgba(255,217,61,0.6);
+}
+.fc:active{transform:scale(0.96);}
+.fc .fc-em{font-size:clamp(58px,8vw,88px);line-height:1.05;margin-bottom:8px;}
+.fc .fc-word{font-family:'Fredoka One',cursive;font-size:clamp(28px,4.2vw,48px);color:white;margin-bottom:5px;line-height:1.1;}
+.fc .fc-ph{font-size:13px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.5px;}
+/* Highlight spans inside focus cards */
+.fc .fc-word .hl{color:var(--sun);text-shadow:0 0 14px rgba(255,217,61,0.6);}
+
+/* Focus nav bar */
+.fo-nav{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:10px 16px;
+  background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+
+/* Beautiful arrow buttons */
+.fo-arrow{
+  width:52px;height:52px;border-radius:50%;cursor:pointer;border:none;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;transition:all 0.22s;
+  flex-shrink:0;
+}
+.fo-arrow.prev{
+  background:linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.06));
+  border:2px solid rgba(255,255,255,0.22);
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+}
+.fo-arrow.next{
+  background:linear-gradient(135deg,#ffd93d,#ff9a3c);
+  border:2px solid rgba(255,255,255,0.3);
+  box-shadow:0 4px 20px rgba(255,217,61,0.45);
+}
+.fo-arrow:disabled{opacity:0.2;cursor:not-allowed;transform:none !important;}
+.fo-arrow:not(:disabled):hover{transform:scale(1.1);}
+.fo-arrow:not(:disabled):active{transform:scale(0.93);}
+.fo-arrow.prev:not(:disabled):hover{
+  background:linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.1));
+  border-color:rgba(255,255,255,0.45);
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
+}
+.fo-arrow.next:not(:disabled):hover{
+  box-shadow:0 8px 28px rgba(255,217,61,0.6);
+}
+.fo-arrow svg{width:22px;height:22px;}
+.fo-arrow.prev svg{stroke:rgba(255,255,255,0.8);}
+.fo-arrow.next svg{stroke:#1a1a4e;}
+
+/* Dot indicators */
+.fo-dots{display:flex;gap:6px;align-items:center;}
+.fo-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,0.22);transition:all 0.2s;cursor:pointer;
+}
+.fo-dot.active{background:#ffd93d;width:18px;border-radius:4px;}
+.fo-dot:hover:not(.active){background:rgba(255,255,255,0.5);}
+
+@keyframes fcPop{from{transform:scale(0.75) translateY(12px);opacity:0}to{transform:scale(1);opacity:1}}
+.fc:nth-child(1){animation-delay:.05s}
+.fc:nth-child(2){animation-delay:.12s}
+.fc:nth-child(3){animation-delay:.19s}
+.fc:nth-child(4){animation-delay:.26s}
+
+/* ── FOOTER ── */
+#footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  height:var(--footer-h);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(6,6,25,0.97);
+  border-top:1px solid rgba(255,255,255,0.07);
+  backdrop-filter:blur(12px);
+}
+.footer-text{
+  font-size:10px;letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(255,255,255,0.22);font-weight:800;font-family:'Nunito',sans-serif;
+}
+.footer-text span{color:rgba(255,217,61,0.5);}
+#deck{margin-bottom:0;}
+.card{margin-bottom:0;}
+
 /* ── ANIMS ── */
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes pop{from{transform:scale(0.72) translateY(7px);opacity:0}to{transform:scale(1);opacity:1}}
@@ -151,23 +331,67 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   <div id="sidebar"></div>
   <div id="main">
     <div id="topbar">
-      <div class="tb-logo">🌟 跟着小宝快快乐乐学习Phonics</div>
-      <div class="tb-nav">
-        <button class="tb-btn" id="bp">&#8592;</button>
-        <div class="tb-ctr" id="ctr">1/1</div>
-        <button class="tb-btn" id="bn">&#8594;</button>
+      <div class="tb-logo" style="flex:1;">🌟和小宝快快乐乐学习Phonics</div>
+
+      <div class="tb-right">
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button class="vt-btn active" id="vt-grid" onclick="setView('grid')" title="Grid View">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <rect x="0" y="0" width="6" height="6" rx="1.5"/><rect x="8" y="0" width="6" height="6" rx="1.5"/>
+              <rect x="0" y="8" width="6" height="6" rx="1.5"/><rect x="8" y="8" width="6" height="6" rx="1.5"/>
+            </svg>
+            ALL
+          </button>
+          <div class="vt-sep"></div>
+          <button class="vt-btn" id="vt-focus" onclick="setView('focus')" title="2×2 Focus View">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="1" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1.5"/>
+              <rect x="1" y="7.5" width="5.5" height="5.5" rx="1.5"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1.5"/>
+            </svg>
+            2×2
+          </button>
+        </div>
+        <!-- Slide nav -->
+        <div class="tb-nav">
+          <button class="tb-btn" id="bp">&#8592;</button>
+          <div class="tb-ctr" id="ctr">1/1</div>
+          <button class="tb-btn" id="bn">&#8594;</button>
+        </div>
       </div>
     </div>
     <div id="deck"></div>
   </div>
 </div>
 
+<!-- FOOTER -->
+<div id="footer">
+  <div class="footer-text">© 2026 <span>COCOBO.TECH</span> &nbsp;·&nbsp; 语言文学部 &nbsp;·&nbsp; All Rights Reserved</div>
+</div>
+
 <script>
+// ══════════════════════════════════════════════════
+// VIEW STATE
+// ══════════════════════════════════════════════════
+let viewMode = 'grid'; // 'grid' | 'focus'
+
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById('vt-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('vt-focus').classList.toggle('active', mode === 'focus');
+  const allSlides = document.querySelectorAll('.slide');
+  allSlides.forEach(sl => {
+    sl.classList.toggle('focus-mode', mode === 'focus');
+  });
+  if (mode === 'focus') {
+    // Init focus view on current slide
+    initFocusForSlide(cur);
+  }
+}
+
 // ══════════════════════════════════════════════════
 // HELPERS
 // ══════════════════════════════════════════════════
-// w(emoji, word, highlight_indexes, phonics_hint)
-// Each emoji has been hand-verified to match the word
 function w(e,word,hl=[],ph=''){
   let t='';
   for(let i=0;i<word.length;i++)
@@ -180,11 +404,36 @@ function sl(t){return `<div class="sl">${t}</div>`;}
 function ib(h){return `<div class="ib">💡 ${h}</div>`;}
 function bg(a,b){return `background:linear-gradient(155deg,${a},${b})`;}
 
+// Extract word cards from a slide's HTML for focus view
+// Returns array of {em, wordHTML (with .hl spans), word (plain), ph, sayWord}
+function extractCards(slideIdx) {
+  const slide = document.querySelectorAll('.slide')[slideIdx];
+  if (!slide) return [];
+  const cards = slide.querySelectorAll('.wc');
+  const result = [];
+  cards.forEach(card => {
+    const emEl = card.querySelector('.we');
+    const em = emEl ? emEl.textContent : '';
+    const wt = card.querySelector('.wt');
+    const wordHTML = wt ? wt.innerHTML : ''; // preserve <span class="hl"> markup
+    const word = wt ? wt.textContent : '';
+    const ph = card.querySelector('.wp')?.textContent || '';
+    const oc = card.getAttribute('onclick') || '';
+    const m = oc.match(/say\('([^']+)'\)/);
+    const sayWord = m ? m[1] : word;
+    result.push({em, wordHTML, word, ph, sayWord});
+  });
+  return result;
+}
+
 const SS=[];
+// Store focus page state per slide
+const focusState = {}; // slideIdx -> {page:0}
+
 function S(id,nav,style,html){SS.push({id,nav,style,html});}
 
 // ══════════════════════════════════════════════════
-// SLIDES — all emoji/word pairs verified
+// SLIDES
 // ══════════════════════════════════════════════════
 
 // ── 01 WELCOME
@@ -198,11 +447,11 @@ S('welcome','🏠 Welcome',bg('#1a6b94','#0d3d6e'),`
     <div class="hch">🔗 Blends &amp; Digraphs</div><div class="hch">📏 Long Vowels</div>
     <div class="hch">👑 Bossy R</div><div class="hch">👁 Sight Words</div><div class="hch">🏆 Quiz!</div>
   </div>
-  <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;">Use sidebar, ← → buttons, or keyboard arrows to navigate</div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;">Use sidebar, ← → buttons, or keyboard arrows to navigate · Toggle 2×2 view with the button above</div>
 </div>
 `);
 
-// ── 02 LETTERS A B C D (10 Words Each)
+// ── 02 LETTERS A B C D
 S('l-abcd','🔤 A B C D',bg('#6b3fa0','#9b59b6'),`
 <div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: A · B · C · D</span></div>
 <div class="sb">
@@ -217,7 +466,7 @@ ${wg(w('🐶','dog',[0])+w('🦆','duck',[0])+w('🚪','door',[0])+w('🥁','dru
 </div>
 `);
 
-// ── 03 LETTERS E F G H (10 Words Each)
+// ── 03 LETTERS E F G H
 S('l-efgh','🔤 E F G H',bg('#1a6b3a','#1e8449'),`
 <div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: E · F · G · H</span></div>
 <div class="sb">
@@ -232,7 +481,7 @@ ${wg(w('🎩','hat',[0])+w('🐔','hen',[0])+w('🔥','hot',[0])+w('🫂','hug',
 </div>
 `);
 
-// ── 04 LETTERS I J K L (10 Words Each)
+// ── 04 LETTERS I J K L
 S('l-ijkl','🔤 I J K L',bg('#c0392b','#e74c3c'),`
 <div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: I · J · K · L</span></div>
 <div class="sb">
@@ -247,7 +496,7 @@ ${wg(w('🦁','lion',[0])+w('🍃','leaf',[0])+w('🪔','lamp',[0])+w('🦵','le
 </div>
 `);
 
-// ── 05 LETTERS M N O P (10 Words Each)
+// ── 05 LETTERS M N O P
 S('l-mnop','🔤 M N O P',bg('#d35400','#e67e22'),`
 <div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: M · N · O · P</span></div>
 <div class="sb">
@@ -262,7 +511,7 @@ ${wg(w('🐷','pig',[0])+w('🖊️','pen',[0])+w('🥣','pot',[0])+w('🍳','pa
 </div>
 `);
 
-// ── 06 LETTERS Q-Z (10 Words Each)
+// ── 06 LETTERS Q-Z
 S('l-qz','🔤 Q through Z',bg('#154360','#1f618d'),`
 <div class="sh"><span class="stag">Level 1</span><span class="stit">Letters: Q · R · S · T · U · V · W · X · Y · Z</span></div>
 <div class="sb">
@@ -273,7 +522,7 @@ ${wg(w('🐀','rat',[0])+w('🔴','red',[0])+w('🏃','run',[0])+w('🐇','rabbi
 ${sl('☀️ S says /s/')}
 ${wg(w('☀️','sun',[0])+w('⭐','star',[0])+w('🪑','sit',[0])+w('🐍','snake',[0],'s')+w('😢','sad',[0])+w('6️⃣','six',[0])+w('☁️','sky',[0])+w('🧼','soap',[0])+w('🎵','song',[0])+w('🧦','sock',[0])+w('🚢','ship',[0]))}
 ${sl('🐅 T says /t/')}
-${wg(w('🐅','tiger',[0])+w('🔟','ten',[0])+w('🔝','top',[0])+w('🧸','toy',[0])+w('🛁','tub',[0])+w('📏','tall',[0])+w('🐅','tiger',[0],'t')+w('🐢','turtle',[0],'t')+w('🌮','taco',[0],'t')+w('🦷','tooth',[0],'t')+w('🍅','tomato',[0],'t')+w('⛺','tent',[0])+w('🌳','tree',[0])+w('🚰','tap',[0])+w('🏘️','town',[0]))}
+${wg(w('🐅','tiger',[0])+w('🔟','ten',[0])+w('🔝','top',[0])+w('🧸','toy',[0])+w('🛁','tub',[0])+w('📏','tall',[0])+w('🐢','turtle',[0],'t')+w('🌮','taco',[0],'t')+w('🦷','tooth',[0],'t')+w('🍅','tomato',[0],'t')+w('⛺','tent',[0])+w('🌳','tree',[0])+w('🚰','tap',[0])+w('🏘️','town',[0]))}
 ${sl('☂️ U says /ŭ/')}
 ${wg(w('⬆️','up',[0])+w('👥','us',[0])+w('👇','under',[0])+w('🔢','unit',[0])+w('🖱️','use',[0])+w('👹','ugly',[0])+w('↩️','undo',[0])+w('☂️','umbrella',[0],'ŭ')+w('🦄','unicorn',[0],'ū')+w('🔝','upon',[0])+w('🏙️','urban',[0])+w('😡','upset',[0]))}
 ${sl('🚐 V says /v/')}
@@ -285,7 +534,7 @@ ${wg(w('📦','box',[2])+w('🦊','fox',[2])+w('6️⃣','six',[2])+w('🪓','ax
 ${sl('🧶 Y says /y/')}
 ${wg(w('🟡','yellow',[0])+w('🧶','yarn',[0])+w('✅','yes',[0])+w('🫵','you',[0])+w('🐃','yak',[0])+w('📢','yell',[0])+w('🏡','yard',[0])+w('🥚','yolk',[0])+w('📅','year',[0])+w('🥱','yawn',[0]))}
 ${sl('🦓 Z says /z/')}
-${wg(w('🦓','zebra',[0])+w('0️⃣','zero',[0])+w('🦁','zoo',[0])+w('🤐','zip',[0])+w('〽️','zag',[0])+w('⚡','zap',[0])+w('区域','zone',[0])+w('🚀','zoom',[0])+w('🍋','zest',[0])+w('🧱','zinc',[0]))}
+${wg(w('🦓','zebra',[0])+w('0️⃣','zero',[0])+w('🦁','zoo',[0])+w('🤐','zip',[0])+w('〽️','zag',[0])+w('⚡','zap',[0])+w('🚀','zoom',[0])+w('🍋','zest',[0])+w('🧱','zinc',[0]))}
 </div>
 `);
 
@@ -295,57 +544,13 @@ S('sa','🎵 Short A',bg('#7d1f2e','#a93226'),`
 <div class="sb">
 ${ib('<b>Short A</b> says /ă/. Open your mouth wide — like saying "ahh" at the dentist! Examples: <b>cat</b> 🐱, <b>hat</b> 🎩, <b>man</b> 👨')}
 ${sl('-at family')}
-${wg(
-w('🐱','cat',[1],'c-ă-t')+
-w('🏏 🦇','bat',[1],'b-ă-t')+
-w('🎩','hat',[1],'h-ă-t')+
-w('🐀','rat',[1],'r-ă-t')+
-w('🧘','mat',[1],'m-ă-t')+
-w('🛏️','pat',[1],'p-ă-t')+
-w('🧍','sat',[1],'s-ă-t')+
-w('🐷','fat',[1],'f-ă-t')
-
-
-)}
-
+${wg(w('🐱','cat',[1],'c-ă-t')+w('🏏','bat',[1],'b-ă-t')+w('🎩','hat',[1],'h-ă-t')+w('🐀','rat',[1],'r-ă-t')+w('🧘','mat',[1],'m-ă-t')+w('🧍','sat',[1],'s-ă-t')+w('🐷','fat',[1],'f-ă-t'))}
 ${sl('-an family')}
-${wg(
-w('👨','man',[1],'m-ă-n')+
-w('🍳','pan',[1],'p-ă-n')+
-w('🚐','van',[1],'v-ă-n')+
-w('🥫','can',[1],'k-ă-n')+
-w('🏃','ran',[1],'r-ă-n')+
-w('🌞','tan',[1],'t-ă-n')+
-w('🪭','fan',[1],'f-ă-n')+
-w('🚫','ban',[1],'b-ă-n')
-)}
-
+${wg(w('👨','man',[1],'m-ă-n')+w('🍳','pan',[1],'p-ă-n')+w('🚐','van',[1],'v-ă-n')+w('🥫','can',[1],'k-ă-n')+w('🏃','ran',[1],'r-ă-n')+w('🌞','tan',[1],'t-ă-n')+w('🪭','fan',[1],'f-ă-n')+w('🚫','ban',[1],'b-ă-n'))}
 ${sl('-ap & -ag family')}
-
-${wg(
-w('🗺️','map',[1],'m-ă-p')+
-w('🧢','cap',[1],'k-ă-p')+
-w('😴','nap',[1],'n-ă-p')+
-w('🚰','tap',[1],'t-ă-p')+
-w('👜','bag',[1],'b-ă-g')+
-w('🏷️','tag',[1],'t-ă-g')+
-w('🐕','wag',[1],'w-ă-g') + 
-w('📉','sag',[1],'s-ă-g')
-)}
-
+${wg(w('🗺️','map',[1],'m-ă-p')+w('🧢','cap',[1],'k-ă-p')+w('😴','nap',[1],'n-ă-p')+w('🚰','tap',[1],'t-ă-p')+w('👜','bag',[1],'b-ă-g')+w('🏷️','tag',[1],'t-ă-g')+w('🐕','wag',[1],'w-ă-g')+w('📉','sag',[1],'s-ă-g'))}
 ${sl('-am & -ad & -ab family')}
-
-${wg(
-w('🍓','jam',[1],'j-ă-m')+
-w('🍖','ham',[1],'h-ă-m') + 
-w('😢','sad',[1],'s-ă-d')+
-w('👨','dad',[1],'d-ă-d')+
-w('😡','mad',[1],'m-ă-d')+
-w('👎','bad',[1],'b-ă-d')+
-w('🚕','cab',[1],'k-ă-b')+
-w('🧪','lab',[1],'l-ă-b') 
-)}
-
+${wg(w('🍓','jam',[1],'j-ă-m')+w('🍖','ham',[1],'h-ă-m')+w('😢','sad',[1],'s-ă-d')+w('👨','dad',[1],'d-ă-d')+w('😡','mad',[1],'m-ă-d')+w('👎','bad',[1],'b-ă-d')+w('🚕','cab',[1],'k-ă-b')+w('🧪','lab',[1],'l-ă-b'))}
 </div>
 `);
 
@@ -355,48 +560,13 @@ S('se','🎵 Short E',bg('#1a5c2a','#239b56'),`
 <div class="sb">
 ${ib('<b>Short E</b> says /ĕ/. Lips slightly open, tongue relaxed. Examples: <b>bed</b> 🛏️, <b>hen</b> 🐔, <b>pet</b> 🐾')}
 ${sl('-ed family')}
-${wg(
-  w('🛏️','bed',   [1],'b-ĕ-d') +
-  w('🔴','red',   [1],'r-ĕ-d') +
-  w('🧸','Ted',   [1],'T-ĕ-d') +
-  w('🛷','sled',  [1],'sl-ĕ-d')
-)}
-
-
+${wg(w('🛏️','bed',[1],'b-ĕ-d')+w('🔴','red',[1],'r-ĕ-d')+w('🧸','Ted',[1],'T-ĕ-d')+w('🛷','sled',[1],'sl-ĕ-d'))}
 ${sl('-en family')}
-
-${wg(
-  w('🐔','hen',  [1],'h-ĕ-n') +
-  w('✏️','pen',  [1],'p-ĕ-n') +
-  w('👨‍👦','men',  [1],'m-ĕ-n') +
-  w('🔟','ten',  [1],'t-ĕ-n') 
-)}
-
+${wg(w('🐔','hen',[1],'h-ĕ-n')+w('✏️','pen',[1],'p-ĕ-n')+w('👨‍👦','men',[1],'m-ĕ-n')+w('🔟','ten',[1],'t-ĕ-n'))}
 ${sl('-et family')}
-${wg(
-  w('🐶','pet',[1],'p-ĕ-t') + 
-  w('🕸️','net',[1],'n-ĕ-t') + 
-  w('💦','wet',[1],'w-ĕ-t') + 
-  w('✈️','jet',[1],'j-ĕ-t') + 
-  w('🩺','vet',[1],'v-ĕ-t') + 
-  w('🤝','met',[1],'m-ĕ-t') + 
-  w('✋','get',[1],'g-ĕ-t')
-)}
-
+${wg(w('🐶','pet',[1],'p-ĕ-t')+w('🕸️','net',[1],'n-ĕ-t')+w('💦','wet',[1],'w-ĕ-t')+w('✈️','jet',[1],'j-ĕ-t')+w('🩺','vet',[1],'v-ĕ-t')+w('🤝','met',[1],'m-ĕ-t')+w('✋','get',[1],'g-ĕ-t'))}
 ${sl('-eg & -ell family')}
-
-${wg(
-  w('🦵','leg',[1],'l-ĕ-g') + 
-  w('🙏','beg',[1],'b-ĕ-g') + 
-  w('🔔','bell',[1],'b-ĕ-ll') + 
-  w('🐚','shell',[2],'sh-ĕ-ll') + 
-  w('📢','yell',[1],'y-ĕ-ll') + 
-  w('🗣️','tell',[1],'t-ĕ-ll') + 
-  w('⛲','well',[1],'w-ĕ-ll') + 
-  w('🍂','fell',[1],'f-ĕ-ll')+
-  w('🔤','spell',[2,3],'sp-ĕ-ll')
-)}
-
+${wg(w('🦵','leg',[1],'l-ĕ-g')+w('🙏','beg',[1],'b-ĕ-g')+w('🔔','bell',[1],'b-ĕ-ll')+w('🐚','shell',[2],'sh-ĕ-ll')+w('📢','yell',[1],'y-ĕ-ll')+w('🗣️','tell',[1],'t-ĕ-ll')+w('⛲','well',[1],'w-ĕ-ll')+w('🍂','fell',[1],'f-ĕ-ll')+w('🔤','spell',[2,3],'sp-ĕ-ll'))}
 </div>
 `);
 
@@ -406,55 +576,13 @@ S('si','🎵 Short I',bg('#4a235a','#7d3c98'),`
 <div class="sb">
 ${ib('<b>Short I</b> says /ĭ/. Smile slightly and say "ih". Examples: <b>pig</b> 🐷, <b>sit</b> 🪑, <b>fish</b> 🐟')}
 ${sl('-ig & -id family')}
-${wg(
-  w('🐷','pig',[1],'p-ĭ-g') + 
-  w('🐘','big',[1],'b-ĭ-g') + 
-  w('⛏️','dig',[1],'d-ĭ-g') + 
-  w('💇','wig',[1],'w-ĭ-g') + 
- 
-  w('👶','kid',[1],'k-ĭ-d') + 
-  w('🙈','hid',[1],'h-ĭ-d') + 
-  w('🍈','fig',[1],'f-ĭ-g')
-)}
-
+${wg(w('🐷','pig',[1],'p-ĭ-g')+w('🐘','big',[1],'b-ĭ-g')+w('⛏️','dig',[1],'d-ĭ-g')+w('💇','wig',[1],'w-ĭ-g')+w('👶','kid',[1],'k-ĭ-d')+w('🙈','hid',[1],'h-ĭ-d')+w('🍈','fig',[1],'f-ĭ-g'))}
 ${sl('-in & -ip family')}
-${wg(
-  w('📌','pin',[1],'p-ĭ-n') + 
-  w('🦈','fin',[1],'f-ĭ-n') + 
-  w('🗑️','bin',[1],'b-ĭ-n') + 
-  w('😊','chin',[2],'ch-ĭ-n') + 
-  w('🥇','win',[1],'w-ĭ-n') + 
-  w('👄','lip',[1],'l-ĭ-p') + 
-  w('🤐','zip',[1],'z-ĭ-p') + 
-  w('🚢','ship',[2],'sh-ĭ-p') + 
-  w('💧','drip',[2],'dr-ĭ-p') 
-)}
-
+${wg(w('📌','pin',[1],'p-ĭ-n')+w('🦈','fin',[1],'f-ĭ-n')+w('🗑️','bin',[1],'b-ĭ-n')+w('😊','chin',[2],'ch-ĭ-n')+w('🥇','win',[1],'w-ĭ-n')+w('👄','lip',[1],'l-ĭ-p')+w('🤐','zip',[1],'z-ĭ-p')+w('🚢','ship',[2],'sh-ĭ-p')+w('💧','drip',[2],'dr-ĭ-p'))}
 ${sl('-it & -ix family')}
-${wg(
-  w('⚾','hit',[1],'h-ĭ-t')+
-  w('🪑','sit',[1],'s-ĭ-t')+
-  w('🧰','kit',[1],'k-ĭ-t')+
-  w('🦟','bit',[1],'b-ĭ-t')+
-
-  w('6','six',[1],'s-ĭ-x')+
-  w('🥣','mix',[1],'m-ĭ-x')+
-  w('🛠️','fix',[1],'f-ĭ-x')
-)}
-
+${wg(w('⚾','hit',[1],'h-ĭ-t')+w('🪑','sit',[1],'s-ĭ-t')+w('🧰','kit',[1],'k-ĭ-t')+w('🦟','bit',[1],'b-ĭ-t')+w('6','six',[1],'s-ĭ-x')+w('🥣','mix',[1],'m-ĭ-x')+w('🛠️','fix',[1],'f-ĭ-x'))}
 ${sl('-ill & -ick family')}
-${wg(
-  w('⛰️','hill',[1],'h-ĭ-ll') + 
-  w('🥛','fill',[1],'f-ĭ-ll') + 
-  w('💊','pill',[1],'p-ĭ-ll') + 
-  w('🛠️','drill',[2],'dr-ĭ-ll') + 
-  w('🐥','chick',[2],'ch-ĭ-ck') + 
-  w('⚽','kick',[1],'k-ĭ-ck') + 
-  w('🧱','brick',[2],'br-ĭ-ck') + 
-  w('🤒','sick',[1],'s-ĭ-ck') + 
-  w('🏒','stick',[2],'st-ĭ-ck')
-)}
-
+${wg(w('⛰️','hill',[1],'h-ĭ-ll')+w('🥛','fill',[1],'f-ĭ-ll')+w('💊','pill',[1],'p-ĭ-ll')+w('🛠️','drill',[2],'dr-ĭ-ll')+w('🐥','chick',[2],'ch-ĭ-ck')+w('⚽','kick',[1],'k-ĭ-ck')+w('🧱','brick',[2],'br-ĭ-ck')+w('🤒','sick',[1],'s-ĭ-ck')+w('🏒','stick',[2],'st-ĭ-ck'))}
 </div>
 `);
 
@@ -464,45 +592,11 @@ S('so','🎵 Short O',bg('#1a5276','#2471a3'),`
 <div class="sb">
 ${ib('<b>Short O</b> says /ŏ/. Drop your jaw and round your lips a little. Examples: <b>dog</b> 🐶, <b>hot</b> 🔥, <b>frog</b> 🐸')}
 ${sl('-ot & -op family')}
-${wg(
-  w('🍲','pot',[1],'p-ŏ-t') + 
-  w('🔥','hot',[1],'h-ŏ-t') + 
-  w('⚫','dot',[1],'d-ŏ-t') + 
-
-  w('🧹','mop',[1],'m-ŏ-p') + 
-  w('🦘','hop',[1],'h-ŏ-p') + 
-
-    w('🎊','pop',[1],'p-ŏ-p')+
-  w('🛑','stop',[2],'st-ŏ-p') + 
-   w('🌱','crop',[2],'cr-ŏ-p')+
-  w('💧','drop',[2],'dr-ŏ-p')+
-   w('🛶','top',[1],'t-ŏ-p')
-)}
-
+${wg(w('🍲','pot',[1],'p-ŏ-t')+w('🔥','hot',[1],'h-ŏ-t')+w('⚫','dot',[1],'d-ŏ-t')+w('🧹','mop',[1],'m-ŏ-p')+w('🦘','hop',[1],'h-ŏ-p')+w('🎊','pop',[1],'p-ŏ-p')+w('🛑','stop',[2],'st-ŏ-p')+w('🌱','crop',[2],'cr-ŏ-p')+w('💧','drop',[2],'dr-ŏ-p')+w('🛶','top',[1],'t-ŏ-p'))}
 ${sl('-og & -ob family')}
-
-${wg(
-  w('🐸','frog',[2],'fr-ŏ-g')+
-  w('🌫️','fog',[1],'f-ŏ-g')+
-  w('🪵','log',[1],'l-ŏ-g')+
-  w('🐶','dog',[1],'d-ŏ-g')+
-  w('💼','job',[1],'j-ŏ-b')+
-  w('🌽','cob',[1],'k-ŏ-b')+
-
-    w('😭','sob',[1],'s-ŏ-b')
-)}
+${wg(w('🐸','frog',[2],'fr-ŏ-g')+w('🌫️','fog',[1],'f-ŏ-g')+w('🪵','log',[1],'l-ŏ-g')+w('🐶','dog',[1],'d-ŏ-g')+w('💼','job',[1],'j-ŏ-b')+w('🌽','cob',[1],'k-ŏ-b')+w('😭','sob',[1],'s-ŏ-b'))}
 ${sl('-ock & -ox family')}
-
-${wg(
-  w('⏰','clock',[2,3],'cl-ŏ-ck')+
-  w('🔒','lock',[1,2],'l-ŏ-ck')+
-  w('🧦','sock',[1,2],'s-ŏ-ck')+
-  w('🪨','rock',[1,2],'r-ŏ-ck')+
-
-  w('📦','box',[1],'b-ŏ-x')+
-  w('🦊','fox',[1],'f-ŏ-x')+
-  w('🐂','ox',[0],'ŏ-x')
-)}
+${wg(w('⏰','clock',[2,3],'cl-ŏ-ck')+w('🔒','lock',[1,2],'l-ŏ-ck')+w('🧦','sock',[1,2],'s-ŏ-ck')+w('🪨','rock',[1,2],'r-ŏ-ck')+w('📦','box',[1],'b-ŏ-x')+w('🦊','fox',[1],'f-ŏ-x')+w('🐂','ox',[0],'ŏ-x'))}
 </div>
 `);
 
@@ -512,52 +606,14 @@ S('su','🎵 Short U',bg('#6e2f1a','#a04000'),`
 <div class="sb">
 ${ib('<b>Short U</b> says /ŭ/. Relax your mouth and say "uh". Examples: <b>bug</b> 🐛, <b>sun</b> ☀️, <b>cup</b> ☕')}
 ${sl('-ug family')}
-
-${wg(
-  w('🐛','bug',[1],'b-ŭ-g') + 
-  w('☕','mug',[1],'m-ŭ-g') + 
-  w('🫔','rug',[1],'r-ŭ-g') + 
-  w('🫖','jug',[1],'j-ŭ-g') + 
-  w('🫂','hug',[1],'h-ŭ-g') + 
-  w('🔌','plug',[2],'pl-ŭ-g') + 
-  w('🐌','slug',[2],'sl-ŭ-g') 
-)}
-
-
 ${wg(w('🐛','bug',[1],'b-ŭ-g')+w('☕','mug',[1],'m-ŭ-g')+w('🪣','jug',[1],'j-ŭ-g')+w('🤗','hug',[1],'h-ŭ-g')+w('🔌','plug',[1,2],'pl-ŭ-g')+w('🐌','slug',[1,2],'sl-ŭ-g')+w('🐛','tug',[1],'t-ŭ-g')+w('🪲','dug',[1],'d-ŭ-g'))}
 ${sl('-un & -ut family')}
-${wg(
-  w('☀️','sun',[1],'s-ŭ-n') + 
-  w('🏃','run',[1],'r-ŭ-n') + 
-  w('🍞','bun',[1],'b-ŭ-n') + 
-    w('🥳','fun',[1],'f-ŭ-n')+
-  w('🛖','hut',[1],'h-ŭ-t') + 
-  w('🌰','nut',[1],'n-ŭ-t') + 
-  w('✂️','cut',[1],'k-ŭ-t') 
-)}
-
+${wg(w('☀️','sun',[1],'s-ŭ-n')+w('🏃','run',[1],'r-ŭ-n')+w('🍞','bun',[1],'b-ŭ-n')+w('🥳','fun',[1],'f-ŭ-n')+w('🛖','hut',[1],'h-ŭ-t')+w('🌰','nut',[1],'n-ŭ-t')+w('✂️','cut',[1],'k-ŭ-t'))}
 ${sl('-ub & -up family')}
-${wg(
-  w('🛁','tub',[1],'t-ŭ-b') + 
-  w('🦁','cub',[1],'k-ŭ-b') + 
-  w('🧼','rub',[1],'r-ŭ-b') + 
-
-  w('☕','cup',[1],'k-ŭ-p') + 
-  w('🐶','pup',[1],'p-ŭ-p') + 
-  w('⬆️','up',[0],'ŭ-p')
-)}
 ${wg(w('🛁','tub',[1],'t-ŭ-b')+w('🦁','cub',[1],'k-ŭ-b')+w('🫧','rub',[1],'r-ŭ-b')+w('🚌','sub',[1],'s-ŭ-b')+w('☕','cup',[1],'k-ŭ-p')+w('🐶','pup',[1],'p-ŭ-p'))}
 ${sl('-um & -us family')}
-${wg(
-  w('🍬','gum',[1],'g-ŭ-m') + 
-  w('😋','yum',[1],'y-ŭ-m') + 
-  w('🥁','drum',[2],'dr-ŭ-m') + 
-  w('🟣','plum',[2],'pl-ŭ-m') + 
-  w('➕','sum',[1],'s-ŭ-m') + 
-  w('🐝','hum',[1],'h-ŭ-m') + 
-    w('🤬','fuss',[1],'f-ŭ-ss')+
-  w('🚌','bus',[1],'b-ŭ-s')
-)}</div>
+${wg(w('🍬','gum',[1],'g-ŭ-m')+w('😋','yum',[1],'y-ŭ-m')+w('🥁','drum',[2],'dr-ŭ-m')+w('🟣','plum',[2],'pl-ŭ-m')+w('➕','sum',[1],'s-ŭ-m')+w('🐝','hum',[1],'h-ŭ-m')+w('🤬','fuss',[1],'f-ŭ-ss')+w('🚌','bus',[1],'b-ŭ-s'))}
+</div>
 `);
 
 // ── 12 CONSONANT BLENDS
@@ -887,6 +943,125 @@ function say(word){
 }
 
 // ══════════════════════════════════════════════════
+// FOCUS VIEW LOGIC
+// ══════════════════════════════════════════════════
+function buildFocusOverlay(slideIdx) {
+  const slide = document.querySelectorAll('.slide')[slideIdx];
+  if (!slide) return;
+
+  // Remove existing overlay if any
+  const existing = slide.querySelector('.focus-overlay');
+  if (existing) existing.remove();
+
+  const cards = extractCards(slideIdx);
+  if (cards.length === 0) return; // No word cards on this slide (hero, quiz, etc.)
+
+  // Init state
+  if (!focusState[slideIdx]) focusState[slideIdx] = {page: 0};
+  const state = focusState[slideIdx];
+
+  const totalPages = Math.ceil(cards.length / 4);
+  state.page = Math.min(state.page, totalPages - 1);
+  const page = state.page;
+  const pageCards = cards.slice(page * 4, page * 4 + 4);
+
+  // Get slide title
+  const titleEl = slide.querySelector('.stit');
+  const title = titleEl ? titleEl.textContent : SS[slideIdx].nav;
+
+  // Build overlay HTML
+  const overlay = document.createElement('div');
+  overlay.className = 'focus-overlay';
+
+  // Get card background from the slide's card gradient
+  const cardEl = slide.querySelector('.card');
+  const cardBg = cardEl ? cardEl.style.background : '';
+
+  overlay.style.cssText = cardBg ? cardBg.replace('background:', 'background:') : '';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'fo-header';
+  header.innerHTML = `
+    <div class="fo-title">${title}</div>
+    <div class="fo-pager">${page + 1} / ${totalPages} &nbsp;·&nbsp; ${cards.length} cards</div>
+  `;
+  overlay.appendChild(header);
+
+  // 2×2 Grid
+  const grid = document.createElement('div');
+  grid.className = 'fo-grid';
+  pageCards.forEach((card, i) => {
+    const fc = document.createElement('div');
+    fc.className = 'fc';
+    fc.style.animationDelay = (i * 0.07) + 's';
+    fc.onclick = () => say(card.sayWord);
+    fc.innerHTML = `
+      <div class="fc-em">${card.em}</div>
+      <div class="fc-word">${card.wordHTML}</div>
+      ${card.ph ? `<div class="fc-ph">${card.ph}</div>` : ''}
+    `;
+    grid.appendChild(fc);
+  });
+  overlay.appendChild(grid);
+
+  // Nav bar with beautiful arrows + dots
+  const nav = document.createElement('div');
+  nav.className = 'fo-nav';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'fo-arrow prev';
+  prevBtn.disabled = page === 0;
+  prevBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+  prevBtn.onclick = () => {
+    focusState[slideIdx].page--;
+    buildFocusOverlay(slideIdx);
+  };
+
+  // Dots
+  const dots = document.createElement('div');
+  dots.className = 'fo-dots';
+  for (let i = 0; i < totalPages; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'fo-dot' + (i === page ? ' active' : '');
+    dot.onclick = () => {
+      focusState[slideIdx].page = i;
+      buildFocusOverlay(slideIdx);
+    };
+    dots.appendChild(dot);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'fo-arrow next';
+  nextBtn.disabled = page >= totalPages - 1;
+  nextBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+  nextBtn.onclick = () => {
+    focusState[slideIdx].page++;
+    buildFocusOverlay(slideIdx);
+  };
+
+  nav.appendChild(prevBtn);
+  nav.appendChild(dots);
+  nav.appendChild(nextBtn);
+  overlay.appendChild(nav);
+
+  // Apply gradient background to overlay (same as card)
+  if (cardEl) {
+    overlay.style.background = cardEl.style.background;
+  }
+
+  slide.querySelector('.card').appendChild(overlay);
+}
+
+function initFocusForSlide(idx) {
+  const slide = document.querySelectorAll('.slide')[idx];
+  if (!slide) return;
+  const cards = extractCards(idx);
+  if (cards.length === 0) return;
+  buildFocusOverlay(idx);
+}
+
+// ══════════════════════════════════════════════════
 // RENDER & NAV
 // ══════════════════════════════════════════════════
 const deck=document.getElementById('deck');
@@ -906,18 +1081,27 @@ const SECS=[
   {label:'🏆 QUIZ & FINISH',idx:24},
 ];
 
+// Insert COCOBO logo at top of sidebar
+const logoWrap = document.createElement('div');
+logoWrap.className = 'sb-logo-wrap';
+logoWrap.innerHTML = `
+  <div class="sb-logo-icon">🐣</div>
+  <div class="sb-logo-text">
+    <div class="sb-logo-name">COCOBO EN</div>
+    <div class="sb-logo-sub">Phonics · Reading</div>
+  </div>
+`;
+sbar.appendChild(logoWrap);
+
 SS.forEach((s,i)=>{
-  // sidebar section header
   const sec=SECS.find(x=>x.idx===i);
   if(sec){const d=document.createElement('div');d.className='sb-sec';d.textContent=sec.label;sbar.appendChild(d);}
-  // sidebar button
   const btn=document.createElement('button');
   btn.className='sb-btn'+(i===0?' active':'');
   btn.dataset.i=i;
   btn.innerHTML=`<span class="sb-n">${i+1}</span>${s.nav}`;
   btn.onclick=()=>goTo(i);
   sbar.appendChild(btn);
-  // slide
   const el=document.createElement('div');
   el.className='slide'+(i===0?' active':'');
   const card=document.createElement('div');
@@ -938,12 +1122,23 @@ function goTo(idx){
   slides[prev].classList.remove('active');slides[prev].classList.add('exit');
   slides[cur].classList.add('enter-prep');slides[cur].offsetWidth;
   slides[cur].classList.remove('enter-prep');slides[cur].classList.add('active');
+  // Apply focus mode class if active
+  if (viewMode === 'focus') {
+    slides[cur].classList.add('focus-mode');
+  }
   btns.forEach((b,i)=>b.classList.toggle('active',i===cur));
   btns[cur].scrollIntoView({block:'nearest',behavior:'smooth'});
   ctr.textContent=`${cur+1}/${TOTAL}`;
   document.getElementById('bp').disabled=cur===0;
   document.getElementById('bn').disabled=cur===TOTAL-1;
-  setTimeout(()=>{slides[prev].classList.remove('exit');busy=false;},350);
+  setTimeout(()=>{
+    slides[prev].classList.remove('exit');
+    busy=false;
+    // Build focus overlay after transition
+    if (viewMode === 'focus') {
+      initFocusForSlide(cur);
+    }
+  },350);
   if(SS[cur].id==='quiz')setTimeout(bq,150);
 }
 document.getElementById('bp').onclick=()=>goTo(cur-1);
