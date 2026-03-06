@@ -202,103 +202,125 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 }
 .slide.focus-mode .focus-overlay{display:flex;}
 
-/* Focus header bar */
+/* Focus header bar — compact */
 .fo-header{
-  flex-shrink:0;padding:10px 16px 8px;
+  flex-shrink:0;padding:8px 14px 7px;
   display:flex;align-items:center;justify-content:space-between;
-  background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  background:rgba(0,0,0,0.22);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
-.fo-title{font-family:'Fredoka One',cursive;font-size:clamp(14px,1.8vw,20px);color:white;}
-.fo-pager{font-family:'Fredoka One',cursive;font-size:13px;color:rgba(255,255,255,0.55);}
+.fo-title{font-family:'Fredoka One',cursive;font-size:clamp(13px,1.6vw,18px);color:white;}
+.fo-pager{font-family:'Fredoka One',cursive;font-size:12px;color:rgba(255,255,255,0.5);}
 
-/* 2x2 grid area */
+/* ── Main body: arrows flanking the grid ── */
+.fo-body{
+  flex:1;display:flex;align-items:center;
+  gap:0;padding:0;min-height:0;
+}
+
+/* Arrow buttons — now live on the sides */
+.fo-arrow{
+  width:44px;flex-shrink:0;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;background:transparent;
+  transition:all 0.2s;
+}
+.fo-arrow:disabled{opacity:0.15;cursor:not-allowed;}
+.fo-arrow:not(:disabled):hover .fo-arrow-inner{ transform:scale(1.12); }
+.fo-arrow:not(:disabled):active .fo-arrow-inner{ transform:scale(0.9); }
+
+.fo-arrow-inner{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.fo-arrow.prev .fo-arrow-inner{
+  background:linear-gradient(135deg,rgba(255,255,255,0.13),rgba(255,255,255,0.06));
+  border:2px solid rgba(255,255,255,0.22);
+  box-shadow:0 3px 12px rgba(0,0,0,0.3);
+}
+.fo-arrow.next .fo-arrow-inner{
+  background:linear-gradient(135deg,#ffd93d,#ff9a3c);
+  border:2px solid rgba(255,255,255,0.25);
+  box-shadow:0 3px 14px rgba(255,217,61,0.4);
+}
+.fo-arrow.prev:not(:disabled):hover .fo-arrow-inner{
+  border-color:rgba(255,255,255,0.5);
+  background:linear-gradient(135deg,rgba(255,255,255,0.22),rgba(255,255,255,0.1));
+}
+.fo-arrow.next:not(:disabled):hover .fo-arrow-inner{
+  box-shadow:0 5px 20px rgba(255,217,61,0.65);
+}
+.fo-arrow svg{width:18px;height:18px;}
+.fo-arrow.prev svg{stroke:rgba(255,255,255,0.8);}
+.fo-arrow.next svg{stroke:#1a1a4e;}
+
+/* 2×2 grid — takes remaining space, shrunk: 60% wide, ~83% tall */
 .fo-grid{
-  flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
-  gap:10px;padding:10px 14px;
+  flex:1;display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:8px;
+  padding:8px 4px;
+  min-height:0;
+  /* horizontal shrink 40%: use max-width so it doesn't stretch */
+  max-width:60%;
+  margin:0 auto;
+  height:83%;  /* ~1/6 less than full */
+  align-self:center;
 }
 
 /* Individual focus card */
 .fc{
-  background:rgba(255,255,255,0.09);border:2px solid rgba(255,255,255,0.18);
-  border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all 0.22s;text-align:center;padding:10px 8px;
+  background:rgba(255,255,255,0.09);
+  border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:13px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.22s;text-align:center;padding:8px 6px;
   animation:fcPop 0.4s ease backwards;
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;min-height:0;
 }
 .fc::before{
-  content:'';position:absolute;inset:0;border-radius:16px;
+  content:'';position:absolute;inset:0;border-radius:13px;
   background:linear-gradient(135deg,rgba(255,255,255,0.06),transparent);
   pointer-events:none;
 }
 .fc:hover{
   background:rgba(255,255,255,0.18);
-  transform:translateY(-4px) scale(1.03);
-  box-shadow:0 8px 24px rgba(0,0,0,0.4),0 0 0 2px rgba(255,217,61,0.4);
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 6px 18px rgba(0,0,0,0.35),0 0 0 1.5px rgba(255,217,61,0.4);
   border-color:rgba(255,217,61,0.6);
 }
 .fc:active{transform:scale(0.96);}
-.fc .fc-em{font-size:clamp(58px,8vw,88px);line-height:1.05;margin-bottom:8px;}
-.fc .fc-word{font-family:'Fredoka One',cursive;font-size:clamp(28px,4.2vw,48px);color:white;margin-bottom:5px;line-height:1.1;}
-.fc .fc-ph{font-size:13px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.5px;}
+.fc .fc-em{font-size:clamp(42px,5.5vw,68px);line-height:1.05;margin-bottom:5px;}
+.fc .fc-word{font-family:'Fredoka One',cursive;font-size:clamp(20px,2.8vw,36px);color:white;margin-bottom:3px;line-height:1.1;}
+.fc .fc-ph{font-size:11px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.5px;}
 /* Highlight spans inside focus cards */
 .fc .fc-word .hl{color:var(--sun);text-shadow:0 0 14px rgba(255,217,61,0.6);}
 
-/* Focus nav bar */
-.fo-nav{
+/* Dot indicators — sit below grid, centred */
+.fo-dots-row{
   flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;gap:16px;
-  padding:10px 16px;
-  background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);
-  border-top:1px solid rgba(255,255,255,0.1);
-}
-
-/* Beautiful arrow buttons */
-.fo-arrow{
-  width:52px;height:52px;border-radius:50%;cursor:pointer;border:none;
   display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;transition:all 0.22s;
-  flex-shrink:0;
+  padding:5px 0 7px;
+  gap:6px;
 }
-.fo-arrow.prev{
-  background:linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.06));
-  border:2px solid rgba(255,255,255,0.22);
-  box-shadow:0 4px 16px rgba(0,0,0,0.3);
-}
-.fo-arrow.next{
-  background:linear-gradient(135deg,#ffd93d,#ff9a3c);
-  border:2px solid rgba(255,255,255,0.3);
-  box-shadow:0 4px 20px rgba(255,217,61,0.45);
-}
-.fo-arrow:disabled{opacity:0.2;cursor:not-allowed;transform:none !important;}
-.fo-arrow:not(:disabled):hover{transform:scale(1.1);}
-.fo-arrow:not(:disabled):active{transform:scale(0.93);}
-.fo-arrow.prev:not(:disabled):hover{
-  background:linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.1));
-  border-color:rgba(255,255,255,0.45);
-  box-shadow:0 6px 20px rgba(0,0,0,0.4);
-}
-.fo-arrow.next:not(:disabled):hover{
-  box-shadow:0 8px 28px rgba(255,217,61,0.6);
-}
-.fo-arrow svg{width:22px;height:22px;}
-.fo-arrow.prev svg{stroke:rgba(255,255,255,0.8);}
-.fo-arrow.next svg{stroke:#1a1a4e;}
-
-/* Dot indicators */
-.fo-dots{display:flex;gap:6px;align-items:center;}
 .fo-dot{
-  width:7px;height:7px;border-radius:50%;
+  width:6px;height:6px;border-radius:50%;
   background:rgba(255,255,255,0.22);transition:all 0.2s;cursor:pointer;
 }
-.fo-dot.active{background:#ffd93d;width:18px;border-radius:4px;}
+.fo-dot.active{background:#ffd93d;width:16px;border-radius:4px;}
 .fo-dot:hover:not(.active){background:rgba(255,255,255,0.5);}
+
+/* Kept for back-compat but hidden — nav is now inline */
+.fo-nav{display:none;}
 
 @keyframes fcPop{from{transform:scale(0.75) translateY(12px);opacity:0}to{transform:scale(1);opacity:1}}
 .fc:nth-child(1){animation-delay:.05s}
 .fc:nth-child(2){animation-delay:.12s}
 .fc:nth-child(3){animation-delay:.19s}
 .fc:nth-child(4){animation-delay:.26s}
+
 
 /* ── FOOTER ── */
 #footer{
@@ -464,20 +486,21 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   .footer-text{ font-size:8px;letter-spacing:1.2px; }
 
   /* ── 2×2 Focus view in landscape ── */
-  .fo-header{ padding:6px 12px 5px; }
-  .fo-title{ font-size:clamp(12px,1.8vw,16px); }
-  .fo-pager{ font-size:11px; }
-  .fo-grid{ gap:7px;padding:7px 10px; }
-  .fc{ padding:7px 6px;border-radius:12px; }
-  .fc .fc-em{ font-size:clamp(32px,5.5vw,52px);margin-bottom:4px; }
-  .fc .fc-word{ font-size:clamp(16px,2.8vw,26px);margin-bottom:3px; }
-  .fc .fc-ph{ font-size:10px; }
-  .fo-nav{ padding:7px 12px;gap:12px; }
-  .fo-arrow{ width:38px;height:38px; }
-  .fo-arrow svg{ width:16px;height:16px; }
-  .fo-dots{ gap:5px; }
-  .fo-dot{ width:6px;height:6px; }
-  .fo-dot.active{ width:14px; }
+  .fo-header{ padding:5px 10px 4px; }
+  .fo-title{ font-size:clamp(11px,1.6vw,14px); }
+  .fo-pager{ font-size:10px; }
+  .fo-body{ gap:0; }
+  .fo-grid{ gap:5px;padding:5px 2px;max-width:65%;height:88%; }
+  .fc{ padding:5px 4px;border-radius:10px; }
+  .fc .fc-em{ font-size:clamp(24px,4.5vw,40px);margin-bottom:3px; }
+  .fc .fc-word{ font-size:clamp(13px,2.2vw,20px);margin-bottom:2px; }
+  .fc .fc-ph{ font-size:9px; }
+  .fo-arrow{ width:36px; }
+  .fo-arrow-inner{ width:30px;height:30px; }
+  .fo-arrow svg{ width:14px;height:14px; }
+  .fo-dots-row{ padding:3px 0 4px;gap:4px; }
+  .fo-dot{ width:5px;height:5px; }
+  .fo-dot.active{ width:12px; }
 }
 
 /* iPhone SE landscape (667px wide) — even tighter */
@@ -486,10 +509,12 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   .we{ font-size:clamp(16px,2.8vw,22px); }
   .wt{ font-size:clamp(10px,1.5vw,13px); }
   .hb{ font-size:clamp(18px,3.5vw,30px); }
-  .fc .fc-em{ font-size:clamp(26px,4.5vw,40px); }
-  .fc .fc-word{ font-size:clamp(14px,2.4vw,22px); }
-  .fo-grid{ padding:5px 8px;gap:5px; }
-  .fo-arrow{ width:32px;height:32px; }
+  .fo-grid{ max-width:68%;height:90%; }
+  .fc .fc-em{ font-size:clamp(20px,3.8vw,32px); }
+  .fc .fc-word{ font-size:clamp(11px,1.9vw,17px); }
+  .fo-arrow{ width:28px; }
+  .fo-arrow-inner{ width:24px;height:24px; }
+  .fo-arrow svg{ width:12px;height:12px; }
   .card{ margin:4px 6px; }
   .tb-logo{ max-width:130px;font-size:11px; }
 }
@@ -1157,13 +1182,11 @@ function buildFocusOverlay(slideIdx) {
   const overlay = document.createElement('div');
   overlay.className = 'focus-overlay';
 
-  // Get card background from the slide's card gradient
+  // Apply gradient background (same as card)
   const cardEl = slide.querySelector('.card');
-  const cardBg = cardEl ? cardEl.style.background : '';
+  if (cardEl) overlay.style.background = cardEl.style.background;
 
-  overlay.style.cssText = cardBg ? cardBg.replace('background:', 'background:') : '';
-
-  // Header
+  // ── Header
   const header = document.createElement('div');
   header.className = 'fo-header';
   header.innerHTML = `
@@ -1172,7 +1195,18 @@ function buildFocusOverlay(slideIdx) {
   `;
   overlay.appendChild(header);
 
-  // 2×2 Grid
+  // ── Body: [← arrow] [2×2 grid] [→ arrow]
+  const body = document.createElement('div');
+  body.className = 'fo-body';
+
+  // Prev arrow
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'fo-arrow prev';
+  prevBtn.disabled = page === 0;
+  prevBtn.innerHTML = `<div class="fo-arrow-inner"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>`;
+  prevBtn.onclick = () => { focusState[slideIdx].page--; buildFocusOverlay(slideIdx); };
+
+  // 2×2 grid
   const grid = document.createElement('div');
   grid.className = 'fo-grid';
   pageCards.forEach((card, i) => {
@@ -1187,52 +1221,29 @@ function buildFocusOverlay(slideIdx) {
     `;
     grid.appendChild(fc);
   });
-  overlay.appendChild(grid);
 
-  // Nav bar with beautiful arrows + dots
-  const nav = document.createElement('div');
-  nav.className = 'fo-nav';
-
-  const prevBtn = document.createElement('button');
-  prevBtn.className = 'fo-arrow prev';
-  prevBtn.disabled = page === 0;
-  prevBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
-  prevBtn.onclick = () => {
-    focusState[slideIdx].page--;
-    buildFocusOverlay(slideIdx);
-  };
-
-  // Dots
-  const dots = document.createElement('div');
-  dots.className = 'fo-dots';
-  for (let i = 0; i < totalPages; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'fo-dot' + (i === page ? ' active' : '');
-    dot.onclick = () => {
-      focusState[slideIdx].page = i;
-      buildFocusOverlay(slideIdx);
-    };
-    dots.appendChild(dot);
-  }
-
+  // Next arrow
   const nextBtn = document.createElement('button');
   nextBtn.className = 'fo-arrow next';
   nextBtn.disabled = page >= totalPages - 1;
-  nextBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
-  nextBtn.onclick = () => {
-    focusState[slideIdx].page++;
-    buildFocusOverlay(slideIdx);
-  };
+  nextBtn.innerHTML = `<div class="fo-arrow-inner"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+  nextBtn.onclick = () => { focusState[slideIdx].page++; buildFocusOverlay(slideIdx); };
 
-  nav.appendChild(prevBtn);
-  nav.appendChild(dots);
-  nav.appendChild(nextBtn);
-  overlay.appendChild(nav);
+  body.appendChild(prevBtn);
+  body.appendChild(grid);
+  body.appendChild(nextBtn);
+  overlay.appendChild(body);
 
-  // Apply gradient background to overlay (same as card)
-  if (cardEl) {
-    overlay.style.background = cardEl.style.background;
+  // ── Dots row below body
+  const dotsRow = document.createElement('div');
+  dotsRow.className = 'fo-dots-row';
+  for (let i = 0; i < totalPages; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'fo-dot' + (i === page ? ' active' : '');
+    dot.onclick = () => { focusState[slideIdx].page = i; buildFocusOverlay(slideIdx); };
+    dotsRow.appendChild(dot);
   }
+  overlay.appendChild(dotsRow);
 
   slide.querySelector('.card').appendChild(overlay);
 }
