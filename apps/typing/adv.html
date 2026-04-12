@@ -1,732 +1,676 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COCOBO-Typing Practice</title>
-    <!-- 引入 Roboto Mono 用于代码和数字显示 -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy-blue: #667eea;
-            --dark-purple: #2e5863;
-            --green: #28a745;
-            --white: white;
-            --light-gray: #e9ecef;
-            --current-bg: #ffd700; /* 黄色光标背景 */
-            --panel-bg: rgba(26, 32, 44, 0.95);
-            --text-color: #2d3748;
-            --stat-label: #a0aec0;
-            --stat-val: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--navy-blue) 0%, var(--dark-purple) 100%);
-            min-height: 100vh;
-            display: flex;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        /* --- 布局容器 --- */
-        .layout-wrapper {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            gap: 40px;
-            align-items: flex-start;
-            justify-content: center;
-            margin-top: 5vh;
-        }
-
-        /* --- 左侧侧边栏 --- */
-        .left-sidebar {
-            width: 220px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px; /* 减小间距让布局更紧凑 */
-            position: sticky;
-            top: 40px;
-        }
-
-        /* 通用面板样式 */
-        .side-panel {
-            background: var(--panel-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: var(--white);
-        }
-
-        /* 字体选择器样式 */
-        .settings-select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 8px;
-            border: 1px solid #4a5568;
-            background: rgba(0, 0, 0, 0.3);
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95em;
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .settings-select:hover {
-            border-color: var(--navy-blue);
-        }
-        /* 下拉选项背景色 */
-        .settings-select option {
-            background: #2d3748;
-            color: white;
-        }
-
-        /* 计时器样式 */
-        .timer-label {
-            font-size: 0.8em;
-            letter-spacing: 3px;
-            color: var(--stat-label);
-            margin-bottom: 5px;
-            border-bottom: 1px solid #4a5568;
-            padding-bottom: 5px;
-        }
-
-        .timer-display {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 2.2em;
-            color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
-            font-weight: 500;
-        }
-
-        .timer-ms {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 1.2em;
-            color: #718096;
-        }
-
-        .side-panel.finished {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-        .side-panel.finished .timer-display {
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-        }
-
-        /* 统计样式 */
-        .stats-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 5px;
-        }
-        .stat-item:last-child { border-bottom: none; }
-
-        .stat-label { font-size: 0.9em; color: var(--stat-label); }
-        .stat-value { font-family: 'Roboto Mono', monospace; font-size: 1.1em; font-weight: 500; color: var(--stat-val); }
-
-        .reset-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--green);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        .reset-btn:hover { background: #218838; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
-
-        /* --- 右侧主要内容区 --- */
-        .main-container {
-            flex-grow: 1;
-            max-width: 1100px;
-            background: var(--white);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--navy-blue);
-            margin-bottom: 30px;
-            font-size: 2.2em;
-            font-weight: 700;
-        }
-
-        /* 关卡网格 */
-        .level-selection {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .level-btn {
-            padding: 12px 5px;
-            border: 2px solid var(--navy-blue);
-            background: var(--white);
-            color: var(--navy-blue);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .level-btn:hover { background: var(--navy-blue); color: var(--white); transform: translateY(-2px); }
-        .level-btn.active { background: var(--navy-blue); color: var(--white); box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); }
-        .level-description { font-size: 0.75em; margin-top: 3px; opacity: 0.8; font-weight: 400; }
-
-        .file-upload {
-            margin-bottom: 20px;
-            padding: 20px;
-            border: 2px dashed var(--navy-blue);
-            border-radius: 10px;
-            display: none;
-            background: #f8f9fa;
-        }
-        
-        .vocab-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--navy-blue); }
-        
-        .lowercase-option {
-            grid-column: span 7;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--navy-blue);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .practice-area {
-            background: #fdfdfd;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 0;
-            min-height: 250px;
-            border: 1px solid #e2e8f0;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .text-display {
-            font-size: 39px; /* 默认 39px */
-            line-height: 1.6;
-            letter-spacing: 1px;
-            font-family: 'Roboto Mono', 'Consolas', monospace; 
-            font-weight: 400;
-            color: #4a5568;
-            transition: font-size 0.2s ease; /* 平滑过渡 */
-        }
-
-        .letter {
-            display: inline-block;
-            padding: 0 1px;
-            border-radius: 2px;
-            position: relative;
-        }
-
-        .letter.space { min-width: 12px; }
-
-        .letter.current {
-            background-color: rgba(255, 215, 0, 0.4);
-            color: #000;
-            border-bottom: 2px solid #ff8c00;
-            animation: blink 1s infinite;
-        }
-
-        .letter.correct { color: var(--green); }
-        .letter.incorrect { background-color: #fed7d7; color: #e53e3e; text-decoration: line-through; }
-
-        @keyframes blink {
-            0%, 100% { border-bottom-color: #ff8c00; }
-            50% { border-bottom-color: transparent; }
-        }
-
-        @media (max-width: 1200px) {
-            .level-selection { grid-template-columns: repeat(4, 1fr); }
-            .lowercase-option { grid-column: span 4; }
-        }
-
-        @media (max-width: 1000px) {
-            .layout-wrapper { flex-direction: column; align-items: center; }
-            .left-sidebar { width: 100%; flex-direction: row; justify-content: center; position: static; }
-            .side-panel { flex: 1; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO-Typing Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--navy-blue: #667eea;
+--dark-purple: #2e5863;
+--green: #28a745;
+--white: white;
+--panel-bg: rgba(26, 32, 44, 0.95);
+--stat-label: #a0aec0;
+--stat-val: #e2e8f0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, var(--navy-blue) 0%, var(--dark-purple) 100%);
+min-height: 100vh;
+display: flex;
+padding: 16px;
+overflow-x: hidden;
+}
+.layout-wrapper {
+display: flex;
+width: 100%;
+max-width: 1400px;
+margin: 0 auto;
+gap: 16px;
+align-items: flex-start;
+justify-content: center;
+}
+.left-sidebar {
+width: 200px;
+flex-shrink: 0;
+display: flex;
+flex-direction: column;
+gap: 10px;
+position: sticky;
+top: 16px;
+max-height: calc(100vh - 32px);
+overflow-y: auto;
+}
+.left-sidebar::-webkit-scrollbar { width: 4px; }
+.left-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+.side-panel {
+background: var(--panel-bg);
+border-radius: 12px;
+padding: 12px 14px;
+box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+border: 1px solid rgba(255,255,255,0.1);
+text-align: center;
+color: var(--white);
+}
+.settings-select {
+padding: 5px 6px;
+border-radius: 6px;
+border: 1px solid #4a5568;
+background: rgba(0,0,0,0.3);
+color: var(--white);
+font-family: 'Inter', sans-serif;
+font-size: 0.82em;
+cursor: pointer;
+outline: none;
+}
+.settings-select option { background: #2d3748; color: white; }
+.timer-label {
+font-size: 0.7em;
+letter-spacing: 3px;
+color: var(--stat-label);
+margin-bottom: 3px;
+border-bottom: 1px solid #4a5568;
+padding-bottom: 4px;
+}
+.timer-display {
+font-family: 'Roboto Mono', monospace;
+font-size: 1.8em;
+color: #00ff88;
+font-weight: 500;
+}
+.timer-ms {
+font-family: 'Roboto Mono', monospace;
+font-size: 1em;
+color: #718096;
+}
+.side-panel.finished { border-color: #ffd700; }
+.side-panel.finished .timer-display { color: #ffd700; }
+.stats-grid { display: flex; flex-direction: column; gap: 7px; }
+.stat-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid rgba(255,255,255,0.08);
+padding-bottom: 4px;
+}
+.stat-item:last-child { border-bottom: none; }
+.stat-label { font-size: 0.8em; color: var(--stat-label); }
+.stat-value { font-family: 'Roboto Mono', monospace; font-size: 1em; font-weight: 500; color: var(--stat-val); }
+.reset-btn {
+width: 100%;
+padding: 9px;
+background: var(--green);
+color: var(--white);
+border: none;
+border-radius: 8px;
+font-size: 0.9em;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+.reset-btn:hover { background: #218838; transform: translateY(-1px); }
+.levels-panel {
+background: var(--panel-bg);
+border-radius: 12px;
+padding: 10px 12px;
+box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+border: 1px solid rgba(255,255,255,0.1);
+}
+.levels-title {
+font-size: 0.7em;
+letter-spacing: 2px;
+color: var(--stat-label);
+margin-bottom: 7px;
+border-bottom: 1px solid #4a5568;
+padding-bottom: 5px;
+text-align: center;
+}
+.level-btn {
+display: flex;
+align-items: center;
+width: 100%;
+padding: 5px 8px;
+border: 1px solid rgba(102,126,234,0.4);
+background: rgba(102,126,234,0.07);
+color: rgba(255,255,255,0.85);
+border-radius: 6px;
+cursor: pointer;
+font-size: 0.8em;
+font-weight: 600;
+transition: all 0.15s;
+margin-bottom: 4px;
+text-align: left;
+gap: 7px;
+}
+.level-btn:last-child { margin-bottom: 0; }
+.level-btn:hover { background: rgba(102,126,234,0.3); border-color: var(--navy-blue); }
+.level-btn.active { background: var(--navy-blue); border-color: var(--navy-blue); color: white; }
+.level-num { font-size: 0.75em; color: rgba(255,255,255,0.5); min-width: 18px; }
+.level-btn.active .level-num { color: rgba(255,255,255,0.75); }
+.level-desc { font-size: 0.7em; color: rgba(255,255,255,0.45); font-weight: 400; }
+.level-btn.active .level-desc { color: rgba(255,255,255,0.7); }
+.lowercase-row {
+display: none;
+align-items: center;
+gap: 6px;
+padding: 8px 8px 2px;
+color: rgba(255,255,255,0.7);
+font-size: 0.78em;
+cursor: pointer;
+margin-top: 4px;
+border-top: 1px solid rgba(255,255,255,0.1);
+}
+.lowercase-row input { cursor: pointer; }
+.main-container {
+flex-grow: 1;
+max-width: 1100px;
+background: var(--white);
+border-radius: 16px;
+padding: 20px 24px;
+box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+}
+h1 {
+text-align: center;
+color: var(--navy-blue);
+margin-bottom: 16px;
+font-size: 1.5em;
+font-weight: 700;
+}
+.file-upload {
+display: none;
+align-items: center;
+gap: 10px;
+margin-bottom: 14px;
+padding: 10px 14px;
+border: 1.5px dashed var(--navy-blue);
+border-radius: 10px;
+background: #f8f9ff;
+flex-wrap: wrap;
+}
+.vocab-label {
+font-weight: 600;
+color: var(--navy-blue);
+font-size: 0.85em;
+white-space: nowrap;
+}
+#vocabSelect {
+flex: 1;
+min-width: 120px;
+padding: 6px 8px;
+border-radius: 6px;
+border: 1px solid var(--navy-blue);
+font-size: 0.85em;
+background: white;
+color: #333;
+}
+.or-sep {
+color: #aaa;
+font-size: 0.8em;
+white-space: nowrap;
+}
+.upload-label {
+background: var(--navy-blue);
+color: white;
+padding: 6px 12px;
+border-radius: 6px;
+cursor: pointer;
+font-size: 0.82em;
+font-weight: 600;
+white-space: nowrap;
+transition: background 0.2s;
+}
+.upload-label:hover { background: #5a6fd8; }
+#filename { color: var(--green); font-size: 0.8em; white-space: nowrap; }
+#loadingMsg { color: var(--navy-blue); font-size: 0.82em; }
+.practice-area {
+background: #fdfdfd;
+padding: 24px;
+border-radius: 10px;
+min-height: 240px;
+border: 1px solid #e2e8f0;
+box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
+overflow-y: auto;
+}
+.text-display {
+font-size: 36px;
+line-height: 1.6;
+letter-spacing: 1px;
+font-family: 'Roboto Mono', 'Consolas', monospace;
+font-weight: 400;
+color: #4a5568;
+transition: font-size 0.2s ease;
+}
+.letter { display: inline-block; padding: 0 1px; border-radius: 2px; }
+.letter.space {
+color: #bbb;
+font-size: 0.75em;
+vertical-align: middle;
+padding: 0 2px;
+}
+.letter.current {
+background-color: rgba(255,215,0,0.4);
+color: #000 !important;
+border-bottom: 2px solid #ff8c00;
+animation: blink 1s infinite;
+}
+.letter.correct { color: var(--green) !important; }
+.letter.incorrect { background-color: #fed7d7; color: #e53e3e !important; text-decoration: line-through; }
+@keyframes blink {
+0%, 100% { border-bottom-color: #ff8c00; }
+50% { border-bottom-color: transparent; }
+}
+</style>
 </head>
 <body>
+<div class="layout-wrapper">
+<aside class="left-sidebar">
+<div class="side-panel" id="timerPanel">
+<div class="timer-label">TIME</div>
+<div>
+<span class="timer-display" id="timerSec">00</span>
+<span class="timer-display">:</span>
+<span class="timer-ms" id="timerMs">00</span>
+</div>
+</div>
+<div class="side-panel">
+<div class="stats-grid">
+<div class="stat-item">
+<span class="stat-label">Correct</span>
+<span class="stat-value" id="correctCount" style="color:#48bb78">0</span>
+</div>
+<div class="stat-item">
+<span class="stat-label">Errors</span>
+<span class="stat-value" id="errorCount" style="color:#f56565">0</span>
+</div>
+<div class="stat-item">
+<span class="stat-label">Accuracy</span>
+<span class="stat-value" id="accuracy" style="color:#63b3ed">100%</span>
+</div>
+</div>
+</div>
+<div class="side-panel" style="padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+<label class="stat-label" for="fontSizeSelect" style="white-space:nowrap;">Font Size</label>
+<select id="fontSizeSelect" class="settings-select">
+<option value="20px">20px</option>
+<option value="28px">28px</option>
+<option value="35px">35px</option>
+<option value="36px" selected>36px</option>
+<option value="45px">45px</option>
+<option value="50px">50px</option>
+</select>
+</div>
+<button class="reset-btn" id="resetBtn">🔄 Reset</button>
+<div class="levels-panel">
+<div class="levels-title">LEVELS</div>
+<button class="level-btn" data-level="1"><span class="level-num">L1</span><span>asdfg<span class="level-desc"> (L)</span></span></button>
+<button class="level-btn" data-level="2"><span class="level-num">L2</span><span>hjkl;<span class="level-desc"> (R)</span></span></button>
+<button class="level-btn" data-level="3"><span class="level-num">L3</span><span>qwert<span class="level-desc"> (TL)</span></span></button>
+<button class="level-btn" data-level="4"><span class="level-num">L4</span><span>yuiop<span class="level-desc"> (TR)</span></span></button>
+<button class="level-btn" data-level="5"><span class="level-num">L5</span><span>zxcvb<span class="level-desc"> (BL)</span></span></button>
+<button class="level-btn" data-level="6"><span class="level-num">L6</span><span>nm,.<span class="level-desc"> (BR)</span></span></button>
+<button class="level-btn" data-level="7"><span class="level-num">L7</span><span>Vocab</span></button>
+<button class="level-btn" data-level="8"><span class="level-num">L8</span><span>1+2<span class="level-desc"> Mix</span></span></button>
+<button class="level-btn" data-level="9"><span class="level-num">L9</span><span>1+3<span class="level-desc"> Mix</span></span></button>
+<button class="level-btn" data-level="10"><span class="level-num">L10</span><span>1+3+5</span></button>
+<button class="level-btn" data-level="11"><span class="level-num">L11</span><span>2+4<span class="level-desc"> Mix</span></span></button>
+<button class="level-btn" data-level="12"><span class="level-num">L12</span><span>COCOBO</span></button>
+<label class="lowercase-row" id="lowercaseLabel">
+<input type="checkbox" id="lowercaseCheckbox" checked> Force Lowercase
+</label>
+</div>
+</aside>
 
-    <div class="layout-wrapper">
-        
-        <!-- 左侧功能区 -->
-        <aside class="left-sidebar">
-            <!-- 1. 计时器 -->
-            <div class="side-panel" id="timerPanel">
-                <div class="timer-label">TIME</div>
-                <div>
-                    <span class="timer-display" id="timerSec">00</span>
-                    <span class="timer-display">:</span>
-                    <span class="timer-ms" id="timerMs">00</span>
-                </div>
-            </div>
+<main class="main-container">
+<h1>⌨️ COCOBO Typing Practice</h1>
+<div class="file-upload" id="fileUpload">
+<span class="vocab-label">📚 Dictionary:</span>
+<select id="vocabSelect"><option value="">-- Choose --</option></select>
+<span class="or-sep">— or —</span>
+<label class="upload-label" for="fileInput">📁 Upload</label>
+<input type="file" id="fileInput" accept=".txt,.csv" style="display:none;">
+<span id="filename"></span>
+<span id="loadingMsg" style="display:none;">Loading...</span>
+</div>
+<div class="practice-area">
+<div class="text-display" id="textDisplay">Select a level to start practicing...</div>
+</div>
+</main>
+</div>
 
-            <!-- 2. 统计数据 -->
-            <div class="side-panel">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Correct</span>
-                        <span class="stat-value" id="correctCount" style="color: #48bb78;">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Errors</span>
-                        <span class="stat-value" id="errorCount" style="color: #f56565;">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Accuracy</span>
-                        <span class="stat-value" id="accuracy" style="color: #63b3ed;">100%</span>
-                    </div>
-                </div>
-            </div>
+<script>
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+function playErrorSound() {
+  const o = audioContext.createOscillator(), g = audioContext.createGain();
+  o.connect(g); g.connect(audioContext.destination);
+  o.frequency.value = 150; o.type = 'sawtooth';
+  g.gain.setValueAtTime(0.15, audioContext.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+  o.start(); o.stop(audioContext.currentTime + 0.15);
+}
+function playTypingSound() {
+  const o = audioContext.createOscillator(), g = audioContext.createGain();
+  o.connect(g); g.connect(audioContext.destination);
+  o.frequency.value = 600; o.type = 'triangle';
+  g.gain.setValueAtTime(0.05, audioContext.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+  o.start(); o.stop(audioContext.currentTime + 0.05);
+}
 
-            <!-- 3. 字体设置 (新增加) -->
-            <div class="side-panel" style="padding: 15px;">
-                <label class="stat-label" for="fontSizeSelect" style="display:block; text-align: left;">Font Size</label>
-                <select id="fontSizeSelect" class="settings-select">
-                    <option value="20px">20px</option>
-                    <option value="28px">28px</option>
-                    <option value="35px">35px</option>
-                    <option value="39px" selected>39px (Default)</option>
-                    <option value="45px">45px</option>
-                    <option value="50px">50px</option>
-                </select>
-            </div>
+// ─── Character normalisation map ───────────────────────────────────────────
+// Converts typographically "smart" / special characters to plain keyboard equivalents.
+// The display will show the NORMALISED character, so the user knows exactly what to type.
+const CHAR_MAP = {
+  // Dashes
+  '\u2014': '-',   // — em dash  → -
+  '\u2013': '-',   // – en dash  → -
+  '\u2012': '-',   // ‒ figure dash → -
+  '\u2015': '-',   // ― horizontal bar → -
+  '\u2010': '-',   // ‐ hyphen → -
+  '\u2011': '-',   // ‑ non-breaking hyphen → -
 
-            <!-- 4. 重置按钮 -->
-            <button class="reset-btn" id="resetBtn">🔄 Reset</button>
-        </aside>
+  // Ellipsis
+  '\u2026': '...', // … → ...
 
-        <!-- 主内容区 -->
-        <main class="main-container">
-            <h1>⌨️ COCOBO Typing Practice</h1>
-            
-            <div class="level-selection">
-                <button class="level-btn" data-level="1"> Level 1 <div class="level-description">asdfg (L)</div> </button>
-                <button class="level-btn" data-level="2"> Level 2 <div class="level-description">hjkl; (R)</div> </button>
-                <button class="level-btn" data-level="3"> Level 3 <div class="level-description">qwert (TL)</div> </button>
-                <button class="level-btn" data-level="4"> Level 4 <div class="level-description">yuiop (TR)</div> </button>
-                <button class="level-btn" data-level="5"> Level 5 <div class="level-description">zxcvb (BL)</div> </button>
-                <button class="level-btn" data-level="6"> Level 6 <div class="level-description">nm,./ (BR)</div> </button>
-                <button class="level-btn" data-level="7"> Level 7 <div class="level-description">Vocab</div> </button>
-                
-                <button class="level-btn" data-level="8"> Level 8 <div class="level-description">1+2 Mix</div> </button>
-                <button class="level-btn" data-level="9"> Level 9 <div class="level-description">1+3 Mix</div> </button>
-                <button class="level-btn" data-level="10"> Level 10 <div class="level-description">1+3+5</div> </button>
-                <button class="level-btn" data-level="11"> Level 11 <div class="level-description">2+4 Mix</div> </button>
-                <button class="level-btn" data-level="12"> Level 12 <div class="level-description">COCOBO</div> </button>
-                
-                <div></div> <!-- 占位符保持网格对齐 -->
-                <div></div>
+  // Curly / smart quotes → straight quotes
+  '\u2018': "'",   // ' left single
+  '\u2019': "'",   // ' right single / apostrophe
+  '\u201A': "'",   // ‚ low-9 single
+  '\u201B': "'",   // ‛ single high-reversed
+  '\u201C': '"',   // " left double
+  '\u201D': '"',   // " right double
+  '\u201E': '"',   // „ low-9 double
+  '\u201F': '"',   // ‟ double high-reversed
+  '\u0060': "'",   // ` grave accent → '
+  '\u00B4': "'",   // ´ acute accent → '
 
-                <label class="lowercase-option" id="lowercaseLabel" style="display: none;">
-                    <input type="checkbox" id="lowercaseCheckbox" checked> &nbsp;Force Lowercase
-                </label>
-            </div>
+  // Spaces / non-breaking characters
+  '\u00A0': ' ',   // non-breaking space → regular space
+  '\u202F': ' ',   // narrow no-break space
+  '\u2009': ' ',   // thin space
+  '\u2003': ' ',   // em space
+  '\u2002': ' ',   // en space
 
-            <div class="file-upload" id="fileUpload">
-                <div class="vocab-selector">
-                    <label for="vocabSelect" style="display:block;margin-bottom:8px;font-weight:600;color:var(--navy-blue)">📚 Select Dictionary:</label>
-                    <select id="vocabSelect">
-                        <option value="">-- Choose --</option>
-                    </select>
-                </div>
-                <div id="loadingMsg" class="loading" style="display:none; text-align:center; color:var(--navy-blue); margin:10px;">Loading...</div>
-                <div class="or-divider" style="text-align:center; margin:10px 0; color:#888;">- OR -</div>
-                <div style="text-align: center;">
-                    <label for="fileInput" style="background:var(--navy-blue); color:white; padding:8px 16px; border-radius:5px; cursor:pointer;">📁 Upload File</label>
-                    <input type="file" id="fileInput" accept=".txt,.csv" style="display:none;">
-                    <div class="filename" id="filename" style="margin-top:5px; color:var(--green);"></div>
-                </div>
-            </div>
+  // Bullets / misc
+  '\u2022': '-',   // • bullet → -
+  '\u00B7': '.',   // · middle dot → .
+  '\u2026': '...', // … ellipsis (duplicate key fine in object literal, last wins)
+};
 
-            <div class="practice-area">
-                <div class="text-display" id="textDisplay">
-                    Select a level to start practicing...
-                </div>
-            </div>
-        </main>
-    </div>
+function normaliseText(text) {
+  // Replace each special char with its keyboard equivalent
+  let result = '';
+  for (const ch of text) {
+    result += CHAR_MAP[ch] !== undefined ? CHAR_MAP[ch] : ch;
+  }
+  // Collapse any multi-spaces introduced by expansions (e.g. '...' keeps 3 chars, that's fine)
+  // Collapse ONLY actual repeated spaces, not '...'
+  result = result.replace(/ {2,}/g, ' ').trim();
+  return result;
+}
+// ───────────────────────────────────────────────────────────────────────────
 
-    <script>
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const levelChars = {
+  1: 'asdfg',
+  2: 'hjkl;',
+  3: 'qwert',
+  4: 'yuiop',
+  5: 'zxcvb',
+  6: 'nm,./',
+  8: 'asdfghjkl;',
+  9: 'asdfgqwert',
+  10: 'asdfgzxcvbqwert',
+  11: 'hjkl;yuiop',
+  12: 'hjkl;yuiop'
+};
 
-        function playErrorSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 150; 
-            oscillator.type = 'sawtooth';
-            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.15);
-        }
+const cocoText = `abcdefghijklmnopqrstuvwxyz abcdefgh ijklmn opqrst uvwxyz jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan cocobotech.github.io`;
 
-        function playTypingSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 600; 
-            oscillator.type = 'triangle';
-            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.05);
-        }
+let currentText = '', currentPosition = 0, correctCount = 0, errorCount = 0;
+let currentLevel = null, currentVocabWords = [], currentOriginalText = '';
+let isLowercase = true, startTime = 0, timerInterval = null, isTimerRunning = false;
 
-        const levelChars = {
-            1: 'asdfg', 2: 'hjkl', 3: 'qwert', 4: 'yuiop', 5: 'zxcvb', 6: 'nm,.',
-            8: 'asdfghjkl', 9: 'asdfgqwert', 10: 'asdfgzxcvbqwert', 11: 'hjklyuiop', 12: 'hjklyuiop'
-        };
-        const cocoText = `abcdefghijklmnopqrstuvwxyz abcdefgh ijklmn opqrst uvwxyz jonathan happy love sun joy peace good i love mom i love dad i love sister i am very happy at dca school shine class jonathan cocobotech.github.io`;
+const textDisplay    = document.getElementById('textDisplay');
+const levelBtns      = document.querySelectorAll('.level-btn');
+const fileUpload     = document.getElementById('fileUpload');
+const lowercaseLabel = document.getElementById('lowercaseLabel');
+const lowercaseCheckbox = document.getElementById('lowercaseCheckbox');
+const vocabSelect    = document.getElementById('vocabSelect');
+const loadingMsg     = document.getElementById('loadingMsg');
+const fileInput      = document.getElementById('fileInput');
+const filename       = document.getElementById('filename');
+const resetBtn       = document.getElementById('resetBtn');
+const correctCountEl = document.getElementById('correctCount');
+const errorCountEl   = document.getElementById('errorCount');
+const accuracyEl     = document.getElementById('accuracy');
+const timerSecEl     = document.getElementById('timerSec');
+const timerMsEl      = document.getElementById('timerMs');
+const timerPanel     = document.getElementById('timerPanel');
+const fontSizeSelect = document.getElementById('fontSizeSelect');
 
-        let currentText = '';
-        let currentPosition = 0;
-        let correctCount = 0;
-        let errorCount = 0;
-        let currentLevel = null;
-        let currentVocabWords = [];
-        let currentOriginalText = '';
-        let isLowercase = true;
-        let startTime = 0;
-        let timerInterval = null;
-        let isTimerRunning = false;
+fontSizeSelect.addEventListener('change', e => { textDisplay.style.fontSize = e.target.value; });
 
-        const textDisplay = document.getElementById('textDisplay');
-        const levelBtns = document.querySelectorAll('.level-btn');
-        const fileUpload = document.getElementById('fileUpload');
-        const lowercaseLabel = document.getElementById('lowercaseLabel');
-        const lowercaseCheckbox = document.getElementById('lowercaseCheckbox');
-        const vocabSelect = document.getElementById('vocabSelect');
-        const loadingMsg = document.getElementById('loadingMsg');
-        const fileInput = document.getElementById('fileInput');
-        const filename = document.getElementById('filename');
-        const resetBtn = document.getElementById('resetBtn');
-        
-        const correctCountEl = document.getElementById('correctCount');
-        const errorCountEl = document.getElementById('errorCount');
-        const accuracyEl = document.getElementById('accuracy');
-        const timerSecEl = document.getElementById('timerSec');
-        const timerMsEl = document.getElementById('timerMs');
-        const timerPanel = document.getElementById('timerPanel');
-        
-        // Font Size Selector
-        const fontSizeSelect = document.getElementById('fontSizeSelect');
+function resetTimer() {
+  stopTimer(); isTimerRunning = false;
+  timerSecEl.textContent = '00'; timerMsEl.textContent = '00';
+  timerPanel.classList.remove('finished');
+}
+function startTimer() {
+  if (!isTimerRunning) {
+    isTimerRunning = true; startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 37);
+  }
+}
+function stopTimer() {
+  isTimerRunning = false;
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+function updateTimer() {
+  const e = Date.now() - startTime;
+  timerSecEl.textContent = Math.floor(e / 1000).toString().padStart(2, '0');
+  timerMsEl.textContent  = Math.floor((e % 1000) / 10).toString().padStart(2, '0');
+}
 
-        // Font Size Event Listener
-        fontSizeSelect.addEventListener('change', (e) => {
-            textDisplay.style.fontSize = e.target.value;
-        });
+function generateRandomText(letters, n = 60) {
+  let t = '', last = '';
+  for (let i = 0; i < n; i++) {
+    let c;
+    do { c = letters[Math.floor(Math.random() * letters.length)]; } while (c === last);
+    t += c; last = c;
+    if ((i + 1) % 5 === 0 && i < n - 1) { t += ' '; last = ''; }
+  }
+  return t;
+}
 
-        function resetTimer() {
-            stopTimer();
-            isTimerRunning = false;
-            timerSecEl.textContent = '00';
-            timerMsEl.textContent = '00';
-            timerPanel.classList.remove('finished');
-        }
+levelBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const level = btn.dataset.level; currentLevel = level;
+    levelBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active');
+    fileUpload.style.display = 'none'; lowercaseLabel.style.display = 'none';
+    if (level === '7') {
+      fileUpload.style.display = 'flex'; lowercaseLabel.style.display = 'flex';
+      textDisplay.innerHTML = 'Please select a dictionary or upload a file.';
+      currentText = ''; currentVocabWords = []; currentOriginalText = '';
+      resetTimer(); updateStats(); populateVocabSelect();
+    } else if (level === '12') {
+      startPractice(cocoText);
+    } else {
+      const chars = levelChars[level];
+      if (chars) startPractice(generateRandomText(chars, 60));
+    }
+  });
+});
 
-        function startTimer() {
-            if (!isTimerRunning) {
-                isTimerRunning = true;
-                startTime = Date.now();
-                timerInterval = setInterval(updateTimer, 37);
-            }
-        }
+lowercaseCheckbox.addEventListener('change', e => { isLowercase = e.target.checked; regeneratePracticeText(); });
 
-        function stopTimer() {
-            isTimerRunning = false;
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
+async function populateVocabSelect() {
+  vocabSelect.innerHTML = '<option value="">-- Choose --</option>';
+  loadingMsg.style.display = 'inline';
+  try {
+    const r = await fetch('https://api.github.com/repos/cocobotech/xiaobao/contents/apps/Vocabulary');
+    if (!r.ok) throw new Error('Fetch failed');
+    const data = await r.json();
+    data.filter(i => i.type === 'file' && (i.name.startsWith('dict_') || i.name.startsWith('txt_'))).forEach(file => {
+      const o = document.createElement('option');
+      o.value = `https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/Vocabulary/${file.name}`;
+      if (file.name.startsWith('dict_')) {
+        const p = file.name.replace('dict_', '').replace('.json', '').split('_');
+        o.textContent = p.length === 2 ? `${p[0].toUpperCase().replace('CET','CET-')} Level ${p[1]}` : file.name;
+      } else { o.textContent = file.name.replace('txt_','').replace('.txt',''); }
+      vocabSelect.appendChild(o);
+    });
+  } catch (e) { textDisplay.innerHTML = `Error: ${e.message}`; }
+  finally { loadingMsg.style.display = 'none'; }
+}
 
-        function updateTimer() {
-            const elapsed = Date.now() - startTime;
-            const seconds = Math.floor(elapsed / 1000);
-            const ms = Math.floor((elapsed % 1000) / 10);
-            timerSecEl.textContent = seconds.toString().padStart(2, '0');
-            timerMsEl.textContent = ms.toString().padStart(2, '0');
-        }
+vocabSelect.addEventListener('change', async e => {
+  const url = e.target.value; if (!url) return;
+  loadingMsg.style.display = 'inline'; textDisplay.innerHTML = 'Loading...';
+  try {
+    const r = await fetch(url); if (!r.ok) throw new Error('Load failed');
+    currentVocabWords = []; currentOriginalText = '';
+    let practiceText = '';
+    if (url.endsWith('.json')) {
+      const data = await r.json(); const words = [];
+      if (data.groups) { for (const k in data.groups) data.groups[k].forEach(i => { if (i.english) words.push(i.english); }); }
+      if (!words.length) throw new Error('No words found');
+      currentVocabWords = words.sort(() => Math.random() - 0.5);
+      practiceText = (isLowercase ? currentVocabWords.map(w => w.toLowerCase()) : currentVocabWords).join(' ');
+    } else {
+      let text = await r.text();
+      text = text.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+      currentOriginalText = text;
+      practiceText = isLowercase ? text.toLowerCase() : text;
+    }
+    startPractice(practiceText);
+  } catch (e) { textDisplay.innerHTML = `Error: ${e.message}`; }
+  finally { loadingMsg.style.display = 'none'; }
+});
 
-        function generateRandomText(letters, numLetters = 60) {
-            let text = '';
-            let lastChar = '';
-            for (let i = 0; i < numLetters; i++) {
-                let newChar;
-                do {
-                    newChar = letters[Math.floor(Math.random() * letters.length)];
-                } while (newChar === lastChar);
-                text += newChar;
-                lastChar = newChar;
-                if ((i + 1) % 5 === 0) {
-                    text += ' ';
-                    lastChar = '';
-                }
-            }
-            return text.trim();
-        }
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  filename.textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    let text = ev.target.result.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+    currentOriginalText = text;
+    startPractice(isLowercase ? text.toLowerCase() : text);
+  };
+  reader.readAsText(file);
+});
 
-        levelBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = btn.dataset.level;
-                currentLevel = level;
-                levelBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                fileUpload.style.display = 'none';
-                lowercaseLabel.style.display = 'none';
+resetBtn.addEventListener('click', () => {
+  if (currentLevel === '7') regeneratePracticeText();
+  else if (currentLevel === '12') startPractice(cocoText);
+  else if (currentLevel) { const chars = levelChars[currentLevel]; if (chars) startPractice(generateRandomText(chars, 60)); }
+});
 
-                if (level === '7') {
-                    fileUpload.style.display = 'block';
-                    lowercaseLabel.style.display = 'flex';
-                    textDisplay.innerHTML = 'Please select a dictionary or upload a file.';
-                    currentText = '';
-                    currentVocabWords = [];
-                    currentOriginalText = '';
-                    resetTimer();
-                    updateStats();
-                    populateVocabSelect();
-                } else if (level === '12') {
-                    startPractice(cocoText);
-                } else {
-                    const chars = levelChars[level];
-                    if (chars) {
-                        startPractice(generateRandomText(chars, 60));
-                    }
-                }
-            });
-        });
+function regeneratePracticeText() {
+  let t = '';
+  if (currentVocabWords.length > 0) {
+    const s = [...currentVocabWords].sort(() => Math.random() - 0.5);
+    t = (isLowercase ? s.map(w => w.toLowerCase()) : s).join(' ');
+  } else if (currentOriginalText) {
+    t = isLowercase ? currentOriginalText.toLowerCase() : currentOriginalText;
+  }
+  if (t) startPractice(t);
+}
 
-        lowercaseCheckbox.addEventListener('change', (e) => {
-            isLowercase = e.target.checked;
-            regeneratePracticeText();
-        });
+function startPractice(text) {
+  // 1. Normalise special chars → keyboard-typeable equivalents
+  // 2. Apply lowercase if needed
+  // 3. Collapse spaces
+  let processed = normaliseText(text);
+  if (isLowercase && currentLevel === '7') processed = processed.toLowerCase();
+  currentText = processed.replace(/\s+/g, ' ').trim();
+  currentPosition = 0; correctCount = 0; errorCount = 0;
+  resetTimer(); updateStats(); displayText();
+}
 
-        async function populateVocabSelect() {
-            vocabSelect.innerHTML = '<option value="">-- Choose --</option>';
-            loadingMsg.style.display = 'block';
-            try {
-                const apiUrl = 'https://api.github.com/repos/cocobotech/xiaobao/contents/apps/Vocabulary';
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Fetch failed');
-                const data = await response.json();
-                const dictFiles = data.filter(item => item.type === 'file' && (item.name.startsWith('dict_') || item.name.startsWith('txt_')));
-                
-                dictFiles.forEach(file => {
-                    const option = document.createElement('option');
-                    option.value = `https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/Vocabulary/${file.name}`;
-                    if (file.name.startsWith('dict_')) {
-                        const parts = file.name.replace('dict_', '').replace('.json', '').split('_');
-                        option.textContent = parts.length === 2 ? `${parts[0].toUpperCase().replace('CET', 'CET-')} Level ${parts[1]}` : file.name;
-                    } else {
-                        option.textContent = file.name.replace('txt_', '').replace('.txt', '');
-                    }
-                    vocabSelect.appendChild(option);
-                });
-            } catch (error) {
-                textDisplay.innerHTML = `Error: ${error.message}`;
-            } finally {
-                loadingMsg.style.display = 'none';
-            }
-        }
+function displayText() {
+  textDisplay.innerHTML = '';
+  if (!currentText) return;
+  for (let i = 0; i < currentText.length; i++) {
+    const ch = currentText[i];
+    const span = document.createElement('span');
+    if (ch === ' ') {
+      span.className = 'letter space';
+      span.textContent = '␣';
+    } else {
+      span.className = 'letter';
+      span.textContent = ch;
+    }
+    if (i === currentPosition) span.classList.add('current');
+    textDisplay.appendChild(span);
+  }
+}
 
-        vocabSelect.addEventListener('change', async (e) => {
-            const url = e.target.value;
-            if (!url) return;
-            loadingMsg.style.display = 'block';
-            textDisplay.innerHTML = 'Loading...';
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Load failed');
-                let practiceText = '';
-                currentVocabWords = [];
-                currentOriginalText = '';
+function updateStats() {
+  correctCountEl.textContent = correctCount;
+  errorCountEl.textContent   = errorCount;
+  const total = correctCount + errorCount;
+  accuracyEl.textContent = (total === 0 ? 100 : Math.round(correctCount / total * 100)) + '%';
+}
 
-                if (url.endsWith('.json')) {
-                    const data = await response.json();
-                    const words = [];
-                    if (data.groups) {
-                        for (const k in data.groups) data.groups[k].forEach(i => { if (i.english) words.push(i.english); });
-                    }
-                    if (words.length === 0) throw new Error('No words');
-                    currentVocabWords = words.sort(() => Math.random() - 0.5);
-                    practiceText = (isLowercase ? currentVocabWords.map(w => w.toLowerCase()) : currentVocabWords).join(' ');
-                } else {
-                    let text = await response.text();
-                    text = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-                    currentOriginalText = text;
-                    practiceText = isLowercase ? text.toLowerCase() : text;
-                }
-                startPractice(practiceText);
-            } catch (error) {
-                textDisplay.innerHTML = `Error: ${error.message}`;
-            } finally {
-                loadingMsg.style.display = 'none';
-            }
-        });
+const IGNORE_KEYS = new Set([
+  'Shift','Control','Alt','Meta','CapsLock','Tab','Escape','Enter',
+  'ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
+  'Home','End','PageUp','PageDown','Insert','Delete',
+  'F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12',
+  'ContextMenu','NumLock','ScrollLock','Pause','PrintScreen'
+]);
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                filename.textContent = file.name;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    let text = ev.target.result.replace(/\s+/g, ' ').trim();
-                    currentOriginalText = text;
-                    startPractice(isLowercase ? text.toLowerCase() : text);
-                };
-                reader.readAsText(file);
-            }
-        });
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (IGNORE_KEYS.has(e.key)) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!currentText || currentPosition >= currentText.length) return;
 
-        resetBtn.addEventListener('click', () => {
-            if (currentLevel === '7') regeneratePracticeText();
-            else if (currentLevel === '12') startPractice(cocoText);
-            else if (currentLevel) {
-                const chars = levelChars[currentLevel];
-                if (chars) startPractice(generateRandomText(chars, 60));
-            }
-        });
+  if (e.key === ' ') e.preventDefault();
 
-        function regeneratePracticeText() {
-            let practiceText = '';
-            if (currentVocabWords.length > 0) {
-                const shuffled = currentVocabWords.sort(() => Math.random() - 0.5);
-                practiceText = (isLowercase ? shuffled.map(w => w.toLowerCase()) : shuffled).join(' ');
-            } else if (currentOriginalText) {
-                practiceText = isLowercase ? currentOriginalText.toLowerCase() : currentOriginalText;
-            }
-            if (practiceText) startPractice(practiceText);
-        }
+  const letters      = textDisplay.querySelectorAll('.letter');
+  const currentLetter = letters[currentPosition];
+  const expectedChar  = currentText[currentPosition];
 
-        function startPractice(text) {
-            currentText = text;
-            currentPosition = 0;
-            correctCount = 0;
-            errorCount = 0;
-            resetTimer();
-            updateStats();
-            displayText();
-        }
-
-        function displayText() {
-            textDisplay.innerHTML = '';
-            if (!currentText) return;
-            const words = currentText.split(' ');
-            let pos = 0;
-            for (let w = 0; w < words.length; w++) {
-                const wordSpan = document.createElement('span');
-                wordSpan.className = 'word';
-                for (let c = 0; c < words[w].length; c++) {
-                    const span = document.createElement('span');
-                    span.className = 'letter';
-                    span.textContent = words[w][c];
-                    if (pos === currentPosition) span.classList.add('current');
-                    wordSpan.appendChild(span);
-                    pos++;
-                }
-                textDisplay.appendChild(wordSpan);
-                if (w < words.length - 1) {
-                    const spaceSpan = document.createElement('span');
-                    spaceSpan.className = 'letter space';
-                    spaceSpan.textContent = '_';
-                    if (pos === currentPosition) spaceSpan.classList.add('current');
-                    textDisplay.appendChild(spaceSpan);
-                    pos++;
-                }
-            }
-        }
-
-        function updateStats() {
-            correctCountEl.textContent = correctCount;
-            errorCountEl.textContent = errorCount;
-            const total = correctCount + errorCount;
-            const acc = total === 0 ? 100 : Math.round((correctCount / total) * 100);
-            accuracyEl.textContent = acc + '%';
-        }
-
-        document.addEventListener('keydown', (e) => {
-            // Fix: Filter modifier keys and shortcuts
-            if (e.repeat) return; // Prevent hold-key repetition logic if undesired
-            if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape', 'Enter'].includes(e.key)) return;
-            if (e.ctrlKey || e.metaKey || e.altKey) return; 
-
-            if (!currentText || currentPosition >= currentText.length) return;
-            if (e.key === ' ') e.preventDefault();
-            
-            const letters = textDisplay.querySelectorAll('.letter');
-            const currentLetter = letters[currentPosition];
-            const expectedChar = currentText[currentPosition];
-
-            if (e.key === expectedChar) {
-                if (currentPosition === 0) startTimer();
-                playTypingSound();
-                currentLetter.classList.remove('current', 'incorrect');
-                currentLetter.classList.add('correct');
-                correctCount++;
-                currentPosition++;
-                
-                if (currentPosition < currentText.length) {
-                    const next = letters[currentPosition];
-                    next.classList.add('current');
-                    const area = document.querySelector('.practice-area');
-                    if (next.offsetTop > area.scrollTop + area.clientHeight - 40) {
-                        next.scrollIntoView({block: 'center', behavior: 'smooth'});
-                    }
-                } else {
-                    stopTimer();
-                    timerPanel.classList.add('finished');
-                }
-                updateStats();
-            } else if (e.key.length === 1) { // Only printable chars
-                playErrorSound();
-                currentLetter.classList.add('incorrect');
-                errorCount++;
-                updateStats();
-                setTimeout(() => currentLetter.classList.remove('incorrect'), 200);
-            }
-        });
-    </script>
+  if (e.key === expectedChar) {
+    if (currentPosition === 0) startTimer();
+    playTypingSound();
+    currentLetter.classList.remove('current', 'incorrect');
+    currentLetter.classList.add('correct');
+    correctCount++;
+    currentPosition++;
+    if (currentPosition < currentText.length) {
+      letters[currentPosition].classList.add('current');
+      const area = document.querySelector('.practice-area');
+      const next = letters[currentPosition];
+      if (next.offsetTop + next.offsetHeight > area.scrollTop + area.clientHeight - 20) {
+        next.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    } else {
+      stopTimer(); timerPanel.classList.add('finished');
+    }
+    updateStats();
+  } else if (e.key === 'Backspace') {
+    if (currentPosition > 0) {
+      currentPosition--;
+      const prev = letters[currentPosition];
+      prev.classList.remove('correct', 'incorrect');
+      prev.classList.add('current');
+      currentLetter.classList.remove('current');
+      if (correctCount > 0) correctCount--;
+      updateStats();
+    }
+  } else if (e.key.length === 1) {
+    playErrorSound();
+    currentLetter.classList.add('incorrect');
+    errorCount++;
+    updateStats();
+    setTimeout(() => currentLetter.classList.remove('incorrect'), 200);
+  }
+});
+</script>
 </body>
 </html>
