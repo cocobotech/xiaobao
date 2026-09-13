@@ -1,0 +1,1037 @@
+<title>COCOBO 单词</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Noto+Sans:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+<style>
+:root{
+  --ground:#F2F6FB; --surface:#FFFFFF; --surface2:#E9EFF6; --ink:#1B2838; --muted:#5E6E82; --line:#D8E1EC;
+  --accent:#FF8A3D; --accent-ink:#FFFFFF; --accent-soft:#FFF0E4; --blue:#3D6BFF; --blue-soft:#E7EDFF;
+  --ok:#2FA36B; --ok-soft:#DFF5E9; --bad:#E0452E; --bad-soft:#FBE3DF;
+  --shadow:0 10px 30px rgba(27,40,56,.10), 0 2px 6px rgba(27,40,56,.06);
+  --radius:18px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141B25; --surface:#1D2734; --surface2:#26313F; --ink:#EEF3F9; --muted:#93A3B6; --line:#2E3B4C;
+    --accent:#FF9A55; --accent-ink:#1B1208; --accent-soft:#3A2717; --blue:#7C9BFF; --blue-soft:#25304D;
+    --ok:#4FC28A; --ok-soft:#1C3A2C; --bad:#F06A55; --bad-soft:#442119;
+    --shadow:0 10px 30px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141B25; --surface:#1D2734; --surface2:#26313F; --ink:#EEF3F9; --muted:#93A3B6; --line:#2E3B4C;
+  --accent:#FF9A55; --accent-ink:#1B1208; --accent-soft:#3A2717; --blue:#7C9BFF; --blue-soft:#25304D;
+  --ok:#4FC28A; --ok-soft:#1C3A2C; --bad:#F06A55; --bad-soft:#442119;
+  --shadow:0 10px 30px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"Nunito",-apple-system,"Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.ipa{font-family:"Noto Sans","Charis SIL","Doulos SIL","Segoe UI",sans-serif}
+/* 汉字：用衬线体，笔画结构更接近课本字形 */
+.hz{font-family:"Noto Serif SC","Songti SC","STSong","SimSun",serif;font-weight:600}
+.face .word.hz{font-size:clamp(72px,16vh,190px);letter-spacing:.04em;line-height:1.05}
+.type-meta .zh.hz{font-family:"Noto Serif SC","Songti SC",serif;font-size:40px;font-weight:600;line-height:1.1}
+.feedback .ans.hz{font-family:"Noto Serif SC","Songti SC",serif;font-size:30px;font-weight:600}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:minmax(150px,1fr) 5fr;height:100dvh;overflow:hidden}
+.side{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 14px 10px;border-bottom:1px solid var(--line)}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:18px;flex:none}
+.brand b{font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;letter-spacing:.2px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.tree{flex:1;overflow:auto;padding:8px 8px 16px}
+.tree-label{display:flex;align-items:center;gap:6px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding:9px 8px 6px;border-radius:10px;text-align:left}
+.tree-label:hover{background:var(--surface2);color:var(--ink)}
+.tree-label .chev{width:11px;flex:none;transition:transform .18s}
+.tgroup.open>.tree-label .chev{transform:rotate(90deg)}
+.tree-label span{flex:1;min-width:0}
+.tree-label em{font-style:normal;opacity:.7;letter-spacing:0}
+.tgroup-body{display:none;padding-bottom:4px}
+.tgroup.open .tgroup-body{display:block}
+.book{border-radius:12px;margin-bottom:4px}
+.book-head{display:flex;align-items:center;gap:6px;width:100%;padding:8px 8px;border-radius:12px;text-align:left}
+.book-head:hover{background:var(--surface2)}
+.book.active>.book-head{background:var(--accent-soft)}
+.book-head .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.book-head .name{flex:1;min-width:0;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.book-head .cnt{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.book.active>.book-head .cnt{color:var(--accent)}
+.side-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.side-foot button{padding:6px 10px;border-radius:10px;background:var(--surface2);font-weight:700;font-size:12px}
+
+/* ---------- palette dropdown ---------- */
+.pal{padding:10px 8px 4px;border-top:1px solid var(--line);position:relative}
+.pal-trigger{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:12px;background:var(--surface2);text-align:left}
+.pal-trigger:hover{filter:brightness(.97)}
+.pal-trigger .swatches{display:flex;flex:none}
+.pal-trigger .swatches i,.pal-opt .swatches i{display:block;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);margin-right:-5px}
+.pal-trigger .lab{flex:1;min-width:0;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pal-trigger .caret{width:12px;flex:none;color:var(--muted);transition:transform .2s}
+.pal[open] .pal-trigger .caret{transform:rotate(180deg)}
+.pal-menu{display:none;position:absolute;left:8px;right:8px;bottom:calc(100% - 4px);z-index:40;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px;max-height:52dvh;overflow:auto}
+.pal[open] .pal-menu{display:block}
+.pal-opt{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;text-align:left}
+.pal-opt:hover{background:var(--surface2)}
+.pal-opt .swatches{display:flex;flex:none}
+.pal-opt .txt{flex:1;min-width:0}
+.pal-opt .txt b{display:block;font-size:13px;font-weight:800;line-height:1.25;white-space:nowrap}
+.pal-opt .txt small{display:block;font-size:11px;color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal-opt .tick{width:14px;flex:none;color:var(--accent);opacity:0}
+.pal-opt.sel .tick{opacity:1}
+.pal-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px 6px}
+
+/* ---------- library loader ---------- */
+.book-head .src{font-size:10px;font-weight:800;padding:1px 5px;border-radius:5px;background:var(--blue-soft);color:var(--blue);flex:none}
+.lib{padding:4px 8px 0}
+.lib-btn{display:flex;align-items:center;gap:7px;width:100%;padding:8px 10px;border-radius:11px;font-size:13px;font-weight:700;color:var(--muted);border:1px dashed var(--line)}
+.lib-btn:hover{color:var(--ink);background:var(--surface2);border-style:solid}
+.lib-btn svg{width:15px;height:15px;flex:none}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,14,20,.5)}
+.modal.show{display:flex}
+.sheet{width:min(560px,100%);max-height:min(76dvh,640px);background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.sheet-top{display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--line)}
+.sheet-top h2{margin:0;font-family:"Fredoka",sans-serif;font-weight:600;font-size:19px}
+.sheet-top p{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:600}
+.sheet-top .x{margin-left:auto;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.sheet-top .x:hover{background:var(--surface2);color:var(--ink)}
+.sheet-body{padding:10px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.src-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);text-align:left;width:100%}
+.src-row:hover{background:var(--surface2)}
+.src-row .ic{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:16px}
+.src-row .info{flex:1;min-width:0}
+.src-row .info b{display:block;font-size:14px;font-weight:800}
+.src-row .info small{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-row .n{font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.src-row[disabled]{opacity:.5;pointer-events:none}
+.sheet-note{margin:0;padding:10px 20px 16px;font-size:12px;color:var(--muted);font-weight:600;border-top:1px solid var(--line);line-height:1.5}
+.sheet-note.warn{color:var(--bad)}
+.sheet-foot{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .7s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.no-ipa{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:var(--muted)}
+
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.topbar{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
+.tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:14px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;flex:none}
+.tab{padding:8px 16px;border-radius:10px;font-weight:800;font-size:14px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.tab svg{width:16px;height:16px}
+.tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.crumb{margin-left:auto;font-size:13px;color:var(--muted);font-weight:700;display:flex;gap:8px;align-items:center}
+.crumb .pill{padding:3px 10px;border-radius:999px;background:var(--surface2);font-variant-numeric:tabular-nums}
+.stage{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:16px}
+.pane{display:none;flex:1;min-height:0;width:100%;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.pane.active{display:flex}
+
+/* ---------- shared controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:14px;font-weight:800;font-size:15px;background:var(--surface);border:1px solid var(--line);transition:transform .08s,background .15s}
+.btn:hover{background:var(--surface2)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.icon{width:46px;height:46px;padding:0;border-radius:50%}
+.btn svg{width:20px;height:20px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted);padding:8px 12px;border-radius:12px}
+.toggle.on{color:var(--ink);background:var(--surface2)}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.progress{width:min(560px,100%);height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+/* ---------- flashcard ---------- */
+.card-wrap{perspective:1600px;width:min(620px,100%);aspect-ratio:8/5;max-height:62dvh}
+.card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px;border:1px solid var(--line)}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft)}
+.face .word{font-family:"Fredoka",sans-serif;font-weight:600;font-size:clamp(44px,9vw,92px);line-height:1;letter-spacing:.5px;text-wrap:balance;text-align:center}
+.face .hint{position:absolute;bottom:16px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.face .ipa{font-size:clamp(20px,3.6vw,32px);color:var(--muted)}
+.face .zh{font-size:clamp(30px,6vw,56px);font-weight:800;line-height:1.1}
+.face .tag{position:absolute;top:16px;left:20px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.face .idx{position:absolute;top:16px;right:20px;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.speak-btn{position:absolute;bottom:14px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.speak-btn svg{width:22px;height:22px}
+.speak-btn.playing{animation:pulse .8s infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+/* ---------- 3D 挤出效果：九种材质 ---------- */
+.fx-word{position:relative;display:inline-block}
+.card-wrap[data-fx] .fx-word{
+  color:var(--fx-side);
+  text-shadow:.014em .014em 0 var(--fx-side),.028em .028em 0 var(--fx-side),.042em .042em 0 var(--fx-side),
+    .056em .056em 0 var(--fx-side),.07em .07em 0 var(--fx-side),.084em .084em 0 var(--fx-side),
+    .098em .098em 0 var(--fx-edge),.112em .112em .1em rgba(0,0,0,.32),.13em .14em .28em rgba(0,0,0,.28);
+}
+.card-wrap[data-fx] .fx-word::before{
+  content:attr(data-word);position:absolute;left:0;top:0;width:100%;text-shadow:none;
+  color:transparent;background-image:var(--fx-face);-webkit-background-clip:text;background-clip:text;
+}
+.card-wrap[data-fx] .face{background:var(--fx-card)}
+.card-wrap[data-fx] .face .tag,.card-wrap[data-fx] .face .idx,.card-wrap[data-fx] .face .hint,.card-wrap[data-fx] .face .ipa{color:var(--fx-meta)}
+.card-wrap[data-fx] .face .zh{color:var(--fx-ink)}
+.card-wrap[data-fx] .speak-btn{background:var(--fx-btn,var(--accent));color:var(--fx-btn-ink,var(--accent-ink))}
+.fx-opt .prev[data-fx]{background:var(--fx-card)}
+.fx-opt .prev[data-fx] .fx-word{
+  color:var(--fx-side);
+  text-shadow:.02em .02em 0 var(--fx-side),.04em .04em 0 var(--fx-side),.06em .06em 0 var(--fx-side),.08em .08em 0 var(--fx-edge);
+}
+.fx-opt .prev[data-fx] .fx-word::before{
+  content:attr(data-word);position:absolute;left:0;top:0;width:100%;text-shadow:none;
+  color:transparent;background-image:var(--fx-face);-webkit-background-clip:text;background-clip:text;
+}
+
+[data-fx="classic"]{--fx-face:linear-gradient(170deg,color-mix(in srgb,var(--accent) 45%,#fff),var(--accent) 55%,color-mix(in srgb,var(--accent) 78%,#000));
+  --fx-side:var(--ink);--fx-edge:var(--ink);--fx-card:var(--surface);--fx-meta:var(--muted);--fx-ink:var(--ink)}
+[data-fx="gold"]{--fx-face:linear-gradient(172deg,#FFF6D2 0%,#F7DE8C 30%,#E3B23C 52%,#FBEFC0 58%,#C08A21 78%,#8A5F12 100%);
+  --fx-side:#6A4A10;--fx-edge:#3A2705;--fx-card:#191510;--fx-meta:#B7A77F;--fx-ink:#F6ECD2;--fx-btn:#E3B23C;--fx-btn-ink:#1B1405}
+[data-fx="rosegold"]{--fx-face:linear-gradient(172deg,#FFF0EA 0%,#F3C9BA 32%,#DE9B85 54%,#FBE2D8 60%,#B87560 82%,#8E5341 100%);
+  --fx-side:#7A4636;--fx-edge:#4A281C;--fx-card:#F8EDE8;--fx-meta:#9A7466;--fx-ink:#3A231B}
+[data-fx="steel"]{--fx-face:linear-gradient(172deg,#FBFDFF 0%,#DCE7F2 28%,#A5BCD3 50%,#F2F7FC 56%,#7A93AC 78%,#4E657D 100%);
+  --fx-side:#33455A;--fx-edge:#1B2734;--fx-card:#E7EFF7;--fx-meta:#5D7A8C;--fx-ink:#1E2C3A}
+[data-fx="candy"]{--fx-face:linear-gradient(172deg,#FFF0F7 0%,#FFC3DE 30%,#FF7FB6 52%,#FFE3F0 58%,#EE4E96 80%,#C92B70 100%);
+  --fx-side:#8E1F52;--fx-edge:#5C0F33;--fx-card:#FFF4F9;--fx-meta:#A9738C;--fx-ink:#4A1230}
+[data-fx="choco"]{--fx-face:linear-gradient(172deg,#E5C4A0 0%,#C79063 30%,#96603A 52%,#E0BA92 58%,#6E4222 80%,#4A2A13 100%);
+  --fx-side:#331D0D;--fx-edge:#1D1007;--fx-card:#F7F0E7;--fx-meta:#8C7259;--fx-ink:#33200F}
+[data-fx="jade"]{--fx-face:linear-gradient(172deg,#EFFBF5 0%,#B4EBD4 30%,#5FC7A2 52%,#DFF8EE 58%,#2E9B75 80%,#1B6B4F 100%);
+  --fx-side:#14563E;--fx-edge:#0A3325;--fx-card:#ECF8F3;--fx-meta:#5D8A79;--fx-ink:#123B2B}
+[data-fx="lava"]{--fx-face:linear-gradient(172deg,#FFE7B8 0%,#FFB65C 26%,#FF7A2F 50%,#FFD6A0 56%,#E8400F 80%,#A31F04 100%);
+  --fx-side:#6E1808;--fx-edge:#390A03;--fx-card:#1A1210;--fx-meta:#B58F7E;--fx-ink:#FBE9DF;--fx-btn:#FF7A2F;--fx-btn-ink:#1A0A03}
+[data-fx="graphite"]{--fx-face:linear-gradient(172deg,#C8D0DA 0%,#8C97A6 28%,#59636F 50%,#DCE3EB 56%,#39414B 80%,#20262E 100%);
+  --fx-side:#171C23;--fx-edge:#0A0D11;--fx-card:#EDF1F5;--fx-meta:#6B7684;--fx-ink:#1B2029}
+
+.fx{position:relative}
+.fx-menu{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);z-index:50;width:224px;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px;max-height:56dvh;overflow:auto}
+.fx[open] .fx-menu{display:block}
+.fx-opt{display:flex;align-items:center;gap:10px;width:100%;padding:7px 9px;border-radius:10px;text-align:left;font-size:13px;font-weight:700}
+.fx-opt:hover{background:var(--surface2)}
+.fx-opt .prev{width:40px;height:28px;border-radius:7px;flex:none;display:grid;place-items:center;background:var(--surface2);overflow:hidden}
+.fx-opt .prev .fx-word{font-family:"Fredoka",sans-serif;font-size:16px;font-weight:600;line-height:1}
+.fx-opt .tick{width:14px;flex:none;color:var(--accent);opacity:0;margin-left:auto}
+.fx-opt.sel .tick{opacity:1}
+/* emoji 图示 */
+.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
+.face .emo{font-size:clamp(30px,7vh,58px)}
+.emo-lg{font-size:clamp(56px,12vh,96px);min-height:1em}
+.type-meta .emo{font-size:26px}
+.wcard .emo{position:absolute;top:26px;right:11px;font-size:22px}
+body.no-emoji .emo{display:none!important}
+.emo:empty{display:none}
+
+/* 汉字卡正面的拼音 */
+.face .py{font-size:clamp(20px,4.2vh,34px);font-weight:600;color:var(--muted);letter-spacing:.06em;line-height:1}
+.card-wrap[data-fx] .face .py{color:var(--fx-meta)}
+
+/* ---------- 全部单词 ---------- */
+#pane-list{justify-content:flex-start;align-items:stretch;gap:12px;overflow:auto;padding:2px}
+.list-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;
+  background:var(--ground);padding:2px 2px 10px}
+.list-head b{font-family:"Fredoka",sans-serif;font-weight:600;font-size:20px}
+.list-sub{font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.list-search{margin-left:auto;width:min(240px,46vw);padding:9px 14px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600}
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:10px;padding-bottom:20px}
+.wcard{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+  background:var(--surface);text-align:left;position:relative;transition:border-color .15s,transform .08s}
+.wcard:hover{border-color:var(--accent)}
+.wcard:active{transform:scale(.98)}
+.wcard.playing{border-color:var(--accent);background:var(--accent-soft)}
+.wcard .w{font-family:"Fredoka",sans-serif;font-size:22px;font-weight:600;line-height:1.15;word-break:break-word}
+.wcard .w.hz{font-size:40px;line-height:1.1}
+.wcard .p{font-size:13px;color:var(--muted);font-weight:700}
+.wcard .m{font-size:13.5px;font-weight:700}
+.wcard .no{position:absolute;top:9px;right:11px;font-size:11px;font-weight:800;color:var(--muted);opacity:.7;font-variant-numeric:tabular-nums}
+.list-empty{padding:30px;text-align:center;color:var(--muted);font-weight:700}
+.nav{display:flex;align-items:center;gap:14px}
+.nav .count{font-weight:800;font-variant-numeric:tabular-nums;color:var(--muted);min-width:70px;text-align:center}
+
+/* ---------- dictation ---------- */
+.dict-card{width:min(640px,100%);background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:36px 32px 28px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.dict-card .sound{display:flex;align-items:center;gap:16px;cursor:pointer;padding:14px 26px;border-radius:20px;background:var(--blue-soft);transition:background .15s}
+.dict-card .sound:hover{filter:brightness(.97)}
+.dict-card .sound .ipa{font-size:44px;color:var(--ink)}
+.dict-card .sound .spk{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
+.dict-card .sound .spk svg{width:22px;height:22px}
+.dict-card .zh-hint{color:var(--muted);font-weight:700;font-size:15px;min-height:22px}
+.dict-input{width:min(420px,100%);font-family:"Fredoka",sans-serif;font-size:36px;font-weight:500;text-align:center;letter-spacing:.06em;padding:12px 18px;border-radius:16px;border:2px solid var(--line);background:var(--ground);color:var(--ink);transition:border-color .15s,background .15s}
+.dict-input::placeholder{color:var(--muted);opacity:.5;font-size:22px;letter-spacing:0;font-family:"Nunito",sans-serif}
+.dict-input.ok{border-color:var(--ok);background:var(--ok-soft)}
+.dict-input.bad{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.feedback{min-height:28px;font-weight:800;font-size:17px;display:flex;align-items:center;gap:8px}
+.feedback.ok{color:var(--ok)}.feedback.bad{color:var(--bad)}
+.feedback .ans{font-family:"Fredoka",sans-serif;font-size:22px;letter-spacing:.04em;color:var(--ink)}
+.score{display:flex;gap:18px;font-size:13px;font-weight:800;color:var(--muted)}
+.score b{color:var(--ink);font-variant-numeric:tabular-nums;font-size:15px}
+.score .g{color:var(--ok)}.score .r{color:var(--bad)}
+
+/* ---------- typing ---------- */
+.type-card{width:min(760px,100%);background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:32px;display:flex;flex-direction:column;align-items:center;gap:22px;cursor:text}
+.type-meta{display:flex;gap:14px;align-items:baseline;color:var(--muted);font-weight:700}
+.type-meta .zh{font-size:22px;color:var(--ink);font-weight:800}
+.letters{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-family:"Fredoka",sans-serif;font-size:clamp(44px,7vw,72px);font-weight:500;line-height:1}
+.letters span{position:relative;min-width:.62em;padding:6px 4px 10px;text-align:center;color:var(--muted);opacity:.55;border-bottom:4px solid var(--line);border-radius:4px;transition:color .1s,opacity .1s,border-color .1s}
+.letters span.sp{opacity:.3;min-width:.42em;border-color:transparent}
+.letters span.done{color:var(--ok);opacity:1;border-color:var(--ok)}
+.letters span.wrong{color:var(--bad);opacity:1;border-color:var(--bad);background:var(--bad-soft)}
+.letters span.cur{opacity:1;color:var(--ink);border-color:var(--accent)}
+.letters span.cur::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:var(--accent);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.type-stats{display:grid;grid-template-columns:repeat(4,auto);gap:26px;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.type-stats b{display:block;font-size:22px;color:var(--ink);letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+.type-stats .g b{color:var(--ok)}.type-stats .r b{color:var(--bad)}
+.type-hint{font-size:13px;color:var(--muted);font-weight:700}
+.type-input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.done-banner{display:none;width:min(640px,100%);text-align:center;padding:18px;border-radius:18px;background:var(--ok-soft);color:var(--ok);font-weight:800;font-size:18px}
+.done-banner.show{display:block}
+
+/* ---------- phone landscape (flashcards) ---------- */
+@media (max-height:520px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .side{border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:6px;padding:4px 8px}
+  .brand{padding:4px 6px;border:0}
+  .brand small,.tree-label,.side-foot,.book-head .cnt,.pal .pal-label{display:none}
+  .pal{border-top:0;padding:0;flex:none}
+  .lib{padding:0;flex:none}
+  .lib-btn{padding:6px 8px;font-size:0;gap:0}
+  .book-head .src{display:none}
+  .sheet{max-height:88dvh}
+  .pal-trigger{padding:6px 8px}.pal-trigger .lab{display:none}
+  .pal-menu{left:auto;right:6px;bottom:auto;top:calc(100% + 4px);width:210px}
+  .tree{display:flex;align-items:center;gap:4px;padding:0;overflow-x:auto;flex:1;min-width:0}
+  .tgroup{display:flex;align-items:center;gap:4px;flex:none}
+  .tgroup .tgroup-body,.tgroup.open .tgroup-body{display:flex;gap:4px;padding:0}
+  .tree{flex-wrap:nowrap}
+  .side{max-height:56px}
+  .side{height:auto;flex:none}
+  .main{min-height:0}
+  .book{margin:0;flex:none}
+  .book-head{padding:6px 10px}
+  .topbar{padding:6px 12px}
+  .tab{padding:5px 10px;font-size:13px}
+  .stage{padding:8px 12px;gap:8px}
+  .card-wrap{aspect-ratio:auto;height:100%;max-height:none;width:min(720px,100%);flex:1}
+  .face{border-radius:20px;padding:14px}
+  .face .word{font-size:clamp(40px,12vh,72px)}
+  .face .zh{font-size:clamp(26px,9vh,48px)}
+  .face .ipa{font-size:clamp(16px,4vh,24px)}
+  .face .hint{display:none}
+  .nav{gap:8px}.btn{padding:7px 14px;font-size:13px}.btn.icon{width:38px;height:38px}
+  .progress{display:none}
+  .flash-tools #fShuffle,.flash-tools #fAuto,.flash-tools .type-hint{display:none}
+  .flash-tools{gap:0}
+  .fx-menu{bottom:auto;top:calc(100% + 6px);max-height:44dvh}
+}
+@media (max-width:640px) and (min-height:521px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .side{border-right:0;border-bottom:1px solid var(--line);max-height:38dvh}
+  .tab{padding:7px 10px;font-size:13px}
+  .crumb{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .card{transition:none}.letters span.cur::after{animation:none}.speak-btn.playing{animation:none}
+}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div><b>COCOBO单词</b><small>Cocobo Words</small></div>
+    </div>
+    <nav class="tree" id="tree" aria-label="单词书"></nav>
+    <div class="lib">
+      <button class="lib-btn" id="libBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>加载词库</button>
+    </div>
+    <div class="pal" id="pal">
+      <div class="pal-menu" id="palMenu" role="listbox" aria-label="配色主题">
+        <div class="pal-label">配色主题</div>
+      </div>
+      <button class="pal-trigger" id="palTrigger" aria-haspopup="listbox" aria-expanded="false">
+        <span class="swatches" id="palTrigSw"></span>
+        <span class="lab" id="palTrigLab">蜜橙 Clementine</span>
+        <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="side-foot">
+      <span id="footInfo">已收录 0 词</span>
+      <button id="themeBtn" style="margin-left:auto" title="切换深色 / 浅色">🌓</button>
+    </div>
+  </aside>
+
+  <section class="main">
+    <div class="topbar">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-mode="flash" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/></svg>单词 Flash 卡</button>
+        <button class="tab" data-mode="dict" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 10v4M8 6v12M12 9v6M16 4v16M20 8v8"/></svg><span id="tabDictLab">根据读音写单词</span></button>
+        <button class="tab" data-mode="type" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>打字练习</button>
+        <button class="tab" data-mode="list" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>显示所有单词</button>
+      </div>
+      <div class="crumb"><span id="crumbBook">—</span><span class="pill" id="crumbCount">0 词</span></div>
+    </div>
+
+    <div class="stage">
+      <!-- FLASH -->
+      <div class="pane active" id="pane-flash">
+        <div class="card-wrap" id="cardWrap">
+          <div class="card" id="card" tabindex="0" role="button" aria-label="翻转卡片">
+            <div class="face front">
+              <span class="tag" id="fTag"></span><span class="idx" id="fIdx"></span>
+              <div class="emo" id="fEmo"></div>
+              <div class="py ipa" id="fPy"></div>
+              <div class="word fx-word" id="fWord">cat</div>
+              <div class="hint">点击卡片 · 听发音 · 看中文</div>
+              <button class="speak-btn" id="fSpeakFront" aria-label="发音" title="发音">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+              </button>
+            </div>
+            <div class="face back">
+              <span class="tag">中文</span><span class="idx" id="bIdx"></span>
+              <div class="emo" id="bEmo"></div>
+              <div class="word fx-word" id="bWord" style="font-size:clamp(28px,5vw,48px)">cat</div>
+              <div class="ipa" id="bIpa">/kæt/</div>
+              <div class="zh" id="bZh">猫</div>
+              <button class="speak-btn" id="fSpeakBack" aria-label="发音" title="发音">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="progress"><i id="fProg"></i></div>
+        <div class="nav">
+          <button class="btn icon" id="fPrev" aria-label="上一个"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 5-7 7 7 7"/></svg></button>
+          <span class="count" id="fCount">1 / 40</span>
+          <button class="btn icon" id="fNext" aria-label="下一个"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg></button>
+        </div>
+        <div class="toolbar flash-tools">
+          <button class="toggle" id="fShuffle">🔀 随机顺序</button>
+          <button class="toggle" id="fAuto">🔊 翻面自动发音</button>
+          <button class="toggle" id="fEmoji">😀 Emoji 显示</button>
+          <span class="fx" id="fx">
+            <div class="fx-menu" id="fxMenu" role="listbox" aria-label="3D 效果"></div>
+            <button class="toggle" id="fxTrigger" aria-haspopup="listbox" aria-expanded="false">🧊 3D 效果：<b id="fxLab">关闭</b></button>
+          </span>
+          <span class="type-hint">键盘：空格翻面 · ← → 切换</span>
+        </div>
+      </div>
+
+      <!-- DICTATION -->
+      <div class="pane" id="pane-dict">
+        <div class="dict-card">
+          <div class="emo emo-lg" id="dEmo"></div>
+          <div class="sound" id="dSound" role="button" tabindex="0" aria-label="播放发音">
+            <span class="spk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></span>
+            <span class="ipa" id="dIpa">/kæt/</span>
+          </div>
+          <div class="zh-hint" id="dZh"></div>
+          <input class="dict-input" id="dInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="听音，输入单词，按回车">
+          <div class="feedback" id="dFeedback"></div>
+          <div class="toolbar">
+            <button class="btn" id="dCheck">检查 ⏎</button>
+            <button class="btn" id="dReveal">显示答案</button>
+            <button class="btn primary" id="dNext">下一个 →</button>
+          </div>
+          <div class="score">
+            <span>第 <b id="dPos">1</b>/<b id="dTotal">40</b> 个</span>
+            <span>正确 <b class="g" id="dRight">0</b></span>
+            <span>错误 <b class="r" id="dWrong">0</b></span>
+            <button class="toggle" id="dHint">💡 显示中文提示</button>
+            <button class="toggle" id="dEmoji">😀 Emoji 显示</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TYPING -->
+      <div class="pane" id="pane-type">
+        <div class="type-card" id="typeCard">
+          <div class="type-meta"><span class="emo" id="tEmo"></span><span id="tPos">1 / 40</span><span class="zh" id="tZh">猫</span><span class="ipa" id="tIpa">/kæt/</span></div>
+          <div class="letters" id="tLetters"></div>
+          <div class="type-stats">
+            <div>速度<b id="tWpm">0</b>WPM</div>
+            <div class="g">正确<b id="tOk">0</b></div>
+            <div class="r">错误<b id="tBad">0</b></div>
+            <div>准确率<b id="tAcc">100%</b></div>
+          </div>
+          <div class="type-hint" id="tHint">直接开始打字 · 打对有清脆提示音，打错会提示并需重打该字母</div>
+          <div class="toolbar"><button class="btn" id="tSkip">跳过</button><button class="btn" id="tRestart">重新开始</button><button class="toggle on" id="tSound">🔔 按键声音</button></div>
+          <input class="type-input" id="tInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="打字输入">
+        </div>
+        <div class="done-banner" id="tDone"></div>
+      </div>
+
+      <!-- LIST -->
+      <div class="pane" id="pane-list">
+        <div class="list-head">
+          <b id="lTitle">全部单词</b>
+          <span class="list-sub" id="lSub"></span>
+          <input class="list-search" id="lSearch" type="search" placeholder="搜索…" autocomplete="off">
+          <button class="btn" id="lPlay">▶︎ 依次朗读</button>
+        </div>
+        <div class="word-grid" id="lGrid"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="libModal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="libTitle">
+    <div class="sheet-top">
+      <div><h2 id="libTitle">加载词库</h2><p id="libSub">cocobotech/xiaobao · apps/Vocabulary</p></div>
+      <button class="x" id="libClose" aria-label="关闭"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" width="18" height="18"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="sheet-body" id="libList"></div>
+    <p class="sheet-note" id="libNote"></p>
+    <div class="sheet-foot">
+      <button class="btn" id="libRefresh">↻ 重新连接 GitHub</button>
+      <button class="btn" id="libUpload">📂 打开本地文件</button>
+      <input type="file" id="libFile" accept=".json,.txt" hidden>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 单词书数据 ================= */
+const BOOKS = [
+  { id:'k', name:'幼儿园 Kindergarten', short:'幼儿园', color:'var(--accent)', words:[
+    ['cat','/kæt/','猫'],['dog','/dɔːɡ/','狗'],['sun','/sʌn/','太阳'],['red','/rɛd/','红色'],['blue','/bluː/','蓝色'],
+    ['big','/bɪɡ/','大的'],['run','/rʌn/','跑'],['jump','/dʒʌmp/','跳'],['apple','/ˈæpəl/','苹果'],['ball','/bɔːl/','球'],
+    ['book','/bʊk/','书'],['fish','/fɪʃ/','鱼'],['hat','/hæt/','帽子'],['milk','/mɪlk/','牛奶'],['mom','/mɑːm/','妈妈'],
+    ['dad','/dæd/','爸爸'],['one','/wʌn/','一'],['two','/tuː/','二'],['three','/θriː/','三'],['tree','/triː/','树'],
+    ['bird','/bɜːrd/','鸟'],['car','/kɑːr/','汽车'],['cup','/kʌp/','杯子'],['bed','/bɛd/','床'],['pig','/pɪɡ/','猪'],
+    ['egg','/ɛɡ/','鸡蛋'],['box','/bɑːks/','盒子'],['hand','/hænd/','手'],['leg','/lɛɡ/','腿'],['eye','/aɪ/','眼睛'],
+    ['moon','/muːn/','月亮'],['star','/stɑːr/','星星'],['go','/ɡoʊ/','去'],['see','/siː/','看见'],['like','/laɪk/','喜欢'],
+    ['yes','/jɛs/','是'],['no','/noʊ/','不'],['up','/ʌp/','向上'],['down','/daʊn/','向下'],['happy','/ˈhæpi/','快乐的']
+  ]},
+  { id:'g1', name:'一年级 1st Grade', short:'一年级', color:'var(--blue)', words:[
+    ['friend','/frɛnd/','朋友'],['school','/skuːl/','学校'],['teacher','/ˈtiːtʃər/','老师'],['water','/ˈwɔːtər/','水'],['house','/haʊs/','房子'],
+    ['green','/ɡriːn/','绿色'],['yellow','/ˈjɛloʊ/','黄色'],['little','/ˈlɪtəl/','小的'],['play','/pleɪ/','玩'],['read','/riːd/','读'],
+    ['write','/raɪt/','写'],['sing','/sɪŋ/','唱歌'],['family','/ˈfæməli/','家庭'],['mother','/ˈmʌðər/','母亲'],['father','/ˈfɑːðər/','父亲'],
+    ['sister','/ˈsɪstər/','姐妹'],['brother','/ˈbrʌðər/','兄弟'],['rabbit','/ˈræbɪt/','兔子'],['flower','/ˈflaʊər/','花'],['garden','/ˈɡɑːrdən/','花园'],
+    ['morning','/ˈmɔːrnɪŋ/','早晨'],['night','/naɪt/','夜晚'],['rain','/reɪn/','雨'],['snow','/snoʊ/','雪'],['cloud','/klaʊd/','云'],
+    ['window','/ˈwɪndoʊ/','窗户'],['door','/dɔːr/','门'],['chair','/tʃɛr/','椅子'],['table','/ˈteɪbəl/','桌子'],['bread','/brɛd/','面包'],
+    ['orange','/ˈɔːrɪndʒ/','橙子'],['banana','/bəˈnænə/','香蕉'],['monkey','/ˈmʌŋki/','猴子'],['elephant','/ˈɛlɪfənt/','大象'],['lion','/ˈlaɪən/','狮子'],
+    ['tiger','/ˈtaɪɡər/','老虎'],['kind','/kaɪnd/','善良的'],['help','/hɛlp/','帮助'],['thank','/θæŋk/','感谢'],['please','/pliːz/','请'],
+    ['again','/əˈɡɛn/','再次'],['because','/bɪˈkɔːz/','因为']
+  ]}
+].map(b=>({...b,builtin:true,cat:'en',lang:'en',words:b.words.map(([en,ipa,zh])=>({en,ipa,zh}))}));
+
+/* ===== 汉字书：[汉字, 拼音(无声调), 拼音(带声调), 释义] ===== */
+const HANZI=[
+  {id:'hz1',name:'小学一年级 汉字',short:'一年级字',color:'var(--accent)',rows:[["一","yi","yī","数字1"],["二","er","èr","数字2"],["三","san","sān","数字3"],["四","si","sì","数字4"],["五","wu","wǔ","数字5"],["六","liu","liù","数字6"],["七","qi","qī","数字7"],["八","ba","bā","数字8"],["九","jiu","jiǔ","数字9"],["十","shi","shí","数字10"],["上","shang","shàng","上面"],["下","xia","xià","下面"],["人","ren","rén","人类"],["口","kou","kǒu","嘴巴"],["目","mu","mù","眼睛"],["耳","er","ěr","耳朵"],["手","shou","shǒu","手"],["足","zu","zú","脚"],["日","ri","rì","太阳/天"],["月","yue","yuè","月亮/月份"],["水","shui","shuǐ","水"],["火","huo","huǒ","火"],["山","shan","shān","山"],["石","shi","shí","石头"],["田","tian","tián","田地"],["土","tu","tǔ","泥土"],["禾","he","hé","禾苗"],["米","mi","mǐ","大米"],["大","da","dà","大的"],["小","xiao","xiǎo","小的"],["多","duo","duō","多的"],["少","shao","shǎo","少的"],["牛","niu","niú","牛"],["羊","yang","yáng","羊"],["马","ma","mǎ","马"],["鸟","niao","niǎo","鸟"],["鱼","yu","yú","鱼"],["虫","chong","chóng","虫子"],["木","mu","mù","树木"],["林","lin","lín","树林"],["早","zao","zǎo","早上"],["中","zhong","zhōng","中间"],["千","qian","qiān","一千"],["力","li","lì","力气"],["云","yun","yún","云彩"],["雨","yu","yǔ","下雨"],["风","feng","fēng","风"],["天","tian","tiān","天空"],["白","bai","bái","白色"],["头","tou","tóu","头"],["我","wo","wǒ","我"],["你","ni","nǐ","你"],["他","ta","tā","他"],["来","lai","lái","过来"],["去","qu","qù","离开"],["出","chu","chū","出去"],["入","ru","rù","进入"],["开","kai","kāi","打开"],["门","men","mén","门"],["心","xin","xīn","心"]]},
+  {id:'hz2',name:'小学二年级 汉字',short:'二年级字',color:'var(--blue)',rows:[["春","chun","chūn","春天"],["夏","xia","xià","夏天"],["秋","qiu","qiū","秋天"],["冬","dong","dōng","冬天"],["雪","xue","xuě","雪"],["花","hua","huā","花"],["草","cao","cǎo","草"],["树","shu","shù","树"],["叶","ye","yè","叶子"],["江","jiang","jiāng","江河"],["河","he","hé","河流"],["湖","hu","hú","湖泊"],["海","hai","hǎi","大海"],["桥","qiao","qiáo","桥"],["路","lu","lù","道路"],["城","cheng","chéng","城市"],["乡","xiang","xiāng","乡村"],["家","jia","jiā","家"],["国","guo","guó","国家"],["学","xue","xué","学习"],["校","xiao","xiào","学校"],["书","shu","shū","书本"],["本","ben","běn","本子"],["笔","bi","bǐ","笔"],["纸","zhi","zhǐ","纸"],["朋","peng","péng","朋友"],["友","you","yǒu","友好"],["老","lao","lǎo","年老"],["师","shi","shī","老师"],["同","tong","tóng","相同"],["读","du","dú","阅读"],["写","xie","xiě","书写"],["说","shuo","shuō","说话"],["话","hua","huà","话语"],["听","ting","tīng","听见"],["看","kan","kàn","看见"],["走","zou","zǒu","行走"],["跑","pao","pǎo","奔跑"],["飞","fei","fēi","飞翔"],["唱","chang","chàng","唱歌"],["歌","ge","gē","歌曲"],["画","hua","huà","画画"],["时","shi","shí","时间"],["间","jian","jiān","中间"],["年","nian","nián","年份"],["岁","sui","suì","岁数"],["明","ming","míng","明亮"],["亮","liang","liàng","光亮"],["黑","hei","hēi","黑色"],["高","gao","gāo","高的"],["低","di","dī","低的"],["长","chang","cháng","长的"],["短","duan","duǎn","短的"],["新","xin","xīn","新的"],["旧","jiu","jiù","旧的"],["前","qian","qián","前面"],["后","hou","hòu","后面"],["东","dong","dōng","东方"],["西","xi","xī","西方"],["南","nan","nán","南方"],["北","bei","běi","北方"]]}
+];
+HANZI.forEach(b=>BOOKS.push({id:b.id,name:b.name,short:b.short,color:b.color,cat:'zh',lang:'zh',builtin:true,
+  words:b.rows.map(([hz,py,tone,mean])=>({en:py,ipa:tone,zh:mean,hz}))}));
+
+/* ===== 默认词条的 emoji（内置英语/汉字书用） ===== */
+const EMOJI={"cat":"🐱","dog":"🐶","sun":"☀️","red":"🔴","blue":"🔵","big":"🐘","run":"🏃","jump":"🤸","apple":"🍎","ball":"⚽","book":"📖","fish":"🐟","hat":"🧢","milk":"🥛","mom":"👩","dad":"👨","one":"1️⃣","two":"2️⃣","three":"3️⃣","tree":"🌳","bird":"🐦","car":"🚗","cup":"☕","bed":"🛏️","pig":"🐷","egg":"🥚","box":"📦","hand":"✋","leg":"🦵","eye":"👁️","moon":"🌙","star":"⭐","go":"🚶","see":"👀","like":"❤️","yes":"✅","no":"❌","up":"⬆️","down":"⬇️","happy":"😊","friend":"🧑‍🤝‍🧑","school":"🏫","teacher":"🧑‍🏫","water":"💧","house":"🏠","green":"🟢","yellow":"🟡","little":"🐜","play":"🧸","read":"📖","write":"✍️","sing":"🎤","family":"👨‍👩‍👧","mother":"👩","father":"👨","sister":"👧","brother":"👦","rabbit":"🐰","flower":"🌸","garden":"🌷","morning":"🌅","night":"🌃","rain":"🌧️","snow":"❄️","cloud":"☁️","window":"🪟","door":"🚪","chair":"🪑","table":"🪑","bread":"🍞","orange":"🍊","banana":"🍌","monkey":"🐵","elephant":"🐘","lion":"🦁","tiger":"🐯","kind":"💛","help":"🤝","thank":"🙏","please":"🙇","again":"🔁","because":"🧩","一":"1️⃣","二":"2️⃣","三":"3️⃣","四":"4️⃣","五":"5️⃣","六":"6️⃣","七":"7️⃣","八":"8️⃣","九":"9️⃣","十":"🔟","上":"⬆️","下":"⬇️","人":"🧍","口":"👄","目":"👁️","耳":"👂","手":"✋","足":"🦶","日":"☀️","月":"🌙","水":"💧","火":"🔥","山":"⛰️","石":"🪨","田":"🌾","土":"🟫","禾":"🌾","米":"🍚","大":"🐘","小":"🐜","多":"➕","少":"➖","牛":"🐮","羊":"🐑","马":"🐴","鸟":"🐦","鱼":"🐟","虫":"🐛","木":"🌳","林":"🌲","早":"🌅","中":"🎯","千":"🔢","力":"💪","云":"☁️","雨":"🌧️","风":"💨","天":"🌤️","白":"⚪","头":"🗣️","我":"🙋","你":"👉","他":"👤","来":"➡️","去":"⬅️","出":"📤","入":"📥","开":"🔓","门":"🚪","心":"❤️","春":"🌸","夏":"☀️","秋":"🍁","冬":"⛄","雪":"❄️","花":"🌺","草":"🌿","树":"🌳","叶":"🍃","江":"🌊","河":"🏞️","湖":"🏞️","海":"🌊","桥":"🌉","路":"🛣️","城":"🏙️","乡":"🏘️","家":"🏠","国":"🏳️","学":"📚","校":"🏫","书":"📕","本":"📓","笔":"✏️","纸":"📄","朋":"🧑‍🤝‍🧑","友":"🤝","老":"👴","师":"🧑‍🏫","同":"🟰","读":"📖","写":"✍️","说":"🗣️","话":"💬","听":"👂","看":"👀","走":"🚶","跑":"🏃","飞":"🕊️","唱":"🎤","歌":"🎵","画":"🎨","时":"⏰","间":"↔️","年":"📅","岁":"🎂","明":"💡","亮":"✨","黑":"⬛","高":"⬆️","低":"⬇️","长":"📏","短":"📐","新":"🆕","旧":"📦","前":"⏩","后":"⏪","东":"🧭","西":"🧭","南":"🧭","北":"🧭"};
+
+/* ===== 小学 2–6 年级英语：[单词, 音标, 中文, emoji] ===== */
+const EN_GRADES=[
+  {id:'g2',name:'二年级 2nd Grade',short:'二年级',rows:[["breakfast","/ˈbrɛkfəst/","早餐","🍳"],["lunch","/lʌntʃ/","午餐","🍱"],["dinner","/ˈdɪnər/","晚餐","🍽️"],["cheese","/tʃiz/","奶酪","🧀"],["juice","/dʒus/","果汁","🧃"],["soup","/sup/","汤","🍲"],["rice","/raɪs/","米饭","🍚"],["noodle","/ˈnudəl/","面条","🍜"],["candy","/ˈkændi/","糖果","🍬"],["cookie","/ˈkʊki/","饼干","🍪"],["bedroom","/ˈbɛdrum/","卧室","🛏️"],["kitchen","/ˈkɪtʃən/","厨房","🍳"],["bathroom","/ˈbæθrum/","浴室","🛁"],["clock","/klɑk/","钟","🕐"],["lamp","/læmp/","台灯","💡"],["sofa","/ˈsoʊfə/","沙发","🛋️"],["mirror","/ˈmɪrər/","镜子","🪞"],["spoon","/spun/","勺子","🥄"],["fork","/fɔrk/","叉子","🍴"],["knife","/naɪf/","刀","🔪"],["plate","/pleɪt/","盘子","🍽️"],["bottle","/ˈbɑtəl/","瓶子","🍾"],["basket","/ˈbæskət/","篮子","🧺"],["umbrella","/əmˈbrɛlə/","雨伞","☂️"],["shoes","/ʃuz/","鞋子","👟"],["socks","/sɑks/","袜子","🧦"],["shirt","/ʃɜrt/","衬衫","👕"],["pants","/pænts/","裤子","👖"],["coat","/koʊt/","外套","🧥"],["dress","/drɛs/","连衣裙","👗"],["glasses","/ˈɡlæsəz/","眼镜","👓"],["watch","/wɑtʃ/","手表","⌚"],["doctor","/ˈdɑktər/","医生","🩺"],["nurse","/nɜrs/","护士","💉"],["farmer","/ˈfɑrmər/","农民","👨‍🌾"],["driver","/ˈdraɪvər/","司机","🚗"],["police","/pəˈlis/","警察","👮"],["cook","/kʊk/","厨师","👨‍🍳"],["train","/treɪn/","火车","🚆"],["bus","/bʌs/","公共汽车","🚌"],["plane","/pleɪn/","飞机","✈️"],["boat","/boʊt/","小船","⛵"],["bike","/baɪk/","自行车","🚲"],["street","/strit/","街道","🛣️"],["park","/pɑrk/","公园","🏞️"],["shop","/ʃɑp/","商店","🏪"],["hospital","/ˈhɑspɪtəl/","医院","🏥"],["zoo","/zu/","动物园","🦁"],["farm","/fɑrm/","农场","🚜"],["beach","/bitʃ/","沙滩","🏖️"],["mountain","/ˈmaʊntən/","山","⛰️"],["river","/ˈrɪvər/","河流","🌊"],["lake","/leɪk/","湖泊","🏞️"],["forest","/ˈfɔrəst/","森林","🌲"]]},
+  {id:'g3',name:'三年级 3rd Grade',short:'三年级',rows:[["weather","/ˈwɛðər/","天气","🌤️"],["sunny","/ˈsʌni/","晴朗的","☀️"],["cloudy","/ˈklaʊdi/","多云的","☁️"],["rainy","/ˈreɪni/","下雨的","🌧️"],["windy","/ˈwɪndi/","有风的","💨"],["snowy","/ˈsnoʊi/","下雪的","❄️"],["storm","/stɔrm/","暴风雨","⛈️"],["season","/ˈsizən/","季节","🍂"],["spring","/sprɪŋ/","春天","🌸"],["summer","/ˈsʌmər/","夏天","🏖️"],["autumn","/ˈɔtəm/","秋天","🍁"],["winter","/ˈwɪntər/","冬天","⛄"],["holiday","/ˈhɑlədeɪ/","假日","🎉"],["birthday","/ˈbɜrθdeɪ/","生日","🎂"],["present","/ˈprɛzənt/","礼物","🎁"],["party","/ˈpɑrti/","聚会","🥳"],["music","/ˈmjuzɪk/","音乐","🎵"],["song","/sɔŋ/","歌曲","🎶"],["dance","/dæns/","跳舞","💃"],["draw","/drɔ/","画画","🎨"],["paint","/peɪnt/","颜料","🖌️"],["story","/ˈstɔri/","故事","📖"],["letter","/ˈlɛtər/","信件","✉️"],["question","/ˈkwɛstʃən/","问题","❓"],["answer","/ˈænsər/","答案","✅"],["homework","/ˈhoʊmwɜrk/","作业","📝"],["lesson","/ˈlɛsən/","课程","📚"],["classroom","/ˈklæsrum/","教室","🏫"],["library","/ˈlaɪbrɛri/","图书馆","📚"],["science","/ˈsaɪəns/","科学","🔬"],["math","/mæθ/","数学","➗"],["history","/ˈhɪstəri/","历史","🏛️"],["computer","/kəmˈpjutər/","电脑","💻"],["phone","/foʊn/","电话","📱"],["camera","/ˈkæmərə/","相机","📷"],["money","/ˈmʌni/","钱","💰"],["market","/ˈmɑrkət/","市场","🛒"],["ticket","/ˈtɪkət/","票","🎫"],["clothes","/kloʊðz/","衣服","👚"],["hungry","/ˈhʌŋɡri/","饿的","🍽️"],["thirsty","/ˈθɜrsti/","渴的","🥤"],["tired","/ˈtaɪərd/","累的","😴"],["angry","/ˈæŋɡri/","生气的","😠"],["sad","/sæd/","伤心的","😢"],["afraid","/əˈfreɪd/","害怕的","😨"],["excited","/ɪkˈsaɪtəd/","兴奋的","🤩"],["strong","/strɔŋ/","强壮的","💪"],["quiet","/ˈkwaɪət/","安静的","🤫"],["loud","/laʊd/","大声的","📢"],["clean","/klin/","干净的","🧼"],["dirty","/ˈdɜrti/","脏的","🧽"],["early","/ˈɜrli/","早的","⏰"],["late","/leɪt/","迟的","⏳"]]},
+  {id:'g4',name:'四年级 4th Grade',short:'四年级',rows:[["animal","/ˈænəməl/","动物","🐾"],["insect","/ˈɪnsɛkt/","昆虫","🐛"],["butterfly","/ˈbʌtərflaɪ/","蝴蝶","🦋"],["spider","/ˈspaɪdər/","蜘蛛","🕷️"],["dolphin","/ˈdɑlfən/","海豚","🐬"],["whale","/weɪl/","鲸鱼","🐳"],["penguin","/ˈpɛŋɡwən/","企鹅","🐧"],["camel","/ˈkæməl/","骆驼","🐪"],["giraffe","/dʒəˈræf/","长颈鹿","🦒"],["kangaroo","/kæŋɡəˈru/","袋鼠","🦘"],["dinosaur","/ˈdaɪnəsɔr/","恐龙","🦕"],["planet","/ˈplænət/","行星","🪐"],["earth","/ɜrθ/","地球","🌍"],["space","/speɪs/","太空","🌌"],["rocket","/ˈrɑkət/","火箭","🚀"],["astronaut","/ˈæstrənɑt/","宇航员","👨‍🚀"],["telescope","/ˈtɛləskoʊp/","望远镜","🔭"],["desert","/ˈdɛzərt/","沙漠","🏜️"],["island","/ˈaɪlənd/","岛屿","🏝️"],["volcano","/vɑlˈkeɪnoʊ/","火山","🌋"],["temperature","/ˈtɛmprətʃər/","温度","🌡️"],["experiment","/ɪkˈspɛrəmənt/","实验","🧪"],["machine","/məˈʃin/","机器","⚙️"],["electricity","/ɪlɛkˈtrɪsəti/","电","⚡"],["energy","/ˈɛnərdʒi/","能量","🔋"],["magnet","/ˈmæɡnət/","磁铁","🧲"],["metal","/ˈmɛtəl/","金属","🔩"],["plastic","/ˈplæstɪk/","塑料","♻️"],["wooden","/ˈwʊdən/","木制的","🪵"],["build","/bɪld/","建造","🏗️"],["invent","/ɪnˈvɛnt/","发明","💡"],["discover","/dɪˈskʌvər/","发现","🔍"],["explore","/ɪkˈsplɔr/","探索","🧭"],["travel","/ˈtrævəl/","旅行","🧳"],["journey","/ˈdʒɜrni/","旅程","🗺️"],["adventure","/ædˈvɛntʃər/","冒险","🏕️"],["brave","/breɪv/","勇敢的","🦁"],["careful","/ˈkɛrfəl/","小心的","⚠️"],["important","/ɪmˈpɔrtənt/","重要的","❗"],["difficult","/ˈdɪfəkəlt/","困难的","😣"],["famous","/ˈfeɪməs/","著名的","🌟"],["different","/ˈdɪfərənt/","不同的","🔀"],["favorite","/ˈfeɪvərɪt/","最喜欢的","❤️"],["remember","/rɪˈmɛmbər/","记得","🧠"],["forget","/fərˈɡɛt/","忘记","🤔"],["understand","/ʌndərˈstænd/","理解","💡"],["practice","/ˈpræktəs/","练习","🏋️"],["improve","/ɪmˈpruv/","提高","📈"],["choose","/tʃuz/","选择","✔️"],["decide","/dɪˈsaɪd/","决定","⚖️"],["promise","/ˈprɑməs/","承诺","🤝"],["believe","/bɪˈliv/","相信","🙏"],["imagine","/ɪˈmædʒən/","想象","💭"]]},
+  {id:'g5',name:'五年级 5th Grade',short:'五年级',rows:[["environment","/ɪnˈvaɪrənmənt/","环境","🌍"],["pollution","/pəˈluʃən/","污染","🏭"],["recycle","/riˈsaɪkəl/","回收","♻️"],["protect","/prəˈtɛkt/","保护","🛡️"],["nature","/ˈneɪtʃər/","大自然","🌿"],["ocean","/ˈoʊʃən/","海洋","🌊"],["climate","/ˈklaɪmət/","气候","🌡️"],["population","/pɑpjəˈleɪʃən/","人口","👥"],["culture","/ˈkʌltʃər/","文化","🎭"],["tradition","/trəˈdɪʃən/","传统","🏮"],["festival","/ˈfɛstəvəl/","节日","🎊"],["custom","/ˈkʌstəm/","习俗","🧧"],["language","/ˈlæŋɡwədʒ/","语言","💬"],["translate","/trænzˈleɪt/","翻译","🔤"],["ancient","/ˈeɪntʃənt/","古代的","🏺"],["modern","/ˈmɑdərn/","现代的","🏙️"],["century","/ˈsɛntʃəri/","世纪","📅"],["invention","/ɪnˈvɛnʃən/","发明物","💡"],["technology","/tɛkˈnɑlədʒi/","科技","🤖"],["robot","/ˈroʊbɑt/","机器人","🤖"],["internet","/ˈɪntərnɛt/","互联网","🌐"],["message","/ˈmɛsədʒ/","消息","💬"],["program","/ˈproʊɡræm/","程序","💻"],["design","/dɪˈzaɪn/","设计","✏️"],["create","/kriˈeɪt/","创造","✨"],["develop","/dɪˈvɛləp/","发展","📈"],["success","/səkˈsɛs/","成功","🏆"],["failure","/ˈfeɪljər/","失败","❌"],["courage","/ˈkɜrədʒ/","勇气","🦁"],["patience","/ˈpeɪʃəns/","耐心","⏳"],["honest","/ˈɑnəst/","诚实的","🤝"],["polite","/pəˈlaɪt/","有礼貌的","🙇"],["respect","/rɪˈspɛkt/","尊重","🙏"],["support","/səˈpɔrt/","支持","🤲"],["volunteer","/vɑlənˈtɪr/","志愿者","🙋"],["community","/kəˈmjunəti/","社区","🏘️"],["neighbor","/ˈneɪbər/","邻居","🏡"],["stranger","/ˈstreɪndʒər/","陌生人","🚶"],["opinion","/əˈpɪnjən/","观点","💭"],["reason","/ˈrizən/","原因","🧩"],["example","/ɪɡˈzæmpəl/","例子","📄"],["compare","/kəmˈpɛr/","比较","⚖️"],["describe","/dɪˈskraɪb/","描述","🗣️"],["explain","/ɪkˈspleɪn/","解释","🗨️"],["suggest","/səˈdʒɛst/","建议","💡"],["receive","/rəˈsiv/","收到","📥"],["provide","/prəˈvaɪd/","提供","📦"],["prepare","/priˈpɛr/","准备","🎒"],["continue","/kənˈtɪnju/","继续","➡️"],["complete","/kəmˈplit/","完成","✅"]]},
+  {id:'g6',name:'六年级 6th Grade',short:'六年级',rows:[["knowledge","/ˈnɑlədʒ/","知识","📚"],["education","/ɛdʒəˈkeɪʃən/","教育","🎓"],["university","/junəˈvɜrsəti/","大学","🏛️"],["graduate","/ˈɡrædʒəwət/","毕业","🧑‍🎓"],["career","/kəˈrɪr/","职业","💼"],["engineer","/ˈɛndʒənɪr/","工程师","👷"],["scientist","/ˈsaɪəntɪst/","科学家","🔬"],["architect","/ˈɑrkətɛkt/","建筑师","📐"],["lawyer","/ˈlɔjər/","律师","⚖️"],["journalist","/ˈdʒɜrnələst/","记者","📰"],["athlete","/ˈæθlit/","运动员","🏃"],["musician","/mjuˈzɪʃən/","音乐家","🎼"],["achievement","/əˈtʃivmənt/","成就","🏅"],["opportunity","/ɑpərˈtunəti/","机会","🚪"],["challenge","/ˈtʃæləndʒ/","挑战","🧗"],["solution","/səˈluʃən/","解决办法","🔑"],["problem","/ˈprɑbləm/","难题","❗"],["research","/riˈsɜrtʃ/","研究","🔬"],["evidence","/ˈɛvədəns/","证据","🔎"],["analyze","/ˈænəlaɪz/","分析","📊"],["measure","/ˈmɛʒər/","测量","📏"],["increase","/ɪnˈkris/","增加","📈"],["decrease","/dɪˈkris/","减少","📉"],["average","/ˈævərɪdʒ/","平均","➗"],["percent","/pərˈsɛnt/","百分比","💯"],["graph","/ɡræf/","图表","📊"],["result","/rɪˈzʌlt/","结果","🎯"],["conclusion","/kənˈkluʒən/","结论","🏁"],["organize","/ˈɔrɡənaɪz/","组织","🗂️"],["manage","/ˈmænədʒ/","管理","🗓️"],["communicate","/kəˈmjunəkeɪt/","交流","📡"],["cooperate","/koʊˈɑpəreɪt/","合作","🤝"],["compete","/kəmˈpit/","竞争","🥇"],["independent","/ɪndɪˈpɛndənt/","独立的","🕊️"],["confident","/ˈkɑnfədənt/","自信的","😎"],["curious","/ˈkjʊriəs/","好奇的","🧐"],["creative","/kriˈeɪtɪv/","有创意的","🎨"],["generous","/ˈdʒɛnərəs/","慷慨的","🎁"],["responsible","/riˈspɑnsəbəl/","负责的","✅"],["necessary","/ˈnɛsəsɛri/","必要的","❗"],["possible","/ˈpɑsəbəl/","可能的","🔓"],["available","/əˈveɪləbəl/","可用的","🟢"],["serious","/ˈsɪriəs/","严肃的","😐"],["peaceful","/ˈpisfəl/","和平的","🕊️"],["valuable","/ˈvæljəbəl/","宝贵的","💎"],["freedom","/ˈfridəm/","自由","🕊️"],["justice","/ˈdʒʌstəs/","正义","⚖️"],["purpose","/ˈpɜrpəs/","目的","🎯"],["future","/ˈfjutʃər/","未来","🔮"],["memory","/ˈmɛməri/","记忆","🧠"],["dream","/drim/","梦想","🌙"],["effort","/ˈɛfərt/","努力","💪"],["progress","/ˈprɑɡrɛs/","进步","📈"]]}
+];
+EN_GRADES.forEach((b,k)=>BOOKS.push({id:b.id,name:b.name,short:b.short,color:k%2?'var(--blue)':'var(--accent)',cat:'en',lang:'en',builtin:true,
+  words:b.rows.map(([en,ipa,zh,emo])=>({en,ipa,zh,em:emo}))}));
+
+/* ===== 小学 3–6 年级汉字：[汉字, 拼音, 带调拼音, 释义, emoji] ===== */
+const HZ_GRADES=[
+  {id:'hz3',name:'小学三年级 汉字',short:'三年级字',rows:[["爸","ba","bà","爸爸","👨"],["妈","ma","mā","妈妈","👩"],["哥","ge","gē","哥哥","🧑"],["姐","jie","jiě","姐姐","👧"],["弟","di","dì","弟弟","👦"],["妹","mei","mèi","妹妹","👧"],["爷","ye","yé","爷爷","👴"],["奶","nai","nǎi","奶奶","👵"],["叔","shu","shū","叔叔",""],["姑","gu","gū","姑姑",""],["脸","lian","liǎn","脸","😊"],["眼","yan","yǎn","眼睛","👁️"],["鼻","bi","bí","鼻子","👃"],["嘴","zui","zuǐ","嘴巴","👄"],["牙","ya","yá","牙齿","🦷"],["肩","jian","jiān","肩膀",""],["背","bei","bèi","后背",""],["腿","tui","tuǐ","腿","🦵"],["脚","jiao","jiǎo","脚","🦶"],["晚","wan","wǎn","晚上","🌙"],["午","wu","wǔ","中午","🌞"],["分","fen","fēn","分钟","⏱️"],["秒","miao","miǎo","秒","⏱️"],["刻","ke","kè","一刻钟",""],["周","zhou","zhōu","星期","📅"],["星","xing","xīng","星星","⭐"],["期","qi","qī","日期","📅"],["饭","fan","fàn","米饭","🍚"],["菜","cai","cài","蔬菜/菜","🥬"],["汤","tang","tāng","汤","🍲"],["茶","cha","chá","茶","🍵"],["面","mian","miàn","面条","🍜"],["蛋","dan","dàn","鸡蛋","🥚"],["肉","rou","ròu","肉","🍖"],["果","guo","guǒ","水果","🍎"],["糖","tang","táng","糖","🍬"],["衣","yi","yī","衣服","👕"],["裤","ku","kù","裤子","👖"],["鞋","xie","xié","鞋子","👟"],["帽","mao","mào","帽子","🧢"],["袜","wa","wà","袜子","🧦"],["房","fang","fáng","房子","🏠"],["屋","wu","wū","屋子","🏡"],["床","chuang","chuáng","床","🛏️"],["桌","zhuo","zhuō","桌子","🪑"],["椅","yi","yǐ","椅子","🪑"],["灯","deng","dēng","灯","💡"],["窗","chuang","chuāng","窗户","🪟"],["车","che","chē","车子","🚗"],["船","chuan","chuán","船","⛵"],["玩","wan","wán","玩耍","🧸"],["笑","xiao","xiào","笑","😄"],["哭","ku","kū","哭","😭"],["跳","tiao","tiào","跳","🤸"],["买","mai","mǎi","买东西","🛒"],["卖","mai","mài","卖东西","🏪"],["钱","qian","qián","钱","💰"],["店","dian","diàn","商店","🏬"],["爱","ai","ài","喜爱","❤️"],["想","xiang","xiǎng","想念/思考","💭"]]},
+  {id:'hz4',name:'小学四年级 汉字',short:'四年级字',rows:[["左","zuo","zuǒ","左边","⬅️"],["右","you","yòu","右边","➡️"],["内","nei","nèi","里面","📥"],["外","wai","wài","外面","📤"],["远","yuan","yuǎn","远的","🔭"],["近","jin","jìn","近的","🔍"],["深","shen","shēn","深的","🌊"],["浅","qian","qiǎn","浅的",""],["宽","kuan","kuān","宽的",""],["窄","zhai","zhǎi","窄的",""],["厚","hou","hòu","厚的",""],["薄","bao","báo","薄的",""],["轻","qing","qīng","轻的",""],["重","zhong","zhòng","重的",""],["冷","leng","lěng","冷的","🥶"],["热","re","rè","热的","🥵"],["温","wen","wēn","温暖","♨️"],["凉","liang","liáng","凉爽","🧊"],["干","gan","gàn","干的","🏜️"],["湿","shi","shī","湿的","💧"],["根","gen","gēn","树根","🌱"],["茎","jing","jīng","茎",""],["枝","zhi","zhī","树枝","🌿"],["种","zhong","zhǒng","种子","🌰"],["苗","miao","miáo","幼苗","🌱"],["森","sen","sēn","森林","🌲"],["竹","zhu","zhú","竹子","🎋"],["松","song","sōng","松树","🌲"],["柳","liu","liǔ","柳树","🌿"],["梅","mei","méi","梅花","🌸"],["兰","lan","lán","兰花","🌷"],["菊","ju","jú","菊花","🌼"],["莲","lian","lián","莲花","🪷"],["虎","hu","hǔ","老虎","🐯"],["狮","shi","shī","狮子","🦁"],["象","xiang","xiàng","大象","🐘"],["猴","hou","hóu","猴子","🐵"],["兔","tu","tù","兔子","🐰"],["猫","mao","māo","猫","🐱"],["狗","gou","gǒu","狗","🐶"],["鸡","ji","jī","鸡","🐔"],["鸭","ya","yā","鸭子","🦆"],["鹅","e","é","鹅","🦢"],["猪","zhu","zhū","猪","🐷"],["蛇","she","shé","蛇","🐍"],["沙","sha","shā","沙子","🏖️"],["泥","ni","ní","泥土","🟤"],["金","jin","jīn","黄金","🥇"],["银","yin","yín","白银","🥈"],["铜","tong","tóng","铜","🥉"],["铁","tie","tiě","铁","🔩"],["玉","yu","yù","玉石","💎"],["雷","lei","léi","打雷","🌩️"],["电","dian","diàn","闪电/电","⚡"],["雾","wu","wù","雾","🌫️"],["霜","shuang","shuāng","霜","❄️"],["露","lu","lù","露水","💧"],["冰","bing","bīng","冰","🧊"],["泉","quan","quán","泉水","⛲"],["球","qiu","qiú","球","⚽"]]},
+  {id:'hz5',name:'小学五年级 汉字',short:'五年级字',rows:[["情","qing","qíng","感情",""],["感","gan","gǎn","感觉",""],["思","si","sī","思考",""],["念","nian","niàn","想念",""],["愿","yuan","yuàn","愿望",""],["望","wang","wàng","盼望",""],["喜","xi","xǐ","欢喜","😊"],["怒","nu","nù","愤怒","😠"],["哀","ai","āi","悲哀","😢"],["乐","le","lè","快乐","😄"],["忧","you","yōu","忧虑","😟"],["愁","chou","chóu","发愁","😔"],["惊","jing","jīng","吃惊","😲"],["恐","kong","kǒng","恐惧","😨"],["勇","yong","yǒng","勇敢","🦁"],["敢","gan","gǎn","敢于",""],["智","zhi","zhì","智慧","🧠"],["慧","hui","huì","聪慧",""],["诚","cheng","chéng","诚实","🤝"],["实","shi","shí","真实",""],["谦","qian","qiān","谦虚","🙇"],["虚","xu","xū","虚心",""],["帮","bang","bāng","帮忙","🤝"],["助","zhu","zhù","帮助","🤲"],["送","song","sòng","赠送","🎁"],["借","jie","jiè","借用","🤝"],["还","huan","huán","归还","🔄"],["谢","xie","xiè","感谢","🙏"],["讲","jiang","jiǎng","讲述","🗣️"],["问","wen","wèn","提问","❓"],["答","da","dá","回答","✅"],["议","yi","yì","商议",""],["论","lun","lùn","讨论",""],["知","zhi","zhī","知道","💡"],["识","shi","shí","认识","🧠"],["习","xi","xí","学习","📖"],["记","ji","jì","记住","🧠"],["忆","yi","yì","回忆","💭"],["文","wen","wén","文章","📄"],["字","zi","zì","文字","🔤"],["词","ci","cí","词语","📝"],["句","ju","jù","句子","📃"],["篇","pian","piān","篇章","📑"],["章","zhang","zhāng","章节","📖"],["民","min","mín","人民","👥"],["族","zu","zú","民族","👪"],["村","cun","cūn","乡村","🏘️"],["镇","zhen","zhèn","城镇","🏙️"],["法","fa","fǎ","法律","⚖️"],["理","li","lǐ","道理","🧩"],["德","de","dé","品德","💛"],["礼","li","lǐ","礼貌","🙇"],["义","yi","yì","正义","⚖️"],["信","xin","xìn","诚信","✉️"],["律","lv","lǜ","纪律","⚖️"],["规","gui","guī","规则","📏"],["则","ze","zé","准则","📐"],["序","xu","xù","顺序","🔢"],["制","zhi","zhì","制度",""],["度","du","dù","程度","📊"]]},
+  {id:'hz6',name:'小学六年级 汉字',short:'六年级字',rows:[["经","jing","jīng","经过",""],["历","li","lì","经历",""],["验","yan","yàn","检验",""],["证","zheng","zhèng","证明",""],["据","ju","jù","依据",""],["科","ke","kē","科学","🔬"],["技","ji","jì","技术","⚙️"],["术","shu","shù","方法",""],["艺","yi","yì","艺术","🎨"],["创","chuang","chuàng","创造","✨"],["造","zao","zào","制造","🏗️"],["研","yan","yán","研究","🔬"],["究","jiu","jiū","探究","🔎"],["探","tan","tàn","探索","🧭"],["索","suo","suǒ","寻找","🔍"],["发","fa","fā","发出","💡"],["现","xian","xiàn","出现","👀"],["环","huan","huán","环绕","🌍"],["境","jing","jìng","环境","🌿"],["保","bao","bǎo","保护","🛡️"],["护","hu","hù","护卫","🛡️"],["污","wu","wū","污染","🏭"],["染","ran","rǎn","沾染","🧫"],["资","zi","zī","资源","📦"],["源","yuan","yuán","来源","💧"],["能","neng","néng","能力","🔋"],["量","liang","liàng","数量","⚖️"],["节","jie","jié","节约","♻️"],["约","yue","yuē","约定",""],["社","she","shè","社会","🏘️"],["责","ze","zé","责任","✅"],["任","ren","rèn","任务","📋"],["务","wu","wù","事务","📋"],["健","jian","jiàn","健康","💪"],["康","kang","kāng","安康","🩺"],["卫","wei","wèi","卫生","🧼"],["安","an","ān","平安","🛡️"],["全","quan","quán","完全","💯"],["济","ji","jì","经济","💹"],["商","shang","shāng","商业","🏬"],["贸","mao","mào","贸易","🚢"],["产","chan","chǎn","生产","🏭"],["品","pin","pǐn","物品","📦"],["传","chuan","chuán","传递","📡"],["统","tong","tǒng","统一","🧵"],["化","hua","huà","变化","🔄"],["未","wei","wèi","未来","🔮"],["希","xi","xī","希望","🌟"],["政","zheng","zhèng","政治","🏛️"],["策","ce","cè","策略","📜"],["教","jiao","jiào","教导","🧑‍🏫"],["育","yu","yù","培育","🌱"],["训","xun","xùn","训练","🏋️"],["练","lian","liàn","练习","🏋️"],["优","you","yōu","优秀","🏅"],["秀","xiu","xiù","优美","🌟"],["良","liang","liáng","良好","👍"],["益","yi","yì","益处","➕"],["效","xiao","xiào","效果","🎯"],["质","zhi","zhì","质量","💎"]]}
+];
+HZ_GRADES.forEach((b,k)=>BOOKS.push({id:b.id,name:b.name,short:b.short,color:k%2?'var(--blue)':'var(--accent)',cat:'zh',lang:'zh',builtin:true,
+  words:b.rows.map(([hz,py,tone,mean,emo])=>({en:py,ipa:tone,zh:mean,hz,em:emo}))}));
+
+/* ===== 英语补充组：每年级 100 词（按词频排序）[单词, 音标, 中文, emoji] ===== */
+const EN_SUPP=[
+  {id:'s0',name:'幼儿园 补充 100',short:'幼K补',rows:[["time","/taɪm/","时间","⏰"],["get","/ɡɛt/","获得",""],["new","/nu/","新的",""],["good","/ɡʊd/","好",""],["first","/fɜrst/","首先",""],["know","/noʊ/","知道",""],["make","/meɪk/","制造",""],["think","/θɪŋk/","想",""],["want","/wɑnt/","想要",""],["way","/weɪ/","方法",""],["need","/nid/","需要",""],["work","/wɜrk/","工作","💼"],["year","/jɪr/","年","📅"],["day","/deɪ/","天","☀️"],["take","/teɪk/","拿",""],["life","/laɪf/","生命","🌱"],["say","/seɪ/","说",""],["world","/wɜrld/","世界","🌍"],["great","/ɡreɪt/","伟大的",""],["last","/læst/","最后的",""],["love","/lʌv/","爱","❤️"],["man","/mæn/","男人","👨"],["home","/hoʊm/","家","🏠"],["long","/lɔŋ/","长的",""],["look","/lʊk/","看",""],["use","/jus/","使用",""],["used","/juzd/","习惯的",""],["every","/ˈɛvəri/","每一的",""],["part","/pɑrt/","部分",""],["state","/steɪt/","状态",""],["find","/faɪnd/","找到",""],["high","/haɪ/","高度",""],["old","/oʊld/","年老的",""],["another","/əˈnʌðər/","另外的",""],["game","/ɡeɪm/","比赛","🎮"],["give","/ɡɪv/","弹性",""],["place","/pleɪs/","地方",""],["next","/nɛkst/","下次的",""],["end","/ɛnd/","末端",""],["show","/ʃoʊ/","表示",""],["feel","/fil/","感觉",""],["team","/tim/","队","👥"],["keep","/kip/","保持",""],["free","/fri/","自由的",""],["second","/ˈsɛkənd/","秒",""],["city","/ˈsɪti/","城市","🏙️"],["name","/neɪm/","名字","🏷️"],["company","/ˈkʌmpəni/","公司",""],["real","/ril/","真的",""],["thought","/θɔt/","思考",""],["government","/ˈɡʌvərmənt/","政府",""],["group","/ɡrup/","团体",""],["public","/ˈpʌblɪk/","公众",""],["top","/tɑp/","顶部",""],["business","/ˈbɪznəs/","商业",""],["care","/kɛr/","注意",""],["start","/stɑrt/","动身","▶️"],["system","/ˈsɪstəm/","系统",""],["week","/wik/","星期","📆"],["case","/keɪs/","情况",""],["person","/ˈpɜrsən/","人",""],["today","/təˈdeɪ/","今天",""],["change","/tʃeɪndʒ/","改变",""],["full","/fʊl/","全部",""],["live","/laɪv/","活的",""],["point","/pɔɪnt/","点",""],["bad","/bæd/","劣质的",""],["hard","/hɑrd/","硬的",""],["mean","/min/","意思是",""],["tell","/tɛl/","告诉",""],["power","/ˈpaʊər/","能力","⚡"],["stop","/stɑp/","停止","🛑"],["call","/kɔl/","喊声",""],["head","/hɛd/","头","🗣️"],["national","/ˈnæʃənəl/","国家的",""],["small","/smɔl/","小的",""],["white","/waɪt/","白色","⚪"],["far","/fɑr/","远处",""],["job","/dʒɑb/","工作",""],["side","/saɪd/","边",""],["try","/traɪ/","尝试",""],["line","/laɪn/","线",""],["order","/ˈɔrdər/","顺序",""],["service","/ˈsɜrvəs/","服务",""],["country","/ˈkʌntri/","国家",""],["open","/ˈoʊpən/","公开","🔓"],["general","/ˈdʒɛnərəl/","普通",""],["area","/ˈɛriə/","范围",""],["black","/blæk/","黑色","⚫"],["together","/təˈɡɛðər/","共同",""],["whole","/hoʊl/","全部",""],["face","/feɪs/","脸",""],["president","/ˈprɛzədɛnt/","总统",""],["course","/kɔrs/","过程",""],["health","/hɛlθ/","健康","🩺"],["hope","/hoʊp/","希望","🌟"],["least","/list/","最小的",""],["able","/ˈeɪbəl/","能...的",""],["information","/ɪnfərˈmeɪʃən/","通知",""],["local","/ˈloʊkəl/","地方的",""]]},
+  {id:'s1',name:'一年级 补充 100',short:'一年补',rows:[["video","/ˈvɪdioʊ/","电视",""],["young","/jʌŋ/","年轻的","🧒"],["social","/ˈsoʊʃəl/","社会的",""],["talk","/tɔk/","谈话","💬"],["court","/kɔrt/","法院",""],["fact","/fækt/","事实",""],["half","/hæf/","一半",""],["level","/ˈlɛvəl/","水平",""],["mind","/maɪnd/","头脑",""],["single","/ˈsɪŋɡəl/","单一的",""],["become","/bɪˈkʌm/","变成",""],["body","/ˈbɑdi/","身体","🧍"],["control","/kənˈtroʊl/","控制",""],["food","/fud/","食物","🍽️"],["guy","/ɡaɪ/","家伙",""],["office","/ˈɔfɪs/","办公室","🏢"],["pay","/peɪ/","薪水","💳"],["south","/saʊθ/","南部","🧭"],["true","/tru/","真实的",""],["large","/lɑrdʒ/","大的",""],["room","/rum/","房间",""],["several","/ˈsɛvrəl/","几个",""],["win","/wɪn/","赢","🏆"],["wrong","/rɔŋ/","错误的",""],["girl","/ɡɜrl/","女孩","👧"],["air","/ɛr/","空气","🌬️"],["hit","/hɪt/","打击","👊"],["nice","/naɪs/","美好的",""],["probably","/ˈprɑbəbli/","大概",""],["class","/klæs/","班级","🏫"],["close","/kloʊs/","关","🔒"],["idea","/aɪˈdiə/","想法","💡"],["past","/pæst/","过去",""],["cause","/kɑz/","原因",""],["human","/ˈhjumən/","人","🧍"],["move","/muv/","移动","➡️"],["wait","/weɪt/","等待","⏳"],["woman","/ˈwʊmən/","女人","👩"],["ask","/æsk/","询问","❓"],["leave","/liv/","许可","🚪"],["north","/nɔrθ/","北","🧭"],["special","/ˈspɛʃəl/","特派员",""],["light","/laɪt/","光","💡"],["low","/loʊ/","低",""],["short","/ʃɔrt/","简略","📏"],["stay","/steɪ/","逗留","🏠"],["age","/eɪdʒ/","年龄","🎂"],["buy","/baɪ/","买","🛒"],["deal","/dil/","交易",""],["report","/riˈpɔrt/","报告",""],["soon","/sun/","立刻",""],["turn","/tɜrn/","转动","🔄"],["check","/tʃɛk/","阻止",""],["development","/dɪˈvɛləpmənt/","发展",""],["form","/fɔrm/","形状",""],["heart","/hɑrt/","心","❤️"],["act","/ækt/","行动",""],["child","/tʃaɪld/","孩子","🧒"],["fire","/ˈfaɪər/","火","🔥"],["fun","/fʌn/","娱乐","🎉"],["major","/ˈmeɪdʒər/","主修的",""],["media","/ˈmidiə/","媒体",""],["art","/ɑrt/","艺术","🎨"],["easy","/ˈizi/","容易的","👌"],["near","/nɪr/","亲近的",""],["plan","/plæn/","计划","🗒️"],["political","/pəˈlɪtəkəl/","政治的",""],["west","/wɛst/","西方","🧭"],["final","/ˈfaɪnəl/","结局",""],["front","/frʌnt/","前面",""],["list","/lɪst/","目录","📋"],["ready","/ˈrɛdi/","有准备的","✅"],["son","/sʌn/","儿子","👦"],["bring","/brɪŋ/","拿来",""],["current","/ˈkɜrənt/","目前的",""],["experience","/ɪkˈspɪriəns/","经验",""],["meet","/mit/","会","🤝"],["type","/taɪp/","类型",""],["baby","/ˈbeɪbi/","婴孩","👶"],["chance","/tʃæns/","机会",""],["process","/ˈprɑsɛs/","过程",""],["study","/ˈstʌdi/","学习",""],["word","/wɜrd/","字","🔤"],["action","/ˈækʃən/","动作",""],["clear","/klɪr/","清楚的","🧼"],["month","/mʌnθ/","月","📅"],["board","/bɔrd/","木板","📋"],["cost","/kɑst/","成本","💲"],["cut","/kʌt/","切","✂️"],["field","/fild/","田野","🌾"],["main","/meɪn/","主要部分",""],["moment","/ˈmoʊmənt/","片刻的","⏱️"],["road","/roʊd/","路","🛣️"],["town","/taʊn/","市镇","🏙️"],["department","/dɪˈpɑrtmənt/","部门",""],["fight","/faɪt/","打架","🥊"],["fine","/faɪn/","好的",""],["force","/fɔrs/","力量","💪"],["hear","/hir/","听到","👂"],["issue","/ˈɪʃu/","问题",""]]},
+  {id:'s2',name:'二年级 补充 100',short:'二年补',rows:[["price","/praɪs/","价格","🏷️"],["rest","/rɛst/","休息","😴"],["term","/tɜrm/","学期",""],["wife","/waɪf/","妻子","👰"],["beautiful","/ˈbjutəfəl/","美丽的",""],["date","/deɪt/","日期","📅"],["land","/lænd/","陆地","🏞️"],["project","/ˈprɑdʒɛkt/","计划","📐"],["shot","/ʃɑt/","射击","🎯"],["site","/saɪt/","地点","📍"],["account","/əˈkaʊnt/","计算",""],["include","/ɪnˈklud/","包括",""],["period","/ˈpɪriəd/","时期",""],["position","/pəˈzɪʃən/","位置",""],["record","/rəˈkɔrd/","履历","⏺️"],["similar","/ˈsɪmələr/","相似的",""],["total","/ˈtoʊtəl/","总共","🧮"],["club","/klʌb/","俱乐部","🎪"],["common","/ˈkɑmən/","共同的",""],["film","/fɪlm/","薄膜","🎬"],["lead","/lɛd/","带领","🧭"],["military","/ˈmɪlətɛri/","军事的","🎖️"],["perfect","/pərˈfɛkt/","完成式","💯"],["personal","/ˈpɜrsɪnəl/","私人的",""],["security","/sɪˈkjʊrəti/","安全",""],["share","/ʃɛr/","共享","🤝"],["couple","/ˈkʌpəl/","连合","👫"],["happen","/ˈhæpən/","发生",""],["hold","/hoʊld/","把握","🤲"],["industry","/ˈɪndəstri/","工业","🏭"],["online","/ˈɔnlaɪn/","联机","🌐"],["private","/ˈpraɪvət/","私人的",""],["return","/rɪˈtɜrn/","回来","↩️"],["sense","/sɛns/","官能",""],["test","/tɛst/","测试","📝"],["view","/vju/","视野","👁️"],["break","/breɪk/","休息","☕"],["event","/ɪˈvɛnt/","事件","📆"],["hour","/ˈaʊər/","小时","⏰"],["member","/ˈmɛmbər/","成员","🧑"],["middle","/ˈmɪdəl/","中间","🎯"],["sorry","/ˈsɑri/","遗憾的","😔"],["wish","/wɪʃ/","愿望","🌠"],["boy","/bɔɪ/","男孩","👦"],["gold","/ɡoʊld/","黄金","🥇"],["guess","/ɡɛs/","猜测","🤔"],["king","/kɪŋ/","国王","👑"],["learn","/lɜrn/","学习","📚"],["policy","/ˈpɑləsi/","政策",""],["society","/səˈsaɪəti/","社会","🏘️"],["alone","/əˈloʊn/","单独的","🧍"],["bank","/bæŋk/","银行","🏦"],["certain","/ˈsɜrtən/","确定的",""],["church","/tʃɜrtʃ/","教堂","⛪"],["east","/ist/","东方","🧭"],["hot","/hɑt/","热的",""],["medical","/ˈmɛdəkəl/","医生",""],["movie","/ˈmuvi/","电影",""],["original","/əˈrɪdʒənəl/","最初的",""],["performance","/pərˈfɔrməns/","履行",""],["role","/roʊl/","角色",""],["worth","/wɜrθ/","价值",""],["bill","/bɪl/","帐单",""],["cool","/kul/","凉爽",""],["director","/dəˈrɛktər/","主任",""],["ground","/ɡraʊnd/","地面",""],["relationship","/riˈleɪʃənʃɪp/","关系",""],["sound","/saʊnd/","声音",""],["source","/sɔrs/","来源",""],["value","/ˈvælju/","价值",""],["follow","/ˈfɑloʊ/","跟随",""],["official","/əˈfɪʃəl/","官员",""],["production","/prəˈdʌkʃən/","生产",""],["rate","/reɪt/","比率",""],["round","/raʊnd/","圆的",""],["save","/seɪv/","解救",""],["stand","/stænd/","停止",""],["tax","/tæks/","税",""],["amount","/əˈmaʊnt/","数量",""],["drive","/draɪv/","驾车",""],["eat","/it/","吃",""],["fall","/fɔl/","秋天",""],["fast","/fæst/","紧的",""],["federal","/ˈfɛdərəl/","联邦的",""],["league","/liɡ/","同盟",""],["management","/ˈmænədʒmənt/","经营",""],["match","/mætʃ/","比赛",""],["model","/ˈmɑdəl/","样式",""],["picture","/ˈpɪktʃər/","画",""],["size","/saɪz/","大小",""],["step","/stɛp/","脚步",""],["trust","/trʌst/","信任",""],["central","/ˈsɛntrəl/","中心的",""],["england","/ˈɪŋɡlənd/","英格兰",""],["forward","/ˈfɔrwərd/","早的",""],["key","/ki/","钥匙","🔑"],["page","/peɪdʒ/","页","📄"],["range","/reɪndʒ/","山脉",""],["review","/riˈvju/","回顾",""],["trade","/treɪd/","贸易",""]]},
+  {id:'s3',name:'三年级 补充 100',short:'三年补',rows:[["various","/ˈvɛriəs/","不同的",""],["attention","/əˈtɛnʃən/","注意",""],["character","/ˈkɛrɪktər/","性格",""],["chief","/tʃif/","主要的",""],["football","/ˈfʊtbɔl/","足球","⚽"],["natural","/ˈnætʃərəl/","自然的",""],["property","/ˈprɑpərti/","财产",""],["quality","/ˈkwɑləti/","质量",""],["send","/sɛnd/","送",""],["style","/staɪl/","风格",""],["vote","/voʊt/","投票",""],["economic","/ɛkəˈnɑmɪk/","经济",""],["oil","/ɔɪl/","油","🛢️"],["stage","/steɪdʒ/","舞台",""],["title","/ˈtaɪtəl/","头衔",""],["add","/æd/","增加",""],["article","/ˈɑrtəkəl/","文章",""],["attack","/əˈtæk/","进攻",""],["born","/bɔrn/","天生的",""],["decision","/dɪˈsɪʒən/","决定",""],["enjoy","/ɛnˈdʒɔɪ/","享受",""],["entire","/ɪnˈtaɪər/","整个的",""],["poor","/pur/","贫穷的",""],["release","/riˈlis/","释放",""],["situation","/sɪtʃuˈeɪʃən/","情形",""],["choice","/tʃɔɪs/","选择",""],["code","/koʊd/","代码",""],["council","/ˈkaʊnsəl/","委员会",""],["election","/ɪˈlɛkʃən/","选举",""],["financial","/fəˈnænʃəl/","财政的",""],["foreign","/ˈfɔrən/","外国的",""],["hair","/hɛr/","头发","💇"],["legal","/ˈliɡəl/","法律的",""],["lose","/luz/","遗失",""],["pick","/pɪk/","挑选",""],["race","/reɪs/","种族",""],["seem","/sim/","象是",""],["sign","/saɪn/","标记",""],["simple","/ˈsɪmpəl/","简单的",""],["staff","/stæf/","员工",""],["union","/ˈjunjən/","联合",""],["walk","/wɔk/","步","🚶"],["daily","/ˈdeɪli/","每日的",""],["daughter","/ˈdɔtər/","女儿","👧"],["popular","/ˈpɑpjələr/","通俗的",""],["safe","/seɪf/","保险箱",""],["version","/ˈvɜrʒən/","译文",""],["voice","/vɔɪs/","声音","🗣️"],["army","/ˈɑrmi/","陆军",""],["goal","/ɡoʊl/","目的",""],["huge","/hjudʒ/","巨大的",""],["listen","/ˈlɪsən/","听","👂"],["sea","/si/","海洋","🌊"],["access","/ˈæksɛs/","通路",""],["base","/beɪs/","底部",""],["deep","/dip/","深的","🌊"],["professional","/prəˈfɛʃənəl/","自由职业者",""],["risk","/rɪsk/","冒...的危险",""],["sleep","/slip/","睡","😴"],["truth","/truθ/","事实",""],["card","/kɑrd/","纸牌","🃏"],["dark","/dɑrk/","黑暗","🌑"],["district","/ˈdɪstrɪkt/","区域",""],["minister","/ˈmɪnəstər/","部长",""],["note","/noʊt/","笔记",""],["piece","/pis/","块",""],["recent","/ˈrisənt/","新近的",""],["straight","/streɪt/","直的",""],["visit","/ˈvɪzɪt/","拜访",""],["wall","/wɔl/","墙壁","🧱"],["growth","/ɡroʊθ/","生长",""],["pain","/peɪn/","痛苦","🤕"],["response","/rɪˈspɑns/","回答",""],["rock","/rɑk/","岩石","🪨"],["speak","/spik/","说话",""],["specific","/spəˈsɪfɪk/","特效药",""],["standard","/ˈstændərd/","标准",""],["tonight","/təˈnaɪt/","今晚","🌃"],["album","/ˈælbəm/","集邮本",""],["charge","/tʃɑrdʒ/","负荷",""],["cold","/koʊld/","寒冷","🥶"],["effect","/ɪˈfɛkt/","结果",""],["funny","/ˈfʌni/","有趣的",""],["network","/ˈnɛtwɜrk/","网络","🌐"],["peace","/pis/","和平","🕊️"],["store","/stɔr/","贮藏","🏬"],["tomorrow","/təˈmɑroʊ/","明天见","📅"],["track","/træk/","轨迹","🛤️"],["weight","/weɪt/","重力","⚖️"],["addition","/əˈdɪʃən/","增加",""],["ahead","/əˈhɛd/","在前",""],["allow","/əˈlaʊ/","允许",""],["association","/əsoʊsiˈeɪʃən/","协会",""],["beat","/bit/","敲打",""],["brown","/braʊn/","褐色","🟤"],["capital","/ˈkæpətəl/","首都",""],["committee","/kəˈmɪti/","委员会",""],["conference","/ˈkɑnfərəns/","会议",""],["difference","/ˈdɪfərəns/","差异",""],["double","/ˈdʌbəl/","两倍",""]]},
+  {id:'s4',name:'四年级 补充 100',short:'四年补',rows:[["expect","/ɪkˈspɛkt/","期待",""],["normal","/ˈnɔrməl/","正规",""],["potential","/pəˈtɛnʃəl/","潜在的",""],["pressure","/ˈprɛʃər/","压",""],["radio","/ˈreɪdioʊ/","用无线电发送","📻"],["station","/ˈsteɪʃən/","位置","🚉"],["text","/tɛkst/","正文",""],["treatment","/ˈtritmənt/","待遇",""],["western","/ˈwɛstərn/","西的",""],["campaign","/kæmˈpeɪn/","[军]战役",""],["content","/ˈkɑntɛnt/","内容",""],["credit","/ˈkrɛdət/","信任",""],["cross","/krɔs/","十字",""],["female","/ˈfimeɪl/","女性",""],["focus","/ˈfoʊkəs/","聚焦",""],["husband","/ˈhʌzbənd/","丈夫",""],["ice","/aɪs/","冰冻食品","🧊"],["individual","/ɪndəˈvɪdʒəwəl/","个人",""],["join","/dʒɔɪn/","参加",""],["particular","/pərˈtɪkjələr/","细节",""],["previous","/ˈpriviəs/","在前的",""],["region","/ˈridʒən/","区域",""],["section","/ˈsɛkʃən/","部分",""],["speed","/spid/","迅速","💨"],["consider","/kənˈsɪdər/","考虑",""],["contact","/ˈkɑntækt/","接触",""],["drop","/drɑp/","滴下",""],["fair","/fɛr/","公平的",""],["kid","/kɪd/","哄骗","🧒"],["link","/lɪŋk/","链环",""],["positive","/ˈpɑzətɪv/","肯定的",""],["sale","/seɪl/","出售",""],["throughout","/θruˈaʊt/","到处",""],["tour","/tʊr/","旅行",""],["welcome","/ˈwɛlkəm/","欢迎",""],["additional","/əˈdɪʃənəl/","另外的",""],["extra","/ˈɛkstrə/","额外的",""],["minute","/ˈmɪnət/","分","⏱️"],["quick","/kwɪk/","快的",""],["sell","/sɛl/","出售",""],["significant","/səɡˈnɪfɪkənt/","有意义的",""],["agree","/əˈɡri/","同意",""],["construction","/kənˈstrʌkʃən/","建筑",""],["episode","/ˈɛpəsoʊd/","一段情节",""],["income","/ˈɪnkʌm/","收入",""],["movement","/ˈmuvmənt/","运动",""],["photo","/ˈfoʊtoʊ/","照片","📷"],["safety","/ˈseɪfti/","安全",""],["scene","/sin/","现场",""],["spend","/spɛnd/","花费",""],["statement","/ˈsteɪtmənt/","声明",""],["ability","/əˈbɪləti/","能力",""],["coach","/koʊtʃ/","四轮大马车",""],["collection","/kəˈlɛkʃən/","收藏",""],["heavy","/ˈhɛvi/","重的",""],["search","/sɜrtʃ/","搜寻",""],["subject","/səbˈdʒɛkt/","科目",""],["wide","/waɪd/","宽的",""],["author","/ˈɔθər/","作家",""],["fear","/fɪr/","恐怖",""],["fit","/fɪt/","突然发作",""],["global","/ˈɡloʊbəl/","球形的",""],["hotel","/hoʊˈtɛl/","旅馆","🏨"],["lady","/ˈleɪdi/","女士",""],["material","/məˈtɪriəl/","材料",""],["product","/ˈprɑdəkt/","产品",""],["regular","/ˈrɛɡjələr/","规则的",""],["secretary","/ˈsɛkrətɛri/","秘书",""],["unit","/ˈjunət/","个体",""],["annual","/ˈænjuəl/","一年生植物",""],["bar","/bɑr/","酒吧",""],["battle","/ˈbætəl/","战役",""],["brain","/breɪn/","脑","🧠"],["contract","/ˈkɑntrækt/","合同",""],["degree","/dɪˈɡri/","度数",""],["floor","/flɔr/","在...上铺","🪵"],["hurt","/hɜrt/","刺痛",""],["image","/ˈɪmədʒ/","图象",""],["insurance","/ɪnˈʃʊrəns/","保险",""],["majority","/məˈdʒɔrəti/","多数",""],["physical","/ˈfɪzɪkəl/","身体的",""],["reach","/ritʃ/","延伸",""],["rule","/rul/","规则",""],["successful","/səkˈsɛsfəl/","成功的",""],["active","/ˈæktɪv/","积极的",""],["approach","/əˈproʊtʃ/","接近",""],["civil","/ˈsɪvəl/","全民的",""],["direction","/dəˈrɛkʃən/","方向",""],["ship","/ʃɪp/","船","🚢"],["stock","/stɑk/","树干","📈"],["weekend","/ˈwikɛnd/","周末",""],["awesome","/ˈɑsəm/","引起敬畏的",""],["band","/bænd/","带子",""],["cash","/kæʃ/","现金",""],["commercial","/kəˈmɜrʃəl/","商业的",""],["fan","/fæn/","扇子","🌀"],["impact","/ɪmˈpækt/","碰撞",""],["lack","/læk/","缺乏",""],["multiple","/ˈmʌltəpəl/","多样的",""],["operation","/ɑpəˈreɪʃən/","运转",""]]},
+  {id:'s5',name:'五年级 补充 100',short:'五年补',rows:[["organization","/ɔrɡənəˈzeɪʃən/","组织",""],["secret","/ˈsikrət/","秘密","🤫"],["senior","/ˈsinjər/","年长的",""],["wear","/wɛr/","穿","👔"],["address","/ˈædrɛs/","地址","📬"],["analysis","/əˈnæləsəs/","分析",""],["color","/ˈkʌlər/","给...涂颜色","🎨"],["commission","/kəˈmɪʃən/","委任",""],["competition","/kɑmpəˈtɪʃən/","竞争",""],["direct","/dəˈrɛkt/","径直的",""],["easily","/ˈizəli/","容易地",""],["finish","/ˈfɪnɪʃ/","完成","🏁"],["grand","/ɡrænd/","盛大的",""],["luck","/lʌk/","运气","🍀"],["marriage","/ˈmɛrɪdʒ/","结婚",""],["rich","/rɪtʃ/","富的","💰"],["skin","/skɪn/","皮","🖐️"],["sweet","/swit/","甜的","🍭"],["touch","/tʌtʃ/","触","👆"],["yesterday","/ˈjɛstərdeɪ/","昨天","📅"],["damage","/ˈdæmədʒ/","损害",""],["disease","/dɪˈziz/","疾病","🦠"],["doubt","/daʊt/","怀疑","❓"],["drink","/drɪŋk/","饮料","🥤"],["glad","/ɡlæd/","高兴的",""],["grow","/ɡroʊ/","生长","🌱"],["notice","/ˈnoʊtəs/","通知",""],["overall","/ˈoʊvərɔl/","全部的",""],["professor","/prəˈfɛsər/","教授",""],["trip","/trɪp/","使跌倒","🧳"],["captain","/ˈkæptən/","队长",""],["carry","/ˈkæri/","进位",""],["crime","/kraɪm/","犯罪",""],["effective","/ɪˈfɛktɪv/","有效的",""],["fully","/ˈfʊli/","充分地",""],["male","/meɪl/","男的",""],["plant","/plænt/","植物","🌱"],["reality","/riˈæləti/","真实",""],["spot","/spɑt/","地点",""],["advice","/ædˈvaɪs/","忠告",""],["agreement","/əˈɡrimənt/","同意",""],["award","/əˈwɔrd/","奖","🏆"],["block","/blɑk/","街区","🧱"],["broken","/ˈbroʊkən/","坏掉的",""],["comment","/ˈkɑmɛnt/","注释",""],["equipment","/ɪˈkwɪpmənt/","装备","🛠️"],["holy","/ˈhoʊli/","神圣的",""],["nation","/ˈneɪʃən/","国家",""],["primary","/ˈpraɪmɛri/","第一位的",""],["sick","/sɪk/","病人",""],["theory","/ˈθɪri/","理论",""],["agency","/ˈeɪdʒənsi/","代理处",""],["avoid","/əˈvɔɪd/","避免",""],["catch","/kætʃ/","捕捉","🤲"],["cell","/sɛl/","单元","🔬"],["coast","/koʊst/","海岸","🏖️"],["economy","/ɪˈkɑnəmi/","经济","💹"],["executive","/ɪɡˈzɛkjətɪv/","实行的",""],["foot","/fʊt/","足","🦶"],["hall","/hɔl/","会堂","🏛️"],["mission","/ˈmɪʃən/","使命",""],["pop","/pɑp/","取出","🎈"],["trial","/ˈtraɪəl/","试验",""],["activity","/ækˈtɪvəti/","活跃",""],["application","/æpləˈkeɪʃən/","请求",""],["coffee","/ˈkɑfi/","咖啡","☕"],["complex","/ˈkɑmplɛks/","复杂的",""],["condition","/kənˈdɪʃən/","条件",""],["division","/dɪˈvɪʒən/","分开",""],["flight","/flaɪt/","飞行","✈️"],["interview","/ˈɪntərvju/","接见",""],["location","/loʊˈkeɪʃən/","位置",""],["queen","/kwin/","王后","👑"],["accept","/ækˈsɛpt/","接受",""],["actual","/ˈæktʃəwəl/","实际的",""],["appear","/əˈpɪr/","出现",""],["attempt","/əˈtɛmpt/","努力",""],["channel","/ˈtʃænəl/","海峡",""],["distance","/ˈdɪstəns/","距离",""],["exchange","/ɪksˈtʃeɪndʒ/","交换",""],["fat","/fæt/","脂肪","🍔"],["glass","/ɡlæs/","玻璃","🥛"],["mobile","/ˈmoʊbəl/","可移动的","📱"],["northern","/ˈnɔrðərn/","北方的",""],["powerful","/ˈpaʊərfəl/","强大的",""],["prior","/ˈpraɪər/","优先的",""],["protection","/prəˈtɛkʃən/","保护",""],["religious","/rɪˈlɪdʒəs/","信奉宗教的",""],["ride","/raɪd/","骑","🎠"],["royal","/ˈrɔɪəl/","王室的","👑"],["screen","/skrin/","屏","🖥️"],["serve","/sɜrv/","当仆人",""],["slow","/sloʊ/","慢的","🐢"],["speech","/spitʃ/","演说","🗣️"],["traffic","/ˈtræfɪk/","交通","🚦"],["wonderful","/ˈwʌndərfəl/","令人惊奇的",""],["begin","/bɪˈɡɪn/","开始","▶️"],["bottom","/ˈbɑtəm/","底","⬇️"],["demand","/dɪˈmænd/","要求","📢"],["engine","/ˈɛndʒən/","发动机","🔧"]]},
+  {id:'s6',name:'六年级 补充 100',short:'六年补',rows:[["investment","/ɪnˈvɛstmənt/","投资","💵"],["lie","/laɪ/","躺","🤥"],["southern","/ˈsʌðərn/","南的",""],["square","/skwɛr/","正方形","⬜"],["structure","/ˈstrʌktʃər/","结构","🏗️"],["traditional","/trəˈdɪʃənəl/","传统的",""],["twice","/twaɪs/","两次","2️⃣"],["wind","/waɪnd/","风","💨"],["worry","/ˈwɜri/","烦恼","😟"],["brand","/brænd/","商标","🏷️"],["count","/kaʊnt/","数","🔢"],["critical","/ˈkrɪtɪkəl/","评论的",""],["digital","/ˈdɪdʒətəl/","数字的","💻"],["fresh","/frɛʃ/","新鲜的","🌿"],["mental","/ˈmɛntəl/","精神的","🧠"],["mouth","/maʊθ/","口","👄"],["realize","/ˈriəlaɪz/","认识到","💡"],["remain","/rɪˈmeɪn/","保持",""],["scale","/skeɪl/","规模","⚖️"],["score","/skɔr/","得分","🎯"],["separate","/ˈsɛpəreɪt/","分开的",""],["smart","/smɑrt/","刺痛",""],["surface","/ˈsɜrfəs/","表面","🪞"],["throw","/θroʊ/","投","🤾"],["benefit","/ˈbɛnəfɪt/","利益",""],["budget","/ˈbʌdʒɪt/","预算","💵"],["click","/klɪk/","发出滴答声",""],["estate","/ɪˈsteɪt/","状态",""],["faith","/feɪθ/","信任","🙏"],["fashion","/ˈfæʃən/","样子","👗"],["feature","/ˈfitʃər/","面貌的一部分",""],["fund","/fʌnd/","资金","💰"],["generation","/dʒɛnəˈreɪʃən/","产生","👨‍👩‍👦"],["hill","/hɪl/","小山","⛰️"],["mid","/mɪd/","中央的",""],["profile","/ˈproʊfaɪl/","剖面","👤"],["pull","/pʊl/","拉","🫱"],["push","/pʊʃ/","推","🫲"],["rose","/roʊz/","蔷薇属","🌹"],["seat","/sit/","座","💺"],["target","/ˈtɑrɡət/","目标","🎯"],["village","/ˈvɪlədʒ/","乡村","🏘️"],["agent","/ˈeɪdʒənt/","代理","🕵️"],["apply","/əˈplaɪ/","申请",""],["authority","/əˈθɔrəti/","权威",""],["foundation","/faʊnˈdeɪʃən/","基础",""],["gain","/ɡeɪn/","财物的增加","📈"],["prime","/praɪm/","最初",""],["ring","/rɪŋ/","环","💍"],["rise","/raɪz/","上升","📈"],["silver","/ˈsɪlvər/","银","🥈"],["soul","/soʊl/","灵魂","✨"],["spread","/sprɛd/","伸展","🌐"],["waste","/weɪst/","废物","🗑️"],["weird","/wɪrd/","怪异的","🤪"],["adult","/əˈdʌlt/","成人","🧑"],["artist","/ˈɑrtəst/","艺术家","🎨"],["chairman","/ˈtʃɛrmən/","主席",""],["edition","/əˈdɪʃən/","版本",""],["grade","/ɡreɪd/","等级","📊"],["healthy","/ˈhɛlθi/","健康的","💪"],["institute","/ˈɪnstətut/","学会","🏛️"],["method","/ˈmɛθəd/","方法","🧩"],["option","/ˈɑpʃən/","选项","☑️"],["prison","/ˈprɪzən/","监狱","🔒"],["stone","/stoʊn/","石","🪨"],["strength","/strɛŋkθ/","力","💪"],["wild","/waɪld/","野性的","🐾"],["bag","/bæɡ/","袋子","🎒"],["bet","/bɛt/","赌","🎲"],["camp","/kæmp/","露营地","⛺"],["cast","/kæst/","投掷","🎣"],["correct","/kəˈrɛkt/","正确的","✅"],["dangerous","/ˈdeɪndʒərəs/","危险的","⚠️"],["firm","/fɜrm/","公司","🏢"],["handle","/ˈhændəl/","柄","🎛️"],["negative","/ˈnɛɡətɪv/","否定","➖"],["prevent","/prɪˈvɛnt/","防止","🛑"],["spirit","/ˈspɪrət/","精神","👻"],["television","/ˈtɛləvɪʒən/","电视","📺"],["trouble","/ˈtrʌbəl/","烦恼","⚠️"],["advantage","/ædˈvæntɪdʒ/","优势","⭐"],["apart","/əˈpɑrt/","分离",""],["aware","/əˈwɛr/","知道的",""],["eastern","/ˈistərn/","东方的",""],["fifth","/fɪfθ/","第五的",""],["function","/ˈfʌŋkʃən/","官能",""],["gift","/ɡɪft/","赠品",""],["impossible","/ɪmˈpɑsəbəl/","不可能的",""],["influence","/ˈɪnfluəns/","影响",""],["produce","/prəˈdus/","产物",""],["proud","/praʊd/","自豪的",""],["require","/riˈkwaɪər/","需要",""],["shut","/ʃʌt/","关上",""],["wood","/wʊd/","木头",""],["background","/ˈbækɡraʊnd/","背景",""],["birth","/bɜrθ/","出生",""],["bridge","/brɪdʒ/","桥",""],["concept","/ˈkɑnsɛpt/","观念",""],["copy","/ˈkɑpi/","副本",""]]}
+];
+EN_SUPP.forEach((b,k)=>BOOKS.push({id:b.id,name:b.name,short:b.short,color:k%2?'var(--blue)':'var(--accent)',cat:'sup',lang:'en',builtin:true,
+  words:b.rows.map(([en,ipa,zh,emo])=>({en,ipa,zh,em:emo}))}));
+
+/* 给内置书补上 emoji */
+BOOKS.forEach(b=>b.words.forEach(w=>{ if(!w.em) w.em=EMOJI[w.hz]||EMOJI[w.en]||''; }));
+
+/* ===== 远程词库：cocobotech/xiaobao · apps/Vocabulary ===== */
+const REPO_API='https://api.github.com/repos/cocobotech/xiaobao/contents/apps/Vocabulary';
+const REPO_RAW='https://raw.githubusercontent.com/cocobotech/xiaobao/main/apps/Vocabulary/';
+/* 离线快照：沙箱里无法联网时使用的同一批词库副本 */
+const SNAPSHOT={"dict_01_DCA.json":{"fileName":"preschool_DCA","description":"包含Unit 1和Unit 2的单词。","groups":{"圣灵的果子":[["Love","仁爱"],["Joy","喜乐"],["Peace","和平"],["Patience","忍耐"],["Kindness","恩慈"],["Goodness","良善"],["Faithfulness","信实"],["Gentleness","温柔"],["Self-control","节制"]],"WW45":[["Spin","旋转"],["Snake","蛇"],["Snail","蜗牛"],["Smoke","烟"],["Swim","游泳"],["Sweep","打扫"],["Skate","滑冰"]]}},"dict_02a_preschool.json":{"fileName":"preschool_words","description":"Pre-school vocabulary list","groups":{"basic":[["hello","你好"],["bye","再见"],["yes","是的"],["no","不是"],["please","请"],["thank you","谢谢"],["sorry","对不起"]],"family":[["mom","妈妈"],["dad","爸爸"],["grandma","奶奶 / 外婆"],["grandpa","爷爷 / 外公"],["brother","哥哥 / 弟弟"],["sister","姐姐 / 妹妹"],["baby","宝宝"]],"body":[["head","头"],["eyes","眼睛"],["ears","耳朵"],["nose","鼻子"],["mouth","嘴巴"],["hands","手"],["feet","脚"]],"colors":[["red","红色"],["blue","蓝色"],["yellow","黄色"],["green","绿色"],["black","黑色"],["white","白色"],["pink","粉色"],["orange","橙色"],["purple","紫色"],["brown","棕色"]],"numbers":[["one","一"],["two","二"],["three","三"],["four","四"],["five","五"],["six","六"],["seven","七"],["eight","八"],["nine","九"],["ten","十"]],"animals":[["cat","猫"],["dog","狗"],["bird","鸟"],["fish","鱼"],["duck","鸭子"],["cow","牛"],["pig","猪"],["sheep","羊"],["horse","马"],["chicken","鸡"]],"fruits":[["apple","苹果"],["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["watermelon","西瓜"]],"shapes":[["circle","圆形"],["square","正方形"],["triangle","三角形"],["star","星形"],["heart","心形"]],"actions":[["run","跑"],["walk","走"],["jump","跳"],["sit","坐"],["stand","站"],["eat","吃"],["sleep","睡觉"]],"emotions":[["happy","开心"],["sad","难过"],["angry","生气"],["scared","害怕"],["tired","累"]],"transport":[["car","汽车"],["bus","巴士"],["train","火车"],["bike","自行车"],["plane","飞机"]],"nature":[["sun","太阳"],["moon","月亮"],["star","星星"],["cloud","云"],["rain","雨"],["tree","树"],["flower","花"]],"clothes":[["shirt","衬衫 / 上衣"],["pants","裤子"],["shoes","鞋子"],["hat","帽子"]],"positions":[["in","里面"],["on","上面"],["under","下面"],["up","上"],["down","下"]]}},"dict_02b_K..json":{"fileName":"kindergarten_sight_words","description":"Kindergarten Sight Words 幼儿园常见高频词表","groups":{"starter":[["a","一个"],["and","和"],["can","能/会"],["do","做"],["go","去"],["I","我"],["in","在…里面"],["is","是"],["it","它"],["like","喜欢"],["me","我(宾格)"],["my","我的"],["see","看见"],["the","这个/那个"],["to","到/去"],["we","我们"],["you","你/你们"]],"common":[["am","我是"],["are","是"],["at","在…"],["be","是/成为"],["big","大的"],["come","来"],["down","向下"],["for","为/给"],["funny","有趣的"],["help","帮助"],["here","这里"],["look","看"],["make","制作"],["not","不"],["one","一"],["play","玩"],["red","红色"],["run","跑"],["up","向上"],["where","哪里"]],"advanced":[["all","全部"],["away","离开"],["but","但是"],["came","来了"],["did","做了"],["eat","吃"],["four","四"],["get","得到"],["good","好的"],["he","他"],["into","进入"],["little","小的"],["must","必须"],["new","新的"],["now","现在"],["our","我们的"],["out","外面"],["please","请"],["pretty","漂亮的"],["saw","看见了"],["say","说"],["she","她"],["so","所以/如此"],["that","那个"],["there","那里"],["they","他们"],["this","这个"],["too","也/太"],["under","在…下面"],["want","想要"],["was","是(过去式)"],["what","什么"],["white","白色"],["who","谁"],["will","将要"],["with","和…一起"],["yes","是的"]]}},"dict_test1.json":{"fileName":"test1","description":"TEST单词。","groups":{"basic":[["apple","苹果"],["book","书"],["cat","猫"],["dog","狗"],["house","房子"],["water","水"],["sun","太阳"],["moon","月亮"],["tree","树"],["flower","花"]],"colors":[["red","红色"],["blue","蓝色"],["green","绿色"],["yellow","黄色"],["purple","紫色"],["orange","橙色"],["pink","粉色"],["black","黑色"],["white","白色"],["brown","棕色"]],"fruits":[["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["strawberry","草莓"],["watermelon","西瓜"],["peach","桃子"],["pear","梨"],["cherry","樱桃"],["lemon","柠檬"],["mango","芒果"]],"fruits2":[["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["strawberry","草莓"],["watermelon","西瓜"],["peach","桃子"],["pear","梨"],["cherry","樱桃"],["lemon","柠檬"],["mango","芒果"]],"fruits3":[["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["strawberry","草莓"],["watermelon","西瓜"],["peach","桃子"],["pear","梨"],["cherry","樱桃"],["lemon","柠檬"],["mango","芒果"]],"fruits4":[["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["strawberry","草莓"],["watermelon","西瓜"],["peach","桃子"],["pear","梨"],["cherry","樱桃"],["lemon","柠檬"],["mango","芒果"]],"fruits5":[["banana","香蕉"],["orange","橙子"],["grape","葡萄"],["strawberry","草莓"],["watermelon","西瓜"],["peach","桃子"],["pear","梨"],["cherry","樱桃"],["lemon","柠檬"],["mango","芒果"]],"animals":[["elephant","大象"],["tiger","老虎"],["lion","狮子"],["monkey","猴子"],["panda","熊猫"],["rabbit","兔子"],["bird","鸟"],["fish","鱼"],["horse","马"],["sheep","羊"]]}}};
+function prettyName(fn){
+  if(fn.startsWith('dict_')){
+    const p=fn.replace(/^dict_/,'').replace(/\.json$/,'').replace(/\.$/,'').split('_');
+    return p.map(s=>s.replace(/^\d+[a-z]?$/i,'')).filter(Boolean).join(' ').replace(/\b\w/g,c=>c.toUpperCase())||fn;
+  }
+  return fn.replace(/^txt_/,'').replace(/\.txt$/,'');
+}
+function bookFromGroups(id,name,desc,groups){
+  const words=[];
+  for(const g in groups) groups[g].forEach(it=>{
+    const en=Array.isArray(it)?it[0]:it.english, zh=Array.isArray(it)?it[1]:(it.chinese||'');
+    if(en) words.push({en:String(en).trim(),ipa:'',zh:String(zh||'').trim(),g});
+  });
+  return {id,name,short:name.length>6?name.slice(0,6):name,color:'var(--blue)',desc:desc||'',words,src:'GitHub'};
+}
+function bookFromText(id,name,text){
+  const seen=new Set(),words=[];
+  text.split(/[^A-Za-z'’-]+/).forEach(w=>{ const k=w.replace(/^['’-]+|['’-]+$/g,''); if(k.length>1&&!seen.has(k.toLowerCase())){seen.add(k.toLowerCase());words.push({en:k,ipa:'',zh:''});} });
+  return {id,name,short:name.slice(0,6),color:'var(--blue)',desc:'纯文本词表 · 无中文释义',words,src:'文本'};
+}
+function addBook(b){
+  if(!b.words.length){ libNote('这个文件里没有找到单词。',true); return; }
+  const ex=BOOKS.findIndex(x=>x.id===b.id);
+  if(ex>=0) BOOKS[ex]=b; else BOOKS.push(b);
+  renderTree(); selectBook(b.id); closeLib();
+}
+function libNote(msg,warn){ const n=$('libNote'); n.textContent=msg; n.className='sheet-note'+(warn?' warn':''); }
+function libRow(icon,title,sub,count,onclick,disabled){
+  const b=document.createElement('button'); b.className='src-row'; if(disabled) b.setAttribute('disabled','');
+  b.innerHTML=`<span class="ic">${icon}</span><span class="info"><b></b><small></small></span>`+(count!=null?`<span class="n">${count} 词</span>`:'');
+  b.querySelector('b').textContent=title; b.querySelector('small').textContent=sub;
+  b.onclick=onclick; $('libList').appendChild(b); return b;
+}
+function showSnapshot(reason){
+  $('libList').innerHTML='';
+  Object.entries(SNAPSHOT).forEach(([fn,d])=>{
+    const n=Object.values(d.groups).reduce((a,v)=>a+v.length,0);
+    libRow('📗',d.fileName||prettyName(fn),d.description||fn,n,()=>addBook(bookFromGroups('snap:'+fn,d.fileName||prettyName(fn),d.description,d.groups)));
+  });
+  libNote(reason+'下面是随应用打包的同一批词库副本，可直接使用；也可以打开本地 .json / .txt 文件。',false);
+}
+async function loadLibrary(){
+  $('libList').innerHTML='';
+  const wait=libRow('<span class="spin"></span>','正在连接 GitHub…',REPO_API,null,null,true);
+  try{
+    const r=await fetch(REPO_API,{headers:{'Accept':'application/vnd.github+json'}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const files=data.filter(i=>i.type==='file'&&(i.name.startsWith('dict_')||i.name.startsWith('txt_')));
+    if(!files.length) throw new Error('目录里没有 dict_ / txt_ 文件');
+    $('libList').innerHTML='';
+    files.forEach(f=>{
+      const isJson=f.name.endsWith('.json');
+      libRow(isJson?'📗':'📄',prettyName(f.name),f.name+' · '+(f.size/1024).toFixed(1)+' KB',null,()=>fetchBook(f.name,isJson));
+    });
+    libNote('点任意一条即可加入左侧书架。词库来自 cocobotech/xiaobao 的 apps/Vocabulary 目录，与 typing/adv.html 使用的是同一份数据。',false);
+  }catch(err){
+    wait.remove();
+    showSnapshot('无法连接 GitHub（'+err.message+'）——这一般是页面所在环境禁止跨站请求。');
+  }
+}
+async function fetchBook(fname,isJson){
+  libNote('正在下载 '+fname+' …',false);
+  try{
+    const r=await fetch(REPO_RAW+encodeURIComponent(fname)); if(!r.ok) throw new Error('HTTP '+r.status);
+    if(isJson){ const d=await r.json(); addBook(bookFromGroups('gh:'+fname,d.fileName||prettyName(fname),d.description,d.groups||{})); }
+    else { addBook(bookFromText('gh:'+fname,prettyName(fname),await r.text())); }
+  }catch(err){ libNote('下载失败：'+err.message,true); }
+}
+function openLib(){ $('libModal').classList.add('show'); loadLibrary(); }
+function closeLib(){ $('libModal').classList.remove('show'); }
+
+/* ================= 状态 & 存储 ================= */
+const store={get(k,d){try{const v=localStorage.getItem('wordbox.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('wordbox.'+k,JSON.stringify(v))}catch{}}};
+const $=id=>document.getElementById(id);
+let bookId=store.get('book',BOOKS[0].id); if(!BOOKS.find(b=>b.id===bookId)) bookId=BOOKS[0].id;
+let mode=store.get('mode','flash');
+const book=()=>BOOKS.find(b=>b.id===bookId);
+
+/* ================= 声音 ================= */
+let actx;
+function ctx(){ if(!actx){ try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch{} } if(actx&&actx.state==='suspended') actx.resume(); return actx; }
+function tone(freq,dur=0.08,type='sine',vol=0.18,when=0){
+  const c=ctx(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,c.currentTime+when);
+  g.gain.exponentialRampToValueAtTime(vol,c.currentTime+when+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+when+dur);
+  o.connect(g).connect(c.destination);o.start(c.currentTime+when);o.stop(c.currentTime+when+dur+0.02);
+}
+const sfx={
+  click(){tone(880,0.05,'triangle',0.12)},
+  buzz(){tone(140,0.18,'square',0.10);tone(120,0.18,'sawtooth',0.05)},
+  win(){tone(523,0.12,'sine',0.16);tone(659,0.12,'sine',0.16,0.1);tone(784,0.12,'sine',0.16,0.2);tone(1046,0.25,'sine',0.18,0.3)},
+  ok(){tone(660,0.1,'sine',0.14);tone(990,0.16,'sine',0.14,0.1)},
+  bad(){tone(220,0.2,'triangle',0.12);tone(180,0.28,'triangle',0.12,0.15)}
+};
+let voice=null, zhVoice=null;
+function pickVoice(){
+  const vs=speechSynthesis.getVoices();
+  voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Samantha|Google US|Aria|Jenny|Zira|Ava/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
+  zhVoice=vs.find(v=>/zh[-_](CN|Hans)/i.test(v.lang)&&/Tingting|Google|Xiaoxiao|Yaoyao|Huihui|Mei/i.test(v.name))||vs.find(v=>/zh[-_](CN|Hans)/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null;
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text,onend,lang){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const zh=lang==='zh';
+  const u=new SpeechSynthesisUtterance(text); u.lang=zh?'zh-CN':'en-US'; u.rate=zh?0.8:0.85;
+  const v=zh?zhVoice:voice; if(v) u.voice=v;
+  if(onend) u.onend=onend; speechSynthesis.speak(u);
+}
+/* 按当前单词书的语言朗读：汉字书读汉字，英语书读单词 */
+function speakWord(w,onend){ speak(w.hz||w.en,onend,w.hz?'zh':'en'); }
+
+/* ================= 配色主题 ================= */
+const PALETTES=[
+  {id:'clem', name:'蜜橙 Clementine', cn:'蜜橙', note:'Clementine · 温暖明快',
+   light:{ground:'#F2F6FB',surface:'#FFFFFF',surface2:'#E9EFF6',ink:'#1B2838',muted:'#5E6E82',line:'#D8E1EC',accent:'#FF8A3D',accentInk:'#FFFFFF',accentSoft:'#FFF0E4',blue:'#3D6BFF',blueSoft:'#E7EDFF'},
+   dark:{ground:'#141B25',surface:'#1D2734',surface2:'#26313F',ink:'#EEF3F9',muted:'#93A3B6',line:'#2E3B4C',accent:'#FF9A55',accentInk:'#1B1208',accentSoft:'#3A2717',blue:'#7C9BFF',blueSoft:'#25304D'}},
+  {id:'ink', name:'靛墨 Indigo Ink', cn:'靛墨', note:'Indigo Ink · 沉静专注',
+   light:{ground:'#F1F2F8',surface:'#FFFFFF',surface2:'#E6E8F3',ink:'#1A1D2E',muted:'#5C6180',line:'#D5D8E7',accent:'#4C5BD4',accentInk:'#FFFFFF',accentSoft:'#E7E9FB',blue:'#7A5AF8',blueSoft:'#EFEAFE'},
+   dark:{ground:'#13141F',surface:'#1C1E2C',surface2:'#262939',ink:'#ECEEF8',muted:'#9297B5',line:'#2E3245',accent:'#8290FF',accentInk:'#10121F',accentSoft:'#262B4A',blue:'#A98BFF',blueSoft:'#2A2445'}},
+  {id:'pine', name:'松林 Pine & Brass', cn:'松林', note:'Pine & Brass · 典雅沉稳',
+   light:{ground:'#F3F5F0',surface:'#FFFFFF',surface2:'#E7EBE2',ink:'#1C2620',muted:'#5A6A5E',line:'#D6DDCF',accent:'#2F6B4F',accentInk:'#FFFFFF',accentSoft:'#DFEDE4',blue:'#B07D3B',blueSoft:'#F5EAD9'},
+   dark:{ground:'#121814',surface:'#1B2320',surface2:'#242E29',ink:'#E9F1EB',muted:'#90A296',line:'#2C3833',accent:'#4FA97B',accentInk:'#08140E',accentSoft:'#1B3428',blue:'#D4A25E',blueSoft:'#33281A'}},
+  {id:'rose', name:'玫瑰石 Rosewood', cn:'玫瑰石', note:'Rosewood · 柔和温润',
+   light:{ground:'#F8F3F2',surface:'#FFFFFF',surface2:'#F0E6E5',ink:'#2A1D20',muted:'#71595E',line:'#E4D5D4',accent:'#A63F52',accentInk:'#FFFFFF',accentSoft:'#F8E5E8',blue:'#4A6C7A',blueSoft:'#E2EDF1'},
+   dark:{ground:'#1A1315',surface:'#241B1E',surface2:'#2F2428',ink:'#F5EAEC',muted:'#AE9096',line:'#3A2C31',accent:'#E37187',accentInk:'#200A0F',accentSoft:'#3D2229',blue:'#7FB0C2',blueSoft:'#21323A'}},
+  {id:'gold', name:'午夜金 Midnight Gold', cn:'午夜金', note:'Midnight Gold · 华贵低调',
+   light:{ground:'#F5F4EF',surface:'#FFFFFF',surface2:'#EAE8DF',ink:'#1F1E1A',muted:'#6B685C',line:'#DCD9CD',accent:'#B58A2B',accentInk:'#1F1705',accentSoft:'#F6ECD4',blue:'#35566B',blueSoft:'#E1EAF0'},
+   dark:{ground:'#14140F',surface:'#1E1E18',surface2:'#292921',ink:'#F2F0E6',muted:'#A09C8A',line:'#34342A',accent:'#D9AE4E',accentInk:'#1A1405',accentSoft:'#3A2F14',blue:'#6E9AB5',blueSoft:'#1E2C36'}},
+  {id:'porcelain', name:'天青 Porcelain', cn:'天青', note:'Porcelain · 清透干净',
+   light:{ground:'#EFF4F6',surface:'#FFFFFF',surface2:'#E1EBEF',ink:'#16262C',muted:'#55707A',line:'#CFDEE4',accent:'#1E7A8C',accentInk:'#FFFFFF',accentSoft:'#DDF0F3',blue:'#E08A3C',blueSoft:'#FCEBDA'},
+   dark:{ground:'#101819',surface:'#182225',surface2:'#212D31',ink:'#E8F3F5',muted:'#8AA5AD',line:'#29383D',accent:'#3FB6C9',accentInk:'#04191C',accentSoft:'#12333A',blue:'#F0A55E',blueSoft:'#33261A'}},
+  {id:'plum', name:'夜紫 Velvet Plum', cn:'夜紫', note:'Velvet Plum · 浓郁有个性',
+   light:{ground:'#F5F2F7',surface:'#FFFFFF',surface2:'#EAE4F0',ink:'#241A2E',muted:'#635673',line:'#DED5E6',accent:'#6D3FA8',accentInk:'#FFFFFF',accentSoft:'#EDE3F8',blue:'#C2557E',blueSoft:'#FAE3EC'},
+   dark:{ground:'#15111C',surface:'#1F1A29',surface2:'#2A2336',ink:'#F0E9F7',muted:'#A395B3',line:'#372E45',accent:'#A87FE8',accentInk:'#150B23',accentSoft:'#2F2244',blue:'#E88AAC',blueSoft:'#3A2130'}}
+];
+function palVars(t){return `--ground:${t.ground};--surface:${t.surface};--surface2:${t.surface2};--ink:${t.ink};--muted:${t.muted};--line:${t.line};--accent:${t.accent};--accent-ink:${t.accentInk};--accent-soft:${t.accentSoft};--blue:${t.blue};--blue-soft:${t.blueSoft};`}
+function applyPalette(id){
+  const p=PALETTES.find(x=>x.id===id)||PALETTES[0];
+  let el=$('palStyle'); if(!el){ el=document.createElement('style'); el.id='palStyle'; document.body.appendChild(el); }
+  el.textContent=`:root{${palVars(p.light)}}`
+    +`@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${palVars(p.dark)}}}`
+    +`:root[data-theme="dark"]{${palVars(p.dark)}}`;
+  store.set('pal',p.id);
+  const sw=t=>`<i style="background:${t.accent}"></i><i style="background:${t.blue}"></i><i style="background:${t.ink}"></i>`;
+  $('palTrigSw').innerHTML=sw(p.light); $('palTrigLab').textContent=p.name;
+  document.querySelectorAll('.pal-opt').forEach(o=>o.classList.toggle('sel',o.dataset.id===p.id));
+}
+function renderPalettes(){
+  const m=$('palMenu');
+  PALETTES.forEach(p=>{
+    const b=document.createElement('button'); b.className='pal-opt'; b.dataset.id=p.id; b.setAttribute('role','option');
+    b.innerHTML=`<span class="swatches"><i style="background:${p.light.accent}"></i><i style="background:${p.light.blue}"></i><i style="background:${p.light.ink}"></i></span>`
+      +`<span class="txt"><b>${p.cn}</b><small>${p.note}</small></span>`
+      +`<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg>`;
+    b.onclick=()=>{ applyPalette(p.id); $('pal').removeAttribute('open'); $('palTrigger').setAttribute('aria-expanded','false'); };
+    m.appendChild(b);
+  });
+  $('palTrigger').onclick=e=>{ e.stopPropagation(); const o=$('pal').hasAttribute('open'); $('pal').toggleAttribute('open',!o); $('palTrigger').setAttribute('aria-expanded',String(!o)); };
+  document.addEventListener('click',e=>{ if(!e.target.closest('#pal')){ $('pal').removeAttribute('open'); $('palTrigger').setAttribute('aria-expanded','false'); } });
+}
+
+/* ================= Emoji 显示开关 ================= */
+let emojiOn=store.get('emoji',true);
+function applyEmoji(on){
+  emojiOn=!!on; store.set('emoji',emojiOn);
+  document.body.classList.toggle('no-emoji',!emojiOn);
+  ['fEmoji','dEmoji'].forEach(id=>$(id)&&$(id).classList.toggle('on',emojiOn));
+}
+
+/* ================= 3D 挤出材质 ================= */
+const FX=[
+  {id:'',          name:'关闭',      note:'干净平面，无立体'},
+  {id:'classic',   name:'经典主色',  note:'跟随当前配色的立体字'},
+  {id:'gold',      name:'黄金',      note:'暖金拉丝 · 深色卡面'},
+  {id:'rosegold',  name:'玫瑰金',    note:'柔粉铜 · 奶油卡面'},
+  {id:'steel',     name:'蓝钢',      note:'冷银抛光'},
+  {id:'candy',     name:'糖果',      note:'亮粉糖霜'},
+  {id:'choco',     name:'巧克力',    note:'焦糖可可'},
+  {id:'jade',      name:'翡翠',      note:'青玉温润'},
+  {id:'lava',      name:'熔岩',      note:'橙红炽热 · 深色卡面'},
+  {id:'graphite',  name:'墨玉',      note:'石墨冷灰'}
+];
+let fxId=store.get('fx','');
+function applyFx(id){
+  fxId=FX.some(f=>f.id===id)?id:'';
+  const w=$('cardWrap');
+  if(fxId) w.setAttribute('data-fx',fxId); else w.removeAttribute('data-fx');
+  $('fxLab').textContent=(FX.find(f=>f.id===fxId)||FX[0]).name;
+  $('fxTrigger').classList.toggle('on',!!fxId);
+  document.querySelectorAll('.fx-opt').forEach(o=>o.classList.toggle('sel',o.dataset.id===fxId));
+  store.set('fx',fxId);
+}
+function renderFx(){
+  const m=$('fxMenu');
+  FX.forEach(f=>{
+    const b=document.createElement('button'); b.className='fx-opt'; b.dataset.id=f.id; b.setAttribute('role','option');
+    b.innerHTML=`<span class="prev"${f.id?` data-fx="${f.id}"`:''}><span class="fx-word" data-word="Aa">Aa</span></span>`
+      +`<span><span style="display:block">${f.name}</span><small style="font-size:11px;font-weight:600;color:var(--muted)">${f.note}</small></span>`
+      +`<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg>`;
+    b.onclick=()=>{ applyFx(f.id); $('fx').removeAttribute('open'); $('fxTrigger').setAttribute('aria-expanded','false'); };
+    m.appendChild(b);
+  });
+  $('fxTrigger').onclick=e=>{ e.stopPropagation(); const o=$('fx').hasAttribute('open'); $('fx').toggleAttribute('open',!o); $('fxTrigger').setAttribute('aria-expanded',String(!o)); };
+  document.addEventListener('click',e=>{ if(!e.target.closest('#fx')) $('fx').removeAttribute('open'); });
+}
+
+/* ================= 侧栏 树 ================= */
+function renderTree(){
+  const t=$('tree'); t.innerHTML='';
+  const groups=[{cat:'en',label:'英语单词'},{cat:'sup',label:'英语补充组'},{cat:'zh',label:'汉字'}];
+  const closed=store.get('closedGroups',[]);
+  groups.forEach(g=>{
+    const listed=BOOKS.filter(b=>(b.cat||'en')===g.cat);
+    if(!listed.length) return;
+    const open=!closed.includes(g.cat)||listed.some(b=>b.id===bookId);
+    const sec=document.createElement('div'); sec.className='tgroup'+(open?' open':''); sec.dataset.cat=g.cat;
+    const h=document.createElement('button'); h.className='tree-label'; h.setAttribute('aria-expanded',String(open));
+    h.innerHTML=`<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg><span>${g.label}</span><em>${listed.length}</em>`;
+    h.onclick=()=>{
+      const now=!sec.classList.contains('open');
+      sec.classList.toggle('open',now); h.setAttribute('aria-expanded',String(now));
+      const c=store.get('closedGroups',[]).filter(x=>x!==g.cat);
+      if(!now) c.push(g.cat);
+      store.set('closedGroups',c);
+    };
+    sec.appendChild(h);
+    const body=document.createElement('div'); body.className='tgroup-body';
+    listed.forEach(bk=>{
+      const el=document.createElement('div'); el.className='book'+(bk.id===bookId?' active':''); el.dataset.id=bk.id;
+      el.innerHTML=`<button class="book-head"><span class="dot" style="background:${bk.color}"></span><span class="name"></span>${bk.src?`<span class="src">${bk.src}</span>`:''}<span class="cnt">${bk.words.length}</span></button>`;
+      el.querySelector('.name').textContent=bk.name; el.querySelector('.book-head').title=bk.name+(bk.desc?' — '+bk.desc:'');
+      el.querySelector('.book-head').onclick=()=>{ if(bk.id!==bookId) selectBook(bk.id); };
+      body.appendChild(el);
+    });
+    sec.appendChild(body); t.appendChild(sec);
+  });
+  $('footInfo').textContent='已收录 '+BOOKS.reduce((n,b)=>n+b.words.length,0)+' 条';
+}
+function selectBook(id){
+  bookId=id; store.set('book',id);
+  document.querySelectorAll('.book').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  const zh=book().lang==='zh';
+  document.body.classList.toggle('zhbook',zh);
+  $('crumbBook').textContent=book().name; $('crumbCount').textContent=book().words.length+(zh?' 字':' 词');
+  $('dInput').placeholder=zh?'听音，输入拼音，按回车':'听音，输入单词，按回车';
+  $('tabDictLab').textContent=zh?'根据读音写拼音':'根据读音写单词';
+  $('tHint').textContent=zh?'听到汉字，打出它的拼音 · 打对有清脆提示音，打错需重打该字母':'直接开始打字 · 打对有清脆提示音，打错会提示并需重打该字母';
+  flash.reset(); dict.reset(); typing.reset(); list.reset();
+}
+function markCurrentWord(){}
+
+/* ================= 模式切换 ================= */
+function setMode(m){
+  mode=m; store.set('mode',m);
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+m));
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  if(m==='dict') setTimeout(()=>{ $('dInput').focus(); if(dict.i>=0&&!dict.answered) dict.say(); },120);
+  if(m==='type') setTimeout(()=>$('tInput').focus(),50);
+  if(m!=='list') list.stop(); else list.render();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setMode(t.dataset.mode));
+
+/* ================= Flash 卡 ================= */
+const flash={
+  order:[], i:0, shuffle:store.get('shuffle',false), auto:store.get('auto',true), flipped:false,
+  reset(){ this.order=book().words.map((_,i)=>i); if(this.shuffle) shuffleArr(this.order); this.i=0; this.flipped=false; this.render(); },
+  go(idx){ const p=this.order.indexOf(idx); this.i=p<0?0:p; this.flipped=false; this.render(); },
+  cur(){ return book().words[this.order[this.i]]; },
+  render(){
+    const w=this.cur(), n=this.order.length;
+    $('card').classList.toggle('flipped',this.flipped);
+    const disp=w.hz||w.en;
+    $('fWord').textContent=disp; $('bWord').textContent=disp;
+    $('fWord').dataset.word=disp; $('bWord').dataset.word=disp;
+    $('fWord').classList.toggle('hz',!!w.hz); $('bWord').classList.toggle('hz',!!w.hz);
+    $('fEmo').textContent=w.em||''; $('bEmo').textContent=w.em||'';
+    $('fPy').textContent=w.hz?(w.ipa||''):''; $('fPy').style.display=w.hz&&w.ipa?'':'none';
+    $('bIpa').textContent=w.ipa||''; $('bIpa').style.display=w.ipa?'':'none';
+    $('bZh').textContent=w.zh||'（本词库无中文释义）'; $('bZh').style.opacity=w.zh?1:.5;
+    $('fTag').textContent=w.g||book().short; $('fIdx').textContent=$('bIdx').textContent=(this.i+1)+' / '+n;
+    $('fCount').textContent=(this.i+1)+' / '+n; $('fProg').style.width=((this.i+1)/n*100)+'%';
+    $('fShuffle').classList.toggle('on',this.shuffle); $('fAuto').classList.toggle('on',this.auto);
+    markCurrentWord(this.order[this.i]);
+  },
+  flip(){ this.flipped=!this.flipped; $('card').classList.toggle('flipped',this.flipped); if(this.flipped&&this.auto) this.say(); },
+  say(){ const b=$('fSpeakBack'),f=$('fSpeakFront'); b.classList.add('playing');f.classList.add('playing'); speakWord(this.cur(),()=>{b.classList.remove('playing');f.classList.remove('playing')}); },
+  next(){ this.i=(this.i+1)%this.order.length; this.flipped=false; this.render(); },
+  prev(){ this.i=(this.i-1+this.order.length)%this.order.length; this.flipped=false; this.render(); }
+};
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
+$('card').onclick=e=>{ if(e.target.closest('.speak-btn')) return; flash.flip(); };
+$('card').onkeydown=e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault();flash.flip();} };
+$('fSpeakFront').onclick=$('fSpeakBack').onclick=e=>{e.stopPropagation();flash.say();};
+$('fNext').onclick=()=>flash.next(); $('fPrev').onclick=()=>flash.prev();
+$('fShuffle').onclick=()=>{flash.shuffle=!flash.shuffle;store.set('shuffle',flash.shuffle);flash.reset();};
+$('fAuto').onclick=()=>{flash.auto=!flash.auto;store.set('auto',flash.auto);flash.render();};
+let tx=0; $('card').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+$('card').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx; if(dx<-60) flash.next(); else if(dx>60) flash.prev();});
+
+/* ================= 根据读音写单词 ================= */
+const dict={
+  order:[], i:0, right:0, wrong:0, answered:false, hint:store.get('dhint',false),
+  reset(){ this.order=book().words.map((_,i)=>i); shuffleArr(this.order); this.i=0; this.right=0; this.wrong=0; this.load(); },
+  cur(){ return book().words[this.order[this.i]]; },
+  load(){
+    this.answered=false; const w=this.cur();
+    $('dEmo').textContent=w.em||'';
+    if(w.ipa&&!w.hz) $('dIpa').textContent=w.ipa; else $('dIpa').innerHTML='<span class="no-ipa">点这里再听一次</span>';
+    $('dZh').textContent=this.hint?(w.zh||''):''; $('dHint').classList.toggle('on',this.hint);
+    const inp=$('dInput'); inp.value=''; inp.className='dict-input'; inp.disabled=false;
+    $('dFeedback').className='feedback'; $('dFeedback').textContent='';
+    $('dPos').textContent=this.i+1; $('dTotal').textContent=this.order.length; $('dRight').textContent=this.right; $('dWrong').textContent=this.wrong;
+    if(mode==='dict'){ inp.focus(); setTimeout(()=>{ if(mode==='dict'&&this.i>=0&&!this.answered) this.say(); },260); }
+  },
+  check(){
+    if(this.answered) return this.next();
+    const inp=$('dInput'), val=inp.value.trim().toLowerCase(); if(!val) return;
+    const w=this.cur(); this.answered=true;
+    if(val===w.en.toLowerCase()){ this.right++; inp.className='dict-input ok'; $('dFeedback').className='feedback ok'; $('dFeedback').innerHTML='✓ 正确！<span class="ans'+(w.hz?' hz':'')+'">'+(w.hz||w.en)+'</span> '+(w.hz?w.ipa+' ':'')+w.zh; sfx.ok(); speakWord(w); setTimeout(()=>{ if(this.answered) this.next(); },1400); }
+    else { this.wrong++; inp.className='dict-input bad'; $('dFeedback').className='feedback bad'; $('dFeedback').innerHTML='✗ 不对，正确是 <span class="ans'+(w.hz?' hz':'')+'">'+(w.hz||w.en)+'</span> <b>'+w.en+'</b> '+w.zh; sfx.bad(); }
+    $('dRight').textContent=this.right; $('dWrong').textContent=this.wrong;
+  },
+  reveal(){ const w=this.cur(); if(!this.answered){this.wrong++;this.answered=true;$('dWrong').textContent=this.wrong;} $('dFeedback').className='feedback bad'; $('dFeedback').innerHTML='答案：<span class="ans'+(w.hz?' hz':'')+'">'+(w.hz||w.en)+'</span> <b>'+w.en+'</b> '+w.zh; speakWord(w); },
+  next(){ this.i++; if(this.i>=this.order.length){ this.finish(); return; } this.load(); },
+  finish(){ const n=this.order.length; sfx.win(); $('dFeedback').className='feedback ok'; $('dFeedback').textContent=`🎉 全部完成！${n} 个词，正确 ${this.right}，错误 ${this.wrong}。按回车重新开始。`; $('dInput').disabled=true; this.i=-1; this.answered=true; $('dIpa').textContent='/ˈfɪnɪʃt/'; $('dZh').textContent='完成'; },
+  say(){ speakWord(this.cur()); }
+};
+$('dSound').onclick=()=>{ if(dict.i<0) return; dict.say(); };
+$('dSound').onkeydown=e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault();dict.say();} };
+$('dInput').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); if(dict.i<0){dict.reset();return;} dict.check(); } if(e.key==='Escape'){dict.say();} };
+$('dCheck').onclick=()=>{ if(dict.i<0){dict.reset();return;} dict.check(); };
+$('dReveal').onclick=()=>{ if(dict.i<0) return; dict.reveal(); };
+$('dNext').onclick=()=>{ if(dict.i<0){dict.reset();return;} if(!dict.answered){dict.wrong++;} dict.next(); };
+$('dHint').onclick=()=>{ dict.hint=!dict.hint; store.set('dhint',dict.hint); $('dZh').textContent=dict.hint&&dict.i>=0?dict.cur().zh:''; $('dHint').classList.toggle('on',dict.hint); };
+
+/* ================= 打字练习 ================= */
+const typing={
+  order:[], i:0, pos:0, ok:0, bad:0, start:null, chars:0, sound:store.get('tsound',true), wrongAt:false,
+  reset(){ this.order=book().words.map((_,i)=>i); this.i=0; this.ok=0; this.bad=0; this.chars=0; this.start=null; $('tDone').className='done-banner'; this.load(); },
+  cur(){ return book().words[this.order[this.i]]; },
+  load(){
+    this.pos=0; this.wrongAt=false; const w=this.cur();
+    $('tEmo').textContent=w.em||''; $('tPos').textContent=(this.i+1)+' / '+this.order.length; $('tZh').textContent=w.hz||w.zh||w.en; $('tZh').classList.toggle('hz',!!w.hz); $('tIpa').textContent=w.hz?w.zh:(w.ipa||'');
+    $('tLetters').innerHTML=w.en.split('').map(c=>c===' '?'<span data-sp="1" class="sp">·</span>':`<span>${c}</span>`).join('');
+    $('tInput').value=''; this.paint(); this.stats();
+  },
+  paint(){ [...$('tLetters').children].forEach((s,k)=>{ const st=k<this.pos?'done':(k===this.pos?(this.wrongAt?'cur wrong':'cur'):''); s.className=(s.dataset.sp?'sp ':'')+st; }); },
+  key(ch){
+    if(this.i<0) return;
+    const w=this.cur().en; if(!this.start) this.start=Date.now();
+    if(ch.toLowerCase()===w[this.pos].toLowerCase()){
+      this.ok++; this.chars++; this.pos++; this.wrongAt=false; if(this.sound) sfx.click();
+      if(this.pos>=w.length){ this.paint(); if(this.sound) sfx.ok(); speakWord(this.cur()); setTimeout(()=>this.nextWord(),650); return; }
+    } else { this.bad++; this.wrongAt=true; if(this.sound) sfx.buzz(); }
+    this.paint(); this.stats();
+  },
+  nextWord(){ this.i++; if(this.i>=this.order.length){ this.finish(); return; } this.load(); },
+  stats(){
+    const total=this.ok+this.bad; $('tOk').textContent=this.ok; $('tBad').textContent=this.bad;
+    $('tAcc').textContent=(total?Math.round(this.ok/total*100):100)+'%';
+    const mins=this.start?(Date.now()-this.start)/60000:0; $('tWpm').textContent=mins>0.02?Math.round(this.chars/5/mins):0;
+  },
+  finish(){ this.stats(); sfx.win(); const b=$('tDone'); b.textContent=`🏆 打完啦！${this.order.length} 个词 · 准确率 ${$('tAcc').textContent} · ${$('tWpm').textContent} WPM。点「重新开始」再来一遍。`; b.className='done-banner show'; $('tLetters').innerHTML=''; $('tZh').textContent='完成'; $('tIpa').textContent=''; this.i=-1; }
+};
+$('tInput').addEventListener('input',e=>{ const v=e.target.value; e.target.value=''; if(v) [...v].forEach(c=>{ if(/^[a-zA-Z' \-’]$/.test(c)) typing.key(c); }); });
+$('tInput').onkeydown=e=>{ if(e.key==='Enter'&&typing.i<0) typing.reset(); };
+$('typeCard').onclick=()=>$('tInput').focus();
+$('tSkip').onclick=e=>{e.stopPropagation(); if(typing.i>=0){typing.nextWord();} $('tInput').focus();};
+$('tRestart').onclick=e=>{e.stopPropagation(); typing.reset(); $('tInput').focus();};
+$('tSound').onclick=e=>{e.stopPropagation(); typing.sound=!typing.sound; store.set('tsound',typing.sound); $('tSound').classList.toggle('on',typing.sound); $('tInput').focus();};
+setInterval(()=>{ if(mode==='type'&&typing.start&&typing.i>=0) typing.stats(); },1000);
+
+
+/* ================= 全部单词 ================= */
+const list={
+  q:'', playing:false, timer:null,
+  reset(){ this.stop(); this.q=''; const s=$('lSearch'); if(s) s.value=''; this.render(); },
+  render(){
+    const b=book(), zh=b.lang==='zh', q=this.q.trim().toLowerCase();
+    $('lTitle').textContent=b.name;
+    const rows=b.words.map((w,i)=>({w,i})).filter(({w})=>!q||w.en.toLowerCase().includes(q)||(w.zh||'').includes(q)||(w.hz||'').includes(q)||(w.ipa||'').toLowerCase().includes(q));
+    $('lSub').textContent=(q?rows.length+' / ':'')+b.words.length+(zh?' 字':' 词');
+    const g=$('lGrid');
+    if(!rows.length){ g.innerHTML='<div class="list-empty">没有匹配的内容</div>'; return; }
+    g.innerHTML='';
+    rows.forEach(({w,i})=>{
+      const c=document.createElement('button'); c.className='wcard'; c.dataset.i=i;
+      c.innerHTML=`<span class="no">${i+1}</span><span class="emo">${w.em||''}</span><span class="w${w.hz?' hz':''}"></span><span class="p"></span><span class="m"></span>`;
+      c.querySelector('.w').textContent=w.hz||w.en;
+      c.querySelector('.p').textContent=w.ipa||'';
+      c.querySelector('.m').textContent=w.zh||'';
+      c.onclick=()=>{ this.stop(); this.flash(c); speakWord(w); };
+      c.ondblclick=()=>{ setMode('flash'); flash.go(i); };
+      g.appendChild(c);
+    });
+  },
+  flash(c){ document.querySelectorAll('.wcard.playing').forEach(x=>x.classList.remove('playing')); c.classList.add('playing'); },
+  play(){
+    const cards=[...$('lGrid').querySelectorAll('.wcard')];
+    if(!cards.length) return;
+    this.playing=true; $('lPlay').textContent='■ 停止朗读'; $('lPlay').classList.add('primary');
+    let k=0;
+    const step=()=>{
+      if(!this.playing||k>=cards.length){ this.stop(); return; }
+      const c=cards[k++]; this.flash(c); c.scrollIntoView({block:'nearest',behavior:'smooth'});
+      speakWord(book().words[+c.dataset.i],()=>{ this.timer=setTimeout(step,450); });
+    };
+    step();
+  },
+  stop(){
+    this.playing=false; clearTimeout(this.timer);
+    if('speechSynthesis' in window) speechSynthesis.cancel();
+    const p=$('lPlay'); if(p){ p.textContent='▶︎ 依次朗读'; p.classList.remove('primary'); }
+    document.querySelectorAll('.wcard.playing').forEach(x=>x.classList.remove('playing'));
+  }
+};
+$('lSearch').oninput=e=>{ list.q=e.target.value; list.render(); };
+$('lPlay').onclick=()=>{ list.playing?list.stop():list.play(); };
+
+/* ================= 全局键盘 ================= */
+document.addEventListener('keydown',e=>{
+  if(mode!=='flash') return;
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowRight'){flash.next()} else if(e.key==='ArrowLeft'){flash.prev()} else if(e.key===' '){e.preventDefault();flash.flip()} else if(e.key.toLowerCase()==='s'){flash.say()}
+});
+document.addEventListener('pointerdown',()=>ctx(),{once:true});
+
+/* ================= 主题 ================= */
+$('themeBtn').onclick=()=>{ const r=document.documentElement; const cur=r.getAttribute('data-theme'); const sysDark=matchMedia('(prefers-color-scheme: dark)').matches; const isDark=cur?cur==='dark':sysDark; r.setAttribute('data-theme',isDark?'light':'dark'); store.set('theme',isDark?'light':'dark'); };
+(()=>{ const t=store.get('theme',null); if(t) document.documentElement.setAttribute('data-theme',t); })();
+
+/* ================= 启动 ================= */
+$('libBtn').onclick=openLib;
+$('libClose').onclick=closeLib;
+$('libRefresh').onclick=loadLibrary;
+$('libModal').onclick=e=>{ if(e.target===$('libModal')) closeLib(); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLib(); });
+$('libUpload').onclick=()=>$('libFile').click();
+$('libFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      if(f.name.endsWith('.json')){ const d=JSON.parse(ev.target.result); addBook(bookFromGroups('file:'+f.name,d.fileName||f.name.replace(/\.json$/,''),d.description,d.groups||{})); }
+      else addBook(bookFromText('file:'+f.name,f.name.replace(/\.txt$/,''),ev.target.result));
+    }catch(err){ libNote('这个文件读不出来：'+err.message,true); }
+  };
+  rd.readAsText(f); e.target.value='';
+};
+$('fEmoji').onclick=()=>applyEmoji(!emojiOn);
+$('dEmoji').onclick=()=>applyEmoji(!emojiOn);
+applyEmoji(emojiOn);
+renderPalettes(); applyPalette(store.get('pal','clem')); renderFx(); applyFx(fxId); renderTree(); selectBook(bookId); $('tSound').classList.toggle('on',typing.sound); setMode(mode);
+</script>
