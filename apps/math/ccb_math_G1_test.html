@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>COCOBO 数学考试</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F4F5F8;
+  --surface:#FFFFFF;
+  --surface-2:#F7F8FB;
+  --ink:#161B2B;
+  --muted:#636B82;
+  --line:#DEE2EC;
+  --line-soft:#EAEDF4;
+  --accent:#2E47C4;
+  --accent-soft:#E8EBFA;
+  --warm:#B75E1C;
+  --warm-soft:#F8EEE4;
+  --ok:#177951;
+  --ok-soft:#E3F3EB;
+  --bad:#C23A3A;
+  --bad-soft:#FAE8E8;
+  --shadow:0 1px 2px rgba(22,27,43,.05), 0 8px 24px -14px rgba(22,27,43,.2);
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,monospace;
+  --ui:"Outfit","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --on-accent:#FFFFFF;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1220; --surface:#181C2A; --surface-2:#1E2332;
+    --ink:#E9EBF4; --muted:#98A0B8; --line:#2C3244; --line-soft:#232939;
+    --accent:#93A6FF; --accent-soft:#232A47;
+    --warm:#EDA463; --warm-soft:#32271B;
+    --ok:#52C892; --ok-soft:#183628;
+    --bad:#FF8484; --bad-soft:#3A2023;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.75);
+    --on-accent:#0F1220;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1220; --surface:#181C2A; --surface-2:#1E2332;
+  --ink:#E9EBF4; --muted:#98A0B8; --line:#2C3244; --line-soft:#232939;
+  --accent:#93A6FF; --accent-soft:#232A47;
+  --warm:#EDA463; --warm-soft:#32271B;
+  --ok:#52C892; --ok-soft:#183628;
+  --bad:#FF8484; --bad-soft:#3A2023;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.75);
+  --on-accent:#0F1220;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--ui);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ====== 两栏骨架：左设置 / 右试卷 ====== */
+.shell{
+  display:grid;
+  grid-template-columns:266px minmax(0,1fr);
+  gap:24px;
+  align-items:start;
+  max-width:1200px;margin:0 auto;
+  padding:0 16px;padding-block:20px 56px;
+}
+@media (max-width:900px){ .shell{grid-template-columns:minmax(0,1fr);gap:18px} }
+
+.side{
+  position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);
+  display:flex;flex-direction:column;gap:14px;
+  min-width:0;
+  max-height:calc(100vh - 40px);overflow-y:auto;overscroll-behavior:contain;
+  padding-right:2px;
+}
+@media (max-width:900px){ .side{position:static;max-height:none;overflow:visible} }
+.main{min-width:0;display:flex;flex-direction:column;gap:18px}
+
+/* ====== 标识 ====== */
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0}
+.brand .mark{
+  display:inline-block;max-width:100%;
+  font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.16em;
+  color:var(--accent);background:var(--accent-soft);
+  padding:4px 9px;border-radius:5px;white-space:nowrap;
+}
+.brand .line{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;min-width:0}
+.brand h1{font-size:17px;font-weight:600;margin:0;letter-spacing:.01em}
+.brand .grade{font-size:12px;color:var(--muted);font-family:var(--mono)}
+
+/* ====== 设置面板 ====== */
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:16px;box-shadow:var(--shadow);min-width:0;
+}
+.panel-head{
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
+  font-size:10.5px;font-weight:600;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;
+}
+.panel-head::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > label{font-size:12.5px;color:var(--muted);font-weight:500}
+.ctl{display:flex;align-items:center;gap:6px;min-width:0}
+.ctl > select{flex:1 1 0;min-width:0}
+.ctl .to{color:var(--muted);font-size:12px;flex:none}
+.panel select,.panel input[type=number]{
+  font-family:var(--ui);font-size:14px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:7px;
+  padding:7px 9px;width:100%;min-width:0;max-width:100%;
+}
+.panel input[type=number]{font-family:var(--mono);font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible,button:focus-visible,label:focus-within{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,110px),1fr));gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft)}
+button{
+  font-family:var(--ui);font-size:13.5px;font-weight:500;cursor:pointer;
+  border-radius:7px;padding:9px 12px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);min-width:0;
+}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);grid-column:1/-1}
+button.primary:hover{filter:brightness(1.08)}
+.switch{
+  display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);
+  cursor:pointer;margin-top:12px;grid-column:1/-1;
+}
+.switch input{accent-color:var(--accent);width:15px;height:15px;flex:none;margin:0}
+.switch span{min-width:0}
+
+/* ====== 成绩条 ====== */
+.banner{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;
+  border-radius:12px;padding:14px 16px;min-width:0;
+  border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);
+}
+.banner.pass{border-color:var(--ok);background:var(--ok-soft)}
+.banner.fail{border-color:var(--bad);background:var(--bad-soft)}
+.banner .score{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1;flex:none}
+.banner.pass .score{color:var(--ok)}
+.banner.fail .score{color:var(--bad)}
+.banner .stat{display:flex;flex-direction:column;gap:1px;min-width:0}
+.banner .stat b{font-family:var(--mono);font-size:15px;font-weight:700;white-space:nowrap}
+.banner .stat em{font-size:10.5px;color:var(--muted);letter-spacing:.08em;font-style:normal;white-space:nowrap}
+
+/* ====== 试卷 ====== */
+.paper{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:26px 24px 30px;box-shadow:var(--shadow);min-width:0;
+}
+@media (max-width:520px){ .paper{padding:20px 14px 24px} }
+
+.paper-head{border-bottom:2px solid var(--ink);padding-bottom:13px;margin-bottom:22px}
+.paper-title{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.paper-title h2{margin:0;font-size:19px;font-weight:600;letter-spacing:.02em;min-width:0}
+.paper-title .code{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;flex:none}
+.blanks{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:13px;font-size:12.5px;color:var(--muted)}
+.blanks span{display:inline-flex;align-items:flex-end;gap:6px}
+.blanks i{display:inline-block;width:68px;max-width:24vw;border-bottom:1px solid var(--line);height:14px;font-style:normal}
+
+.sec + .sec{margin-top:28px;padding-top:24px;border-top:1px dashed var(--line)}
+.sec-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 15px}
+.sec-tag{
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  padding:4px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent);flex:none;
+}
+.sec-b .sec-tag{background:var(--warm-soft);color:var(--warm)}
+.sec-head h3{margin:0;font-size:15px;font-weight:600;min-width:0}
+.sec-head .hint{font-size:12px;color:var(--muted);margin-left:auto;flex:none}
+@media (max-width:520px){ .sec-head .hint{margin-left:0;flex-basis:100%} }
+
+.qs{
+  display:grid;gap:8px 20px;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,var(--qw,260px)),1fr));
+}
+.empty{margin:0;color:var(--muted);font-size:13px}
+
+/* 题目行：flex + wrap，任何宽度下都不会溢出或重叠 */
+.q{
+  display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;
+  padding:6px 8px;border-radius:7px;border:1px solid transparent;min-width:0;
+}
+.q.correct{background:var(--ok-soft);border-color:var(--ok)}
+.q.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.q-no{
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  width:22px;text-align:right;flex:none;font-variant-numeric:tabular-nums;
+}
+.expr{
+  font-family:var(--mono);font-size:var(--fs,16px);font-weight:500;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+  flex:1 1 auto;min-width:0;text-align:right;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+}
+.expr::-webkit-scrollbar{display:none}
+input.ans{
+  font-family:var(--mono);font-size:var(--fs,16px);font-weight:600;font-variant-numeric:tabular-nums;
+  width:var(--aw,72px);max-width:100%;flex:0 0 auto;text-align:center;
+  padding:5px 4px;border:1px solid var(--line);border-radius:6px;
+  background:var(--surface-2);color:var(--ink);
+  -moz-appearance:textfield;appearance:textfield;
+}
+input.ans::-webkit-outer-spin-button,input.ans::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.q.correct .ans{border-color:var(--ok);color:var(--ok);background:transparent}
+.q.wrong .ans{border-color:var(--bad);color:var(--bad);background:transparent}
+.mark{font-family:var(--mono);font-size:13px;font-weight:700;flex:none;width:14px;text-align:center}
+.q.correct .mark{color:var(--ok)}
+.q.wrong .mark{color:var(--bad)}
+/* 正确答案单独占一行，永不与算式挤在一起 */
+.fix{
+  flex:1 0 100%;text-align:right;padding-right:22px;
+  font-family:var(--mono);font-size:11.5px;color:var(--bad);
+}
+
+/* ====== 答案页 ====== */
+.keysheet{margin-top:26px;padding-top:22px;border-top:2px solid var(--ink)}
+.keysheet h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.keysheet p{margin:0 0 14px;font-size:12px;color:var(--muted)}
+.keygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,132px),1fr));gap:4px 16px}
+.keygrid div{
+  font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;
+  display:flex;gap:8px;padding:3px 0;border-bottom:1px dotted var(--line-soft);min-width:0;
+}
+.keygrid div span{color:var(--muted);width:24px;text-align:right;flex:none}
+.keygrid div b{font-weight:600;min-width:0;overflow-x:auto;scrollbar-width:none}
+
+.foot{margin:0;font-size:11.5px;color:var(--muted);text-align:center;letter-spacing:.04em}
+
+/* ====== 打印 ====== */
+@page{margin:14mm 12mm}
+@media print{
+  .noprint{display:none !important}
+  body{background:#fff;color:#000;font-size:13px;overflow:visible}
+  .shell{display:block;max-width:none;padding:0;margin:0}
+  .main{display:block}
+  .paper{border:none;box-shadow:none;border-radius:0;padding:0;background:#fff}
+  .paper-head{border-bottom:2px solid #000}
+  .paper-title h2{font-size:17px}
+  .blanks i{border-bottom:1px solid #666;max-width:none}
+  .sec-tag{background:#fff !important;color:#000 !important;border:1px solid #000}
+  .sec + .sec{border-top:1px dashed #999}
+  .q{border:none !important;background:transparent !important;break-inside:avoid;padding:5px 0}
+  .expr{color:#000;overflow:visible}
+  .ans{
+    border:none !important;border-bottom:1px solid #000 !important;border-radius:0;
+    background:transparent !important;color:#000 !important;
+  }
+  .mark,.fix{display:none !important}
+  .q-no,.keygrid div span,.sec-head .hint,.keysheet p{color:#444}
+  .keysheet{break-before:page;border-top:2px solid #000}
+  .keygrid div{border-bottom:1px dotted #bbb}
+}
+</style>
+
+<div class="shell">
+
+  <!-- ============ 左栏：设置 ============ -->
+  <aside class="side noprint">
+    <div class="brand">
+      <span class="mark">COCOBO</span>
+      <span class="line">
+        <h1>数学考试</h1>
+        <span class="grade">Grade 1</span>
+      </span>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">出题设置</div>
+      <div class="fields">
+        <div class="field" style="grid-column:1/-1">
+          <label for="digMin">加减法位数</label>
+          <div class="ctl">
+            <select id="digMin"></select>
+            <span class="to">到</span>
+            <select id="digMax"></select>
+          </div>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label for="addMode">加减法类型</label>
+          <select id="addMode">
+            <option value="mix">加减混合</option>
+            <option value="add">只考加法</option>
+            <option value="sub">只考减法</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label for="addCount">加减法题数</label>
+          <input id="addCount" type="number" min="0" max="60" step="1" value="10">
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label for="mulMode">乘除法类型</label>
+          <select id="mulMode">
+            <option value="mix">乘除混合</option>
+            <option value="mul">只考乘法</option>
+            <option value="div">只考除法</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label for="mulCount">乘除法题数</label>
+          <input id="mulCount" type="number" min="0" max="60" step="1" value="10">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnNew" class="primary" type="button">出新试卷</button>
+        <button id="btnGrade" type="button">交卷批改</button>
+        <button id="btnClear" type="button">清空答案</button>
+        <button id="btnPrint" type="button">打印试卷</button>
+        <label class="switch" for="showKey">
+          <input id="showKey" type="checkbox">
+          <span>显示／打印答案页</span>
+        </label>
+      </div>
+    </div>
+
+    <p class="foot">每次「出新试卷」都会随机生成全新题目</p>
+  </aside>
+
+  <!-- ============ 右栏：试卷 ============ -->
+  <div class="main">
+
+    <div id="banner" class="banner noprint" hidden></div>
+
+    <div class="paper">
+      <div class="paper-head">
+        <div class="paper-title">
+          <h2>COCOBO 数学考试 · 一年级</h2>
+          <span class="code" id="paperCode">卷号 —</span>
+        </div>
+        <div class="blanks">
+          <span>姓名 <i></i></span>
+          <span>班级 <i></i></span>
+          <span>日期 <i></i></span>
+          <span>得分 <i></i></span>
+        </div>
+      </div>
+
+      <section class="sec sec-a">
+        <div class="sec-head">
+          <span class="sec-tag">PART 1</span>
+          <h3>多位数加减法</h3>
+          <span class="hint" id="hintA"></span>
+        </div>
+        <div class="qs" id="listA"></div>
+      </section>
+
+      <section class="sec sec-b">
+        <div class="sec-head">
+          <span class="sec-tag">PART 2</span>
+          <h3>乘法与除法</h3>
+          <span class="hint" id="hintB"></span>
+        </div>
+        <div class="qs" id="listB" style="--qw:216px;--fs:15px;--aw:60px"></div>
+      </section>
+
+      <div class="keysheet" id="keysheet" hidden>
+        <h3>参考答案</h3>
+        <p>第 1–<span id="keySplit">0</span> 题为加减法，其余为乘除法。</p>
+        <div class="keygrid" id="keyGrid"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var $ = function(id){ return document.getElementById(id); };
+  var digMin = $("digMin"), digMax = $("digMax");
+  var addMode = $("addMode"), addCount = $("addCount");
+  var mulMode = $("mulMode"), mulCount = $("mulCount");
+  var listA = $("listA"), listB = $("listB");
+  var banner = $("banner"), showKey = $("showKey");
+  var keysheet = $("keysheet"), keyGrid = $("keyGrid"), keySplit = $("keySplit");
+  var questions = [];
+
+  for (var d = 2; d <= 7; d++){
+    digMin.insertAdjacentHTML("beforeend", '<option value="'+d+'">'+d+' 位</option>');
+    digMax.insertAdjacentHTML("beforeend", '<option value="'+d+'">'+d+' 位</option>');
+  }
+  digMin.value = "2";
+  digMax.value = "3";
+
+  function randInt(lo, hi){ return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+  function numOfDigits(n){
+    if (n <= 1) return randInt(1, 9);
+    var lo = Math.pow(10, n - 1);
+    return randInt(lo, lo * 10 - 1);
+  }
+
+  // ---- 出题 ----------------------------------------------------------------
+  function makeAddSub(lo, hi, mode){
+    var op = mode === "add" ? "+" : mode === "sub" ? "-" : (Math.random() < 0.5 ? "+" : "-");
+    var a = numOfDigits(randInt(lo, hi));
+    var b = numOfDigits(randInt(lo, hi));
+    if (op === "-"){
+      if (a < b){ var t = a; a = b; b = t; }          // 保证不出现负数
+      if (a === b){ b = Math.max(1, b - randInt(1, 9)); }  // 避免结果为 0
+    }
+    return { text: a + " " + op + " " + b, answer: op === "+" ? a + b : a - b };
+  }
+
+  function makeMulDiv(mode){
+    var op = mode === "mul" ? "×" : mode === "div" ? "÷" : (Math.random() < 0.5 ? "×" : "÷");
+    if (op === "×"){
+      var a = randInt(2, 9), b = randInt(2, 9);
+      return { text: a + " × " + b, answer: a * b };
+    }
+    var divisor = randInt(2, 9);                       // 除数为个位数
+    var quotient = randInt(2, 9);                      // 商为个位数，必定整除
+    return { text: (divisor * quotient) + " ÷ " + divisor, answer: quotient };
+  }
+
+  function rowHTML(q, idx){
+    return '<div class="q" data-i="' + idx + '">' +
+             '<span class="q-no">' + (idx + 1) + '</span>' +
+             '<span class="expr">' + q.text + ' =</span>' +
+             '<input class="ans" type="number" inputmode="numeric" autocomplete="off" ' +
+                    'id="q' + idx + '" aria-label="第 ' + (idx + 1) + ' 题答案">' +
+             '<span class="mark" aria-hidden="true"></span>' +
+             '<span class="fix"></span>' +
+           '</div>';
+  }
+
+  function generate(){
+    var lo = parseInt(digMin.value, 10);
+    var hi = parseInt(digMax.value, 10);
+    if (lo > hi){ hi = lo; digMax.value = String(hi); }
+
+    var nA = Math.max(0, Math.min(60, parseInt(addCount.value, 10) || 0));
+    var nB = Math.max(0, Math.min(60, parseInt(mulCount.value, 10) || 0));
+    addCount.value = nA; mulCount.value = nB;
+
+    questions = [];
+    var i, htmlA = "", htmlB = "";
+
+    // 位数越多，字号略小、列越宽 —— 列宽同时受 min(100%, …) 保护，绝不溢出容器
+    var fs = hi <= 3 ? 16 : (hi <= 5 ? 15 : 14);
+    var ch = fs * 0.62;
+    var ansW = Math.max(62, Math.round((hi + 2) * ch + 20));
+    var exprW = Math.round((2 * hi + 5) * ch);
+    var qw = exprW + ansW + 82;   // 题号 + 勾叉 + 间距 + 内边距
+
+    listA.style.setProperty("--qw", qw + "px");
+    listA.style.setProperty("--fs", fs + "px");
+    listA.style.setProperty("--aw", ansW + "px");
+
+    for (i = 0; i < nA; i++){
+      var qa = makeAddSub(lo, hi, addMode.value);
+      questions.push(qa);
+      htmlA += rowHTML(qa, questions.length - 1);
+    }
+    for (i = 0; i < nB; i++){
+      var qb = makeMulDiv(mulMode.value);
+      questions.push(qb);
+      htmlB += rowHTML(qb, questions.length - 1);
+    }
+
+    listA.innerHTML = htmlA || '<p class="empty">本卷不含加减法题。</p>';
+    listB.innerHTML = htmlB || '<p class="empty">本卷不含乘除法题。</p>';
+
+    $("hintA").textContent = nA + " 题 · " + (lo === hi ? lo + " 位数" : lo + "–" + hi + " 位数");
+    $("hintB").textContent = nB + " 题 · 一位数乘法／整除";
+    $("paperCode").textContent = "卷号 " + randInt(1000, 9999);
+
+    keySplit.textContent = String(nA);
+    keyGrid.innerHTML = questions.map(function(q, n){
+      return '<div><span>' + (n + 1) + '</span><b>' + q.answer + '</b></div>';
+    }).join("");
+
+    banner.hidden = true;
+    banner.className = "banner noprint";
+  }
+
+  // ---- 批改 ----------------------------------------------------------------
+  function grade(){
+    if (!questions.length) return;
+    var right = 0, blank = 0;
+    questions.forEach(function(q, i){
+      var input = $("q" + i);
+      if (!input) return;
+      var row = input.closest(".q");
+      var mark = row.querySelector(".mark");
+      var fix = row.querySelector(".fix");
+      var raw = input.value.trim();
+      row.classList.remove("correct", "wrong");
+      if (raw !== "" && Number(raw) === q.answer){
+        right++;
+        row.classList.add("correct");
+        mark.textContent = "✓"; fix.textContent = "";
+      } else {
+        if (raw === "") blank++;
+        row.classList.add("wrong");
+        mark.textContent = "✗"; fix.textContent = "正确答案 " + q.answer;
+      }
+    });
+
+    var total = questions.length;
+    var pct = Math.round(right / total * 100);
+    banner.className = "banner noprint " + (pct >= 80 ? "pass" : "fail");
+    banner.innerHTML =
+      '<div class="score">' + pct + '</div>' +
+      '<div class="stat"><b>' + right + " / " + total + '</b><em>答对</em></div>' +
+      '<div class="stat"><b>' + (total - right - blank) + '</b><em>做错</em></div>' +
+      '<div class="stat"><b>' + blank + '</b><em>未作答</em></div>' +
+      '<div class="stat"><b>' + (pct >= 80 ? "很棒！" : "再练一次") + '</b><em>评语</em></div>';
+    banner.hidden = false;
+  }
+
+  function clearAnswers(){
+    Array.prototype.forEach.call(document.querySelectorAll(".q"), function(row){
+      var input = row.querySelector(".ans");
+      if (input) input.value = "";
+      row.classList.remove("correct", "wrong");
+      row.querySelector(".mark").textContent = "";
+      row.querySelector(".fix").textContent = "";
+    });
+    banner.hidden = true;
+  }
+
+  // ---- 交互 ----------------------------------------------------------------
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Enter") return;
+    var el = document.activeElement;
+    if (!el || !el.classList.contains("ans")) return;
+    e.preventDefault();
+    var all = Array.prototype.slice.call(document.querySelectorAll(".ans"));
+    var next = all[all.indexOf(el) + 1];
+    if (next) next.focus(); else grade();
+  });
+
+  $("btnNew").addEventListener("click", generate);
+  $("btnGrade").addEventListener("click", grade);
+  $("btnClear").addEventListener("click", clearAnswers);
+  $("btnPrint").addEventListener("click", function(){ window.print(); });
+  showKey.addEventListener("change", function(){ keysheet.hidden = !showKey.checked; });
+  [digMin, digMax, addMode, addCount, mulMode, mulCount].forEach(function(el){
+    el.addEventListener("change", generate);
+  });
+
+  generate();
+})();
+</script>
+
+</body>
+</html>
