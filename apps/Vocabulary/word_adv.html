@@ -61,7 +61,8 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .book-head .cnt{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .book.active>.book-head .cnt{color:var(--accent)}
 .side-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
-.side-foot button{padding:6px 10px;border-radius:10px;background:var(--surface2);font-weight:700;font-size:12px}
+.side-foot button{padding:6px 9px;border-radius:10px;background:var(--surface2);font-weight:700;font-size:12px;white-space:nowrap;flex:none}
+.side-foot #footInfo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 
 /* ---------- palette dropdown ---------- */
 .pal{padding:10px 8px 4px;border-top:1px solid var(--line);position:relative}
@@ -112,6 +113,15 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .sheet-foot{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
 .spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .7s linear infinite;flex:none}
 @keyframes spin{to{transform:rotate(360deg)}}
+.vbody{padding:16px 20px;gap:18px}
+.vrow{display:flex;flex-direction:column;gap:8px}
+.vrow label{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.vctl{display:flex;gap:8px}
+.vctl select{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:700}
+.vctl .btn{padding:9px 14px;font-size:14px;flex:none}
+.vrate{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--muted)}
+.vrate input{flex:1;accent-color:var(--accent)}
+.vrate b{min-width:38px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .no-ipa{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:var(--muted)}
 
 .main{display:flex;flex-direction:column;min-width:0;min-height:0}
@@ -359,7 +369,8 @@ body.no-emoji .emo{display:none!important}
     </div>
     <div class="side-foot">
       <span id="footInfo">已收录 0 词</span>
-      <button id="themeBtn" style="margin-left:auto" title="切换深色 / 浅色">🌓</button>
+      <button id="voiceBtn" style="margin-left:auto" title="朗读声音设置">🔈 声音</button>
+      <button id="themeBtn" title="切换深色 / 浅色">🌓</button>
     </div>
   </aside>
 
@@ -494,6 +505,29 @@ body.no-emoji .emo{display:none!important}
       <button class="btn" id="libUpload">📂 打开本地文件</button>
       <input type="file" id="libFile" accept=".json,.txt" hidden>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="voiceModal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="voiceTitle">
+    <div class="sheet-top">
+      <div><h2 id="voiceTitle">朗读声音</h2><p>自动挑选本机最自然的人声，也可以手动指定</p></div>
+      <button class="x" id="voiceClose" aria-label="关闭"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" width="18" height="18"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="sheet-body vbody">
+      <div class="vrow">
+        <label for="vEn">英文声音</label>
+        <div class="vctl"><select id="vEn"></select><button class="btn" id="vEnTest">▶︎ 试听</button></div>
+        <div class="vrate"><span>语速</span><input type="range" id="vEnRate" min="0.5" max="1.3" step="0.05"><b id="vEnRateV"></b></div>
+      </div>
+      <div class="vrow">
+        <label for="vZh">中文声音</label>
+        <div class="vctl"><select id="vZh"></select><button class="btn" id="vZhTest">▶︎ 试听</button></div>
+        <div class="vrate"><span>语速</span><input type="range" id="vZhRate" min="0.5" max="1.3" step="0.05"><b id="vZhRateV"></b></div>
+      </div>
+    </div>
+    <p class="sheet-note" id="voiceNote"></p>
+    <div class="sheet-foot"><button class="btn" id="vAuto">↺ 恢复自动挑选</button></div>
   </div>
 </div>
 
@@ -674,22 +708,63 @@ const sfx={
   ok(){tone(660,0.1,'sine',0.14);tone(990,0.16,'sine',0.14,0.1)},
   bad(){tone(220,0.2,'triangle',0.12);tone(180,0.28,'triangle',0.12,0.15)}
 };
-let voice=null, zhVoice=null;
-function pickVoice(){
-  const vs=speechSynthesis.getVoices();
-  voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Samantha|Google US|Aria|Jenny|Zira|Ava/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
-  zhVoice=vs.find(v=>/zh[-_](CN|Hans)/i.test(v.lang)&&/Tingting|Google|Xiaoxiao|Yaoyao|Huihui|Mei/i.test(v.name))||vs.find(v=>/zh[-_](CN|Hans)/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null;
+/* ================= 朗读引擎：自动挑选最自然的人声 =================
+   优先级：Edge 在线 Natural/Neural 声音 > Apple 增强/高级声音 > Google 声音 > 系统普通声音
+   声音列表是异步加载的，监听 voiceschanged，并轮询兜底（Safari 有时不触发事件）。 */
+const VOICE={ en:null, zh:null, list:{en:[],zh:[]},
+  pref:store.get('voicePref',{en:'',zh:'',rateEn:0.9,rateZh:0.8}) };
+const NOVELTY=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Organ|Pipe Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy|Princess|Grandma|Grandpa|Eddy|Flo|Reed|Rocko|Sandy|Shelley/i;
+function voiceScore(v,lang){
+  const n=v.name, l=(v.lang||'').replace('_','-');
+  let s=0;
+  if(lang==='en'){
+    if(!/^en/i.test(l)) return -1e9;
+    if(/en-US/i.test(l)) s+=30; else if(/en-GB/i.test(l)) s+=18; else s+=6;
+    if(/Aria|Jenny|Ava|Andrew|Emma|Brian|Michelle|Guy|Samantha|Allison|Susan|Zoe|Evan|Nathan|Joelle/i.test(n)) s+=25;
+  }else{
+    if(!/zh|cmn/i.test(l)) return -1e9;
+    if(/zh-HK|yue|Cantonese|粤/i.test(l+n)) s-=400;          // 粤语不要
+    if(/zh-CN|cmn-Hans|zh-Hans/i.test(l)) s+=30; else if(/zh-TW|zh-Hant/i.test(l)) s+=10;
+    if(/Xiaoxiao|Xiaoyi|Yunxi|Yunjian|Yunyang|Xiaochen|Xiaohan|Xiaomo|Tingting|Lili|Yu-shu|Meijia|普通话/i.test(n)) s+=25;
+  }
+  if(/Natural|Neural|Online/i.test(n)) s+=120;                // Edge 在线自然声音
+  if(/Premium|Enhanced|高级|增强|Siri/i.test(n)) s+=90;          // Apple 下载的高品质声音
+  if(/Google/i.test(n)) s+=60;                                 // Chrome 的 Google 声音
+  if(v.localService===false) s+=15;
+  if(/eSpeak|espeak/i.test(n)) s-=150;
+  if(NOVELTY.test(n)) s-=300;                                  // macOS 的搞怪声音
+  if(v.default) s+=2;
+  return s;
 }
-if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function loadVoices(){
+  if(!('speechSynthesis' in window)) return;
+  const vs=speechSynthesis.getVoices(); if(!vs.length) return;
+  ['en','zh'].forEach(lang=>{
+    VOICE.list[lang]=vs.map(v=>({v,s:voiceScore(v,lang)})).filter(x=>x.s>-1e8).sort((a,b)=>b.s-a.s).map(x=>x.v);
+    const want=VOICE.pref[lang];
+    VOICE[lang]=(want&&VOICE.list[lang].find(v=>v.voiceURI===want||v.name===want))||VOICE.list[lang][0]||null;
+  });
+  if(typeof renderVoicePanel==='function') renderVoicePanel();
+}
+if('speechSynthesis' in window){
+  loadVoices(); speechSynthesis.onvoiceschanged=loadVoices;
+  let tries=0; const poll=setInterval(()=>{ loadVoices(); if(VOICE.list.en.length||++tries>20) clearInterval(poll); },250);
+}
+let _utter=null, _speakTimer=null;   // 保持引用，避免 Chrome 回收后 onend 不触发
 function speak(text,onend,lang){
   if(!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
   const zh=lang==='zh';
-  const u=new SpeechSynthesisUtterance(text); u.lang=zh?'zh-CN':'en-US'; u.rate=zh?0.8:0.85;
-  const v=zh?zhVoice:voice; if(v) u.voice=v;
-  if(onend) u.onend=onend; speechSynthesis.speak(u);
+  speechSynthesis.cancel(); clearTimeout(_speakTimer);
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=zh?'zh-CN':'en-US';
+  u.rate=zh?VOICE.pref.rateZh:VOICE.pref.rateEn;
+  u.pitch=1; u.volume=1;
+  const v=zh?VOICE.zh:VOICE.en; if(v){ u.voice=v; u.lang=v.lang; }
+  if(onend){ u.onend=onend; u.onerror=onend; }
+  _utter=u;
+  // cancel 之后立刻 speak，Chrome 偶尔会吞掉这一句，稍等一帧再读
+  _speakTimer=setTimeout(()=>{ speechSynthesis.speak(u); if(speechSynthesis.paused) speechSynthesis.resume(); },40);
 }
-/* 按当前单词书的语言朗读：汉字书读汉字，英语书读单词 */
 function speakWord(w,onend){ speak(w.hz||w.en,onend,w.hz?'zh':'en'); }
 
 /* ================= 配色主题 ================= */
@@ -1000,6 +1075,46 @@ const list={
 };
 $('lSearch').oninput=e=>{ list.q=e.target.value; list.render(); };
 $('lPlay').onclick=()=>{ list.playing?list.stop():list.play(); };
+
+
+/* ================= 声音设置面板 ================= */
+function voiceLabel(v,lang){
+  const sc=voiceScore(v,lang);
+  const star=sc>=150?'★ ':sc>=100?'☆ ':'';
+  return star+v.name.replace(/Microsoft /,'').replace(/ - .*$/,'')+'  ('+v.lang+')';
+}
+function renderVoicePanel(){
+  if(!$('vEn')) return;
+  ['en','zh'].forEach(lang=>{
+    const sel=$(lang==='en'?'vEn':'vZh'); const list=VOICE.list[lang];
+    sel.innerHTML='';
+    if(!list.length){ const o=document.createElement('option'); o.textContent=lang==='en'?'本机没有英文声音':'本机没有中文普通话声音'; sel.appendChild(o); sel.disabled=true; return; }
+    sel.disabled=false;
+    const auto=document.createElement('option'); auto.value=''; auto.textContent='自动（'+voiceLabel(list[0],lang).replace(/^[★☆] /,'')+'）'; sel.appendChild(auto);
+    list.forEach(v=>{ const o=document.createElement('option'); o.value=v.voiceURI||v.name; o.textContent=voiceLabel(v,lang); sel.appendChild(o); });
+    sel.value=VOICE.pref[lang]||'';
+  });
+  $('vEnRate').value=VOICE.pref.rateEn; $('vEnRateV').textContent=(+VOICE.pref.rateEn).toFixed(2);
+  $('vZhRate').value=VOICE.pref.rateZh; $('vZhRateV').textContent=(+VOICE.pref.rateZh).toFixed(2);
+  const natural=[...VOICE.list.en,...VOICE.list.zh].some(v=>/Natural|Neural|Online|Premium|Enhanced/i.test(v.name));
+  $('voiceNote').textContent=natural
+    ? '★ 表示高品质自然人声（Edge 的 Natural 在线声音、Apple 的增强/高级声音），已自动优先使用。'
+    : '当前浏览器只提供普通系统声音。想要更自然的朗读：Windows 上用 Microsoft Edge 打开本页，会出现 “Xiaoxiao Online (Natural)”、“Aria/Jenny Online (Natural)” 等在线自然声音；Mac / iPhone 可在「系统设置 › 辅助功能 › 朗读内容 › 声音」里下载 Tingting、Ava 等“增强/高级”声音。';
+}
+function saveVoicePref(){ store.set('voicePref',VOICE.pref); loadVoices(); }
+$('voiceBtn').onclick=()=>{ loadVoices(); renderVoicePanel(); $('voiceModal').classList.add('show'); };
+$('voiceClose').onclick=()=>$('voiceModal').classList.remove('show');
+$('voiceModal').onclick=e=>{ if(e.target===$('voiceModal')) $('voiceModal').classList.remove('show'); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('voiceModal').classList.remove('show'); });
+$('vEn').onchange=e=>{ VOICE.pref.en=e.target.value; saveVoicePref(); speak('Hello! This is my reading voice.',null,'en'); };
+$('vZh').onchange=e=>{ VOICE.pref.zh=e.target.value; saveVoicePref(); speak('你好，我用这个声音来朗读。',null,'zh'); };
+$('vEnTest').onclick=()=>speak('Apple, butterfly, beautiful. Let us learn new words!',null,'en');
+$('vZhTest').onclick=()=>speak('春天来了，小草绿了，花儿开了。',null,'zh');
+$('vEnRate').oninput=e=>{ VOICE.pref.rateEn=+e.target.value; $('vEnRateV').textContent=(+e.target.value).toFixed(2); store.set('voicePref',VOICE.pref); };
+$('vZhRate').oninput=e=>{ VOICE.pref.rateZh=+e.target.value; $('vZhRateV').textContent=(+e.target.value).toFixed(2); store.set('voicePref',VOICE.pref); };
+$('vEnRate').onchange=()=>speak('butterfly',null,'en');
+$('vZhRate').onchange=()=>speak('蝴蝶',null,'zh');
+$('vAuto').onclick=()=>{ VOICE.pref={en:'',zh:'',rateEn:0.9,rateZh:0.8}; saveVoicePref(); renderVoicePanel(); };
 
 /* ================= 全局键盘 ================= */
 document.addEventListener('keydown',e=>{
